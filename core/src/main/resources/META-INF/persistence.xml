@@ -18,6 +18,7 @@
         <class>com.globaltrade.core.entity.OrderItem</class>
         <class>com.globaltrade.core.entity.RouteOptimizationLog</class>
         <class>com.globaltrade.core.entity.Shipment</class>
+        <class>com.globaltrade.core.entity.Status</class>
         <class>com.globaltrade.core.entity.ShipmentItem</class>
         <class>com.globaltrade.core.entity.TransactionAudit</class>
         <class>com.globaltrade.core.entity.User</class>

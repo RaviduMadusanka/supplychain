@@ -35,11 +35,12 @@ public class InventoryServiceBean implements InventoryService {
             throw new InsufficientStockException("Stock record not found for Item ID: " + itemId);
         }
 
-        if (stock.getQuantityAvailable() < quantity) {
-            throw new InsufficientStockException("Not enough stock available. Requested: " + quantity + ", Available: " + stock.getQuantityAvailable());
+        if (stock.getStockQty() < quantity) {
+            throw new InsufficientStockException("Not enough stock available. Requested: " + quantity + ", Available: " + stock.getStockQty());
         }
-        stock.setQuantityAvailable(stock.getQuantityAvailable() - quantity);
-        stock.setQuantityReserved(stock.getQuantityReserved() + quantity);
+
+        // Reserve the stock (deduct from available)
+        stock.setStockQty(stock.getStockQty() - quantity);
         
         em.merge(stock);
     }
@@ -55,7 +56,7 @@ public class InventoryServiceBean implements InventoryService {
                 .getSingleResult();
 
         if (stock != null) {
-            stock.setQuantityAvailable(stock.getQuantityAvailable() + quantityToAdd);
+            stock.setStockQty(stock.getStockQty() + quantityToAdd);
             em.merge(stock);
         }
     }
