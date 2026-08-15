@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 @Stateless
-@TransactionManagement(TransactionManagementType.BEAN) // BMT Example
+@TransactionManagement(TransactionManagementType.BEAN)
 public class OrderServiceBean implements OrderService {
 
     @PersistenceContext(unitName = "SupplyChainPU")
@@ -31,14 +31,10 @@ public class OrderServiceBean implements OrderService {
     @EJB
     private InventoryService inventoryService;
 
-    /**
-     * BMT Example: Manually starting, committing, and rolling back a multi-step transaction.
-     */
     @Override
     public Order createOrderWithBMT(Long customerId, Long vendorId, Map<Long, Integer> itemsWithQuantities, Long warehouseId) throws Exception {
         Order order = new Order();
         try {
-            // Step 1: Begin Transaction
             userTransaction.begin();
 
             Customer customer = em.find(Customer.class, customerId);
@@ -48,7 +44,6 @@ public class OrderServiceBean implements OrderService {
                 throw new IllegalArgumentException("Invalid Customer or Vendor ID");
             }
 
-            // Create Order Header
             order.setOrderCode("ORD-" + System.currentTimeMillis());
             order.setCustomer(customer);
             order.setVendor(vendor);
@@ -59,7 +54,6 @@ public class OrderServiceBean implements OrderService {
 
             BigDecimal totalAmount = BigDecimal.ZERO;
 
-            // Step 2: Process Items and Reserve Stock
             for (Map.Entry<Long, Integer> entry : itemsWithQuantities.entrySet()) {
                 Long itemId = entry.getKey();
                 Integer quantity = entry.getValue();
@@ -69,12 +63,8 @@ public class OrderServiceBean implements OrderService {
                     throw new IllegalArgumentException("Invalid Item ID: " + itemId);
                 }
 
-                // Call CMT bean (REQUIRES_NEW) to reserve stock
-                // Even though this is BMT, calling a CMT REQUIRES_NEW bean will suspend this tx, 
-                // run the reservation, and resume this tx.
                 inventoryService.reserveStock(itemId, warehouseId, quantity);
 
-                // Create OrderItem
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
                 orderItem.setItem(item);
@@ -82,7 +72,6 @@ public class OrderServiceBean implements OrderService {
                 orderItem.setUnitPrice(item.getUnitPrice());
                 em.persist(orderItem);
 
-                // Calculate subtotal
                 BigDecimal subtotal = item.getUnitPrice().multiply(new BigDecimal(quantity));
                 totalAmount = totalAmount.add(subtotal);
             }
@@ -90,12 +79,10 @@ public class OrderServiceBean implements OrderService {
             order.setTotalAmount(totalAmount);
             em.merge(order);
 
-            // Step 3: Commit Transaction
             userTransaction.commit();
             return order;
 
         } catch (Exception e) {
-            // Step 4: Rollback Transaction on Failure
             try {
                 if (userTransaction.getStatus() == jakarta.transaction.Status.STATUS_ACTIVE 
                         || userTransaction.getStatus() == jakarta.transaction.Status.STATUS_MARKED_ROLLBACK) {
