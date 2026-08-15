@@ -12,10 +12,10 @@
     <name>Global Supply Chain Management System</name>
 
     <modules>
-        <module>supplychain-core</module>
-        <module>supplychain-ejb</module>
-        <module>supplychain-web</module>
-        <module>supplychain-ear</module>
+        <module>core</module>
+        <module>ejb</module>
+        <module>web</module>
+        <module>ear</module>
     </modules>
 
     <properties>
@@ -39,18 +39,18 @@
             <!-- Internal Modules -->
             <dependency>
                 <groupId>com.globaltrade</groupId>
-                <artifactId>supplychain-core</artifactId>
+                <artifactId>core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.globaltrade</groupId>
-                <artifactId>supplychain-ejb</artifactId>
+                <artifactId>ejb</artifactId>
                 <version>${project.version}</version>
                 <type>ejb</type>
             </dependency>
             <dependency>
                 <groupId>com.globaltrade</groupId>
-                <artifactId>supplychain-web</artifactId>
+                <artifactId>web</artifactId>
                 <version>${project.version}</version>
                 <type>war</type>
             </dependency>

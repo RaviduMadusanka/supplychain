@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+
+    <persistence-unit name="SupplyChainPU" transaction-type="JTA">
+        <jta-data-source>jdbc/SupplyChainDB</jta-data-source>
+        
+        <class>core.entity.AuditLog</class>
+        <class>core.entity.Customer</class>
+        <class>core.entity.CustomsDocument</class>
+        <class>core.entity.ExceptionLog</class>
+        <class>core.entity.InventoryAlert</class>
+        <class>core.entity.InventoryItem</class>
+        <class>core.entity.InventoryStock</class>
+        <class>core.entity.Order</class>
+        <class>core.entity.OrderItem</class>
+        <class>core.entity.RouteOptimizationLog</class>
+        <class>core.entity.Shipment</class>
+        <class>core.entity.ShipmentItem</class>
+        <class>core.entity.TransactionAudit</class>
+        <class>core.entity.User</class>
+        <class>core.entity.Vendor</class>
+        <class>core.entity.VendorPerformance</class>
+        <class>core.entity.Warehouse</class>
+
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>
