@@ -1,4 +1,4 @@
-package core.entity;
+package com.globaltrade.core.entity;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
