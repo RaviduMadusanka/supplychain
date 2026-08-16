@@ -69,11 +69,11 @@ public class OrderServiceBean implements OrderService {
                 orderItem.setOrder(order);
                 orderItem.setItem(item);
                 orderItem.setQuantity(quantity);
-                orderItem.setUnitPrice(item.getUnitPrice());
+//                orderItem.setUnitPrice(item.getUnitPrice());
                 em.persist(orderItem);
-
-                BigDecimal subtotal = item.getUnitPrice().multiply(new BigDecimal(quantity));
-                totalAmount = totalAmount.add(subtotal);
+//
+//                BigDecimal subtotal = item.getUnitPrice().multiply(new BigDecimal(quantity));
+//                totalAmount = totalAmount.add(subtotal);
             }
 
             order.setTotalAmount(totalAmount);
