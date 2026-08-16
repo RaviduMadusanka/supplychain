@@ -39,7 +39,6 @@ public class InventoryServiceBean implements InventoryService {
             throw new InsufficientStockException("Not enough stock available. Requested: " + quantity + ", Available: " + stock.getStockQty());
         }
 
-        // Reserve the stock (deduct from available)
         stock.setStockQty(stock.getStockQty() - quantity);
         
         em.merge(stock);
