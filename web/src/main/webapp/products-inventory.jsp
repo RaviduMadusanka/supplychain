@@ -17,7 +17,7 @@
   </div>
 
   <div id="t-products">
-    <div class="flex justify-end mb-4"><button class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold">+ Add Product</button></div>
+    <div class="flex justify-end mb-4"><button onclick="toggleModal('addProductModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primarydk transition">+ Add Product</button></div>
     <div class="card overflow-hidden">
       <table class="w-full text-sm">
         <thead><tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line bg-bg/50">
@@ -72,6 +72,51 @@ function scmTab(e, id){
   e.currentTarget.classList.add('border-primary','text-primary');
   e.currentTarget.classList.remove('border-transparent','text-ink/50');
 }
+
+function toggleModal(id) {
+  const modal = document.getElementById(id);
+  if (modal.classList.contains('hidden')) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  } else {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
 </script>
+
+<!-- Add Product Modal -->
+<div id="addProductModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-sm">
+  <div class="bg-white rounded-xl shadow-xl border border-line w-full max-w-md p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display font-semibold text-lg">Add New Product</h3>
+      <button onclick="toggleModal('addProductModal')" class="text-ink/50 hover:text-ink">&times;</button>
+    </div>
+    <form class="space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-ink/60 mb-1">SKU</label>
+        <input type="text" class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-ink/60 mb-1">Name</label>
+        <input type="text" class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary">
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-medium text-ink/60 mb-1">Category</label>
+          <input type="text" class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-ink/60 mb-1">Reorder Level</label>
+          <input type="number" class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary">
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end gap-3">
+        <button type="button" onclick="toggleModal('addProductModal')" class="px-4 py-2 rounded-lg border border-line text-sm font-medium hover:bg-bg">Cancel</button>
+        <button type="button" onclick="toggleModal('addProductModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primarydk transition">Save Product</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <%@ include file="includes/footer.jspf" %>
