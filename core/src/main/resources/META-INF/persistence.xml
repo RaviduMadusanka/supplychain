@@ -6,7 +6,7 @@
 
     <persistence-unit name="SupplyChainPU" transaction-type="JTA">
         <jta-data-source>jdbc/SupplyChainDB</jta-data-source>
-        
+
         <class>com.globaltrade.core.entity.AuditLog</class>
         <class>com.globaltrade.core.entity.Customer</class>
         <class>com.globaltrade.core.entity.CustomsDocument</class>
@@ -20,6 +20,7 @@
         <class>com.globaltrade.core.entity.Shipment</class>
         <class>com.globaltrade.core.entity.Status</class>
         <class>com.globaltrade.core.entity.ShipmentItem</class>
+        <class>com.globaltrade.core.entity.TimerJob</class>
         <class>com.globaltrade.core.entity.TransactionAudit</class>
         <class>com.globaltrade.core.entity.User</class>
         <class>com.globaltrade.core.entity.Vendor</class>

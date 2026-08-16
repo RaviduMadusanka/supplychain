@@ -2,6 +2,7 @@ package com.globaltrade.ejb;
 
 import com.globaltrade.core.entity.Customer;
 import com.globaltrade.core.entity.InventoryItem;
+import com.globaltrade.core.entity.InventoryStock;
 import com.globaltrade.core.entity.Order;
 import com.globaltrade.core.entity.OrderItem;
 import com.globaltrade.core.entity.Vendor;
@@ -49,7 +50,7 @@ public class OrderServiceBean implements OrderService {
             order.setVendor(vendor);
             order.setStatus("CREATED");
             order.setTotalAmount(BigDecimal.ZERO);
-            
+
             em.persist(order);
 
             BigDecimal totalAmount = BigDecimal.ZERO;
@@ -63,17 +64,29 @@ public class OrderServiceBean implements OrderService {
                     throw new IllegalArgumentException("Invalid Item ID: " + itemId);
                 }
 
+                // Unit price is warehouse-specific (lives on inventory_stock, not on the product itself)
+                InventoryStock stock = em.createQuery(
+                                "SELECT s FROM InventoryStock s WHERE s.item.id = :itemId AND s.warehouse.id = :warehouseId",
+                                InventoryStock.class)
+                        .setParameter("itemId", itemId)
+                        .setParameter("warehouseId", warehouseId)
+                        .getSingleResult();
+
+                if (stock == null || stock.getUnitPrice() == null) {
+                    throw new IllegalArgumentException("No priced stock record found for Item ID: " + itemId + " at Warehouse ID: " + warehouseId);
+                }
+
                 inventoryService.reserveStock(itemId, warehouseId, quantity);
 
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
                 orderItem.setItem(item);
                 orderItem.setQuantity(quantity);
-//                orderItem.setUnitPrice(item.getUnitPrice());
+                orderItem.setUnitPrice(stock.getUnitPrice());
                 em.persist(orderItem);
-//
-//                BigDecimal subtotal = item.getUnitPrice().multiply(new BigDecimal(quantity));
-//                totalAmount = totalAmount.add(subtotal);
+
+                BigDecimal subtotal = stock.getUnitPrice().multiply(new BigDecimal(quantity));
+                totalAmount = totalAmount.add(subtotal);
             }
 
             order.setTotalAmount(totalAmount);
@@ -84,7 +97,7 @@ public class OrderServiceBean implements OrderService {
 
         } catch (Exception e) {
             try {
-                if (userTransaction.getStatus() == jakarta.transaction.Status.STATUS_ACTIVE 
+                if (userTransaction.getStatus() == jakarta.transaction.Status.STATUS_ACTIVE
                         || userTransaction.getStatus() == jakarta.transaction.Status.STATUS_MARKED_ROLLBACK) {
                     userTransaction.rollback();
                 }

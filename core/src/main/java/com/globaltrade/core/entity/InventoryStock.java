@@ -14,7 +14,7 @@ public class InventoryStock implements Serializable {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "product_id")
     private InventoryItem item;
 
     @ManyToOne(fetch = FetchType.LAZY)

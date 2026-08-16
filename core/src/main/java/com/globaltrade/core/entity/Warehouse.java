@@ -28,6 +28,10 @@ public class Warehouse implements Serializable {
     @Column(name = "current_utilization")
     private Integer currentUtilization = 0;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -43,4 +47,6 @@ public class Warehouse implements Serializable {
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
     public Integer getCurrentUtilization() { return currentUtilization; }
     public void setCurrentUtilization(Integer currentUtilization) { this.currentUtilization = currentUtilization; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

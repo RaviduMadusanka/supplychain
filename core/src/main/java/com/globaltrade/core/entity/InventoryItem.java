@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "inventory_items")
+@Table(name = "products")
 public class InventoryItem implements Serializable {
 
     @Id
@@ -27,6 +27,9 @@ public class InventoryItem implements Serializable {
     @Column(name = "reorder_level")
     private Integer reorderLevel = 10;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendor_id")
+    private Vendor vendor;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -40,4 +43,6 @@ public class InventoryItem implements Serializable {
     public void setWeight(BigDecimal weight) { this.weight = weight; }
     public Integer getReorderLevel() { return reorderLevel; }
     public void setReorderLevel(Integer reorderLevel) { this.reorderLevel = reorderLevel; }
+    public Vendor getVendor() { return vendor; }
+    public void setVendor(Vendor vendor) { this.vendor = vendor; }
 }

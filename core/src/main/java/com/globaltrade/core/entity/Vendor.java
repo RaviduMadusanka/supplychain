@@ -40,6 +40,10 @@ public class Vendor implements Serializable {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -66,4 +70,6 @@ public class Vendor implements Serializable {
     public void setStatus(String status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }
