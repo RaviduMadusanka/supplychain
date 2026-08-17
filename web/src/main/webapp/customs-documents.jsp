@@ -3,8 +3,8 @@
   String pageTitle = "Customs Documents";
   String pageSubtitle = "3 documents \u00b7 1 pending approval";
   String activePage = "customs";
-  String userName = "Nadeesha Perera";
-  String userRole = "Admin";
+  String userName = "Saman Kumara";
+  String userRole = "Warehouse Manager";
 %>
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>

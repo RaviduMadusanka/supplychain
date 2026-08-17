@@ -3,8 +3,8 @@
   String pageTitle = "Route Optimization";
   String pageSubtitle = "366.25 km saved this month across 3 shipments";
   String activePage = "routes";
-  String userName = "Nadeesha Perera";
-  String userRole = "Admin";
+  String userName = "Saman Kumara";
+  String userRole = "Warehouse Manager";
 %>
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>

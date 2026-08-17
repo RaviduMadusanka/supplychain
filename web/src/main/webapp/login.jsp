@@ -81,9 +81,9 @@
       <p class="text-sm text-ink/50 mb-6">Select your portal and enter your credentials.</p>
 
       <div class="grid grid-cols-4 gap-1 p-1 bg-line/50 rounded-lg mb-6 font-mono text-[10px] uppercase tracking-wide">
-        <button type="button" class="role-tab active rounded-md py-2 font-semibold" onclick="selectRole('staff', this)">Staff</button>
+        <button type="button" class="role-tab active rounded-md py-2 font-semibold" onclick="selectRole('admin', this)">Admin</button>
+        <button type="button" class="role-tab rounded-md py-2 font-semibold" onclick="selectRole('whmanager', this)">WH Mgr</button>
         <button type="button" class="role-tab rounded-md py-2 font-semibold" onclick="selectRole('vendor', this)">Vendor</button>
-        <button type="button" class="role-tab rounded-md py-2 font-semibold" onclick="selectRole('customs', this)">Customs</button>
         <button type="button" class="role-tab rounded-md py-2 font-semibold" onclick="selectRole('customer', this)">Customer</button>
       </div>
 
@@ -101,7 +101,7 @@
           <a href="#" class="text-primary font-medium hover:underline">Forgot password?</a>
         </div>
         <button type="button" onclick="doSignIn()" class="w-full py-2.5 rounded-lg bg-primary hover:bg-primarydk transition text-white text-sm font-semibold shadow-sm shadow-primary/30">
-          Sign in as <span id="signInRoleLabel">Staff</span>
+          Sign in as <span id="signInRoleLabel">Admin</span>
         </button>
       </form>
 
@@ -115,21 +115,21 @@
 
 <script>
   var dashboards = {
-    staff:    'dashboard-admin.jsp',
-    vendor:   'dashboard-vendor.jsp',
-    customs:  'customs-documents.jsp',
-    customer: 'dashboard-customer.jsp'
+    admin:     'dashboard-admin.jsp',
+    whmanager: 'dashboard-wh.jsp',
+    vendor:    'dashboard-vendor.jsp',
+    customer:  'browse-products.jsp'
   };
   var placeholders = {
-    staff:    'coord01',
-    vendor:   'vendor01',
-    customs:  'customs01',
-    customer: 'cust01'
+    admin:     'admin01',
+    whmanager: 'whmgr01',
+    vendor:    'vendor01',
+    customer:  'cust01'
   };
   var roleLabels = {
-    staff: 'Staff', vendor: 'Vendor', customs: 'Customs', customer: 'Customer'
+    admin: 'Admin', whmanager: 'WH Manager', vendor: 'Vendor', customer: 'Customer'
   };
-  var selectedRole = 'staff';
+  var selectedRole = 'admin';
 
   function selectRole(role, btnEl) {
     selectedRole = role;

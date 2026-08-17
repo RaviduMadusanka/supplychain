@@ -3,8 +3,8 @@
   String pageTitle = "Vendor Performance";
   String pageSubtitle = "Evaluation period ending 30 Jun 2026";
   String activePage = "vendorperf";
-  String userName = "Nadeesha Perera";
-  String userRole = "Admin";
+  String userName = "Saman Kumara";
+  String userRole = "Warehouse Manager";
 %>
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>

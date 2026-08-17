@@ -3,8 +3,8 @@
   String pageTitle = "Vendors";
   String pageSubtitle = "3 vendors \u00b7 across 3 countries";
   String activePage = "vendors";
-  String userName = "Nadeesha Perera";
-  String userRole = "Admin";
+  String userName = "Saman Kumara";
+  String userRole = "Warehouse Manager";
 %>
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>
