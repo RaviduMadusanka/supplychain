@@ -1,5 +1,19 @@
-# Project exclude paths
-/supplychain-core/target/
-/supplychain-ear/target/
-/supplychain-ejb/target/
-/supplychain-web/target/
+# Compiled class files
+*.class
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# Maven build folders
+target/
+*/target/
+core/target/
+ejb/target/
+web/target/
+ear/target/
+
+# IntelliJ IDEA specific files
+.idea/
+*.iml

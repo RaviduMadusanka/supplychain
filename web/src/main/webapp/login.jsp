@@ -2,27 +2,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign in :: NexTrade SCM</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = { theme: { extend: { colors: {
-    ink:'#12172B', sidebar:'#0B1220', primary:'#2547D0', primarydk:'#1B34A6',
-    teal:'#0EA5A4', amber:'#E0572B', line:'#E4E7EF', bg:'#F5F6FA'
-  }, fontFamily: { display:['"Space Grotesk"','sans-serif'], body:['Inter','sans-serif'], mono:['"JetBrains Mono"','monospace'] } } } }
-</script>
-<style>
-  body{ font-family:'Inter',sans-serif; }
-  .font-display{ font-family:'Space Grotesk',sans-serif; }
-  .font-mono{ font-family:'JetBrains Mono',monospace; }
-  .route-line{ background-image:linear-gradient(to right,rgba(255,255,255,.25) 60%, transparent 0%); background-size:10px 2px; background-repeat:repeat-x; height:2px; }
-  .role-tab{ transition:.15s; }
-  .role-tab.active{ background:#fff; color:#12172B; box-shadow:0 1px 2px rgba(0,0,0,.06); }
-  .role-tab:not(.active){ color:#8A93AC; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in :: NexTrade SCM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+            ink:'#12172B', sidebar:'#0B1220', primary:'#2547D0', primarydk:'#1B34A6',
+            teal:'#0EA5A4', amber:'#E0572B', line:'#E4E7EF', bg:'#F5F6FA'
+          }, fontFamily: { display:['"Space Grotesk"','sans-serif'], body:['Inter','sans-serif'], mono:['"JetBrains Mono"','monospace'] } } } }
+  </script>
+  <style>
+    body{ font-family:'Inter',sans-serif; }
+    .font-display{ font-family:'Space Grotesk',sans-serif; }
+    .font-mono{ font-family:'JetBrains Mono',monospace; }
+    .route-line{ background-image:linear-gradient(to right,rgba(255,255,255,.25) 60%, transparent 0%); background-size:10px 2px; background-repeat:repeat-x; height:2px; }
+    .role-tab{ transition:.15s; cursor:pointer; }
+    .role-tab.active{ background:#fff; color:#12172B; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+    .role-tab:not(.active){ color:#8A93AC; }
+  </style>
 </head>
 <body class="bg-bg text-ink">
 <div class="min-h-screen flex">
@@ -81,16 +81,16 @@
       <p class="text-sm text-ink/50 mb-6">Select your portal and enter your credentials.</p>
 
       <div class="grid grid-cols-4 gap-1 p-1 bg-line/50 rounded-lg mb-6 font-mono text-[10px] uppercase tracking-wide">
-        <button class="role-tab active rounded-md py-2 font-semibold">Staff</button>
-        <button class="role-tab rounded-md py-2 font-semibold">Vendor</button>
-        <button class="role-tab rounded-md py-2 font-semibold">Customs</button>
-        <button class="role-tab rounded-md py-2 font-semibold">Customer</button>
+        <button type="button" class="role-tab active rounded-md py-2 font-semibold" onclick="selectRole('staff', this)">Staff</button>
+        <button type="button" class="role-tab rounded-md py-2 font-semibold" onclick="selectRole('vendor', this)">Vendor</button>
+        <button type="button" class="role-tab rounded-md py-2 font-semibold" onclick="selectRole('customs', this)">Customs</button>
+        <button type="button" class="role-tab rounded-md py-2 font-semibold" onclick="selectRole('customer', this)">Customer</button>
       </div>
 
-      <form class="space-y-4">
+      <form class="space-y-4" onsubmit="return false;">
         <div>
           <label class="block text-xs font-medium text-ink/60 mb-1.5">Username</label>
-          <input type="text" placeholder="coord01" class="w-full px-3.5 py-2.5 rounded-lg border border-line bg-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+          <input id="usernameInput" type="text" placeholder="coord01" class="w-full px-3.5 py-2.5 rounded-lg border border-line bg-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
         </div>
         <div>
           <label class="block text-xs font-medium text-ink/60 mb-1.5">Password</label>
@@ -100,14 +100,48 @@
           <label class="flex items-center gap-2 text-ink/60"><input type="checkbox" class="rounded border-line"> Keep me signed in</label>
           <a href="#" class="text-primary font-medium hover:underline">Forgot password?</a>
         </div>
-        <button type="button" onclick="window.location.href='dashboard-admin.jsp'" class="w-full py-2.5 rounded-lg bg-primary hover:bg-primarydk transition text-white text-sm font-semibold shadow-sm shadow-primary/30">
-          Sign in
+        <button type="button" onclick="doSignIn()" class="w-full py-2.5 rounded-lg bg-primary hover:bg-primarydk transition text-white text-sm font-semibold shadow-sm shadow-primary/30">
+          Sign in as <span id="signInRoleLabel">Staff</span>
         </button>
       </form>
 
-      <p class="text-xs text-ink/40 mt-6 text-center">Trouble signing in? Contact your logistics coordinator or system admin.</p>
+      <p class="text-xs text-ink/50 mt-6 text-center">
+        New vendor or customer? <a href="register.jsp" class="text-primary font-medium hover:underline">Create an account</a>
+      </p>
+      <p class="text-xs text-ink/40 mt-2 text-center">Trouble signing in? Contact your logistics coordinator or system admin.</p>
     </div>
   </div>
 </div>
+
+<script>
+  var dashboards = {
+    staff:    'dashboard-admin.jsp',
+    vendor:   'dashboard-vendor.jsp',
+    customs:  'customs-documents.jsp',
+    customer: 'dashboard-customer.jsp'
+  };
+  var placeholders = {
+    staff:    'coord01',
+    vendor:   'vendor01',
+    customs:  'customs01',
+    customer: 'cust01'
+  };
+  var roleLabels = {
+    staff: 'Staff', vendor: 'Vendor', customs: 'Customs', customer: 'Customer'
+  };
+  var selectedRole = 'staff';
+
+  function selectRole(role, btnEl) {
+    selectedRole = role;
+    document.querySelectorAll('.role-tab').forEach(function(t){ t.classList.remove('active'); });
+    btnEl.classList.add('active');
+    document.getElementById('usernameInput').placeholder = placeholders[role];
+    document.getElementById('signInRoleLabel').textContent = roleLabels[role];
+  }
+
+  function doSignIn() {
+    window.location.href = dashboards[selectedRole] || 'dashboard-admin.jsp';
+  }
+</script>
 </body>
 </html>
