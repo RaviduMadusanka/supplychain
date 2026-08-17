@@ -87,20 +87,27 @@
         <button type="button" class="role-tab rounded-md py-2 font-semibold" onclick="selectRole('customer', this)">Customer</button>
       </div>
 
-      <form class="space-y-4" onsubmit="return false;">
+      <% if (request.getAttribute("error") != null) { %>
+        <div class="mb-6 p-3 rounded-lg bg-amber/10 border border-amber/20 flex items-start gap-3 text-amber">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <div class="text-sm font-medium"><%= request.getAttribute("error") %></div>
+        </div>
+      <% } %>
+
+      <form action="<%= request.getContextPath() %>/login" method="POST" class="space-y-4">
         <div>
           <label class="block text-xs font-medium text-ink/60 mb-1.5">Username</label>
-          <input id="usernameInput" type="text" placeholder="coord01" class="w-full px-3.5 py-2.5 rounded-lg border border-line bg-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+          <input id="usernameInput" name="username" required type="text" placeholder="admin01" class="w-full px-3.5 py-2.5 rounded-lg border border-line bg-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
         </div>
         <div>
           <label class="block text-xs font-medium text-ink/60 mb-1.5">Password</label>
-          <input type="password" placeholder="••••••••••" class="w-full px-3.5 py-2.5 rounded-lg border border-line bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+          <input type="password" name="password" required placeholder="••••••••••" class="w-full px-3.5 py-2.5 rounded-lg border border-line bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
         </div>
         <div class="flex items-center justify-between text-xs">
           <label class="flex items-center gap-2 text-ink/60"><input type="checkbox" class="rounded border-line"> Keep me signed in</label>
           <a href="#" class="text-primary font-medium hover:underline">Forgot password?</a>
         </div>
-        <button type="button" onclick="doSignIn()" class="w-full py-2.5 rounded-lg bg-primary hover:bg-primarydk transition text-white text-sm font-semibold shadow-sm shadow-primary/30">
+        <button type="submit" class="w-full py-2.5 rounded-lg bg-primary hover:bg-primarydk transition text-white text-sm font-semibold shadow-sm shadow-primary/30">
           Sign in as <span id="signInRoleLabel">Admin</span>
         </button>
       </form>
