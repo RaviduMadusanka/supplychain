@@ -1,4 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+  com.globaltrade.core.dto.UserDTO sessionUser = (com.globaltrade.core.dto.UserDTO) session.getAttribute("user");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,14 +58,15 @@
       <a href="dashboard-customer.jsp" class="text-sm font-medium text-ink/50 hover:text-ink transition py-5 border-b-2 border-transparent">My Orders</a>
     </nav>
   </div>
-  <div class="flex items-center gap-4">
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-display text-sm font-semibold">C</div>
-      <span class="text-sm font-medium">Colombo Retail Hub</span>
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bg/50">
+        <div class="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-display text-xs font-semibold">
+          <%= sessionUser != null && sessionUser.getFullName() != null && !sessionUser.getFullName().isEmpty() ? sessionUser.getFullName().substring(0, 1) : "C" %>
+        </div>
+        <span class="text-sm font-medium"><%= sessionUser != null ? sessionUser.getFullName() : "Guest" %></span>
+      </div>
+      <a href="logout" class="text-sm font-medium text-ink/50 hover:text-ink transition">Sign out</a>
     </div>
-    <div class="w-px h-6 bg-line"></div>
-    <a href="login.jsp" class="text-xs font-semibold text-ink/50 hover:text-amber transition">Sign out</a>
-  </div>
 </header>
 
 <main class="max-w-6xl mx-auto p-8">
