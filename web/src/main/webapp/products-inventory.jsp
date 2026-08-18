@@ -10,11 +10,24 @@
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>
 
+  <c:set var="alertCount" value="0" />
+  <c:if test="${not empty stocks}">
+    <c:forEach var="s" items="${stocks}">
+      <c:if test="${s.statusName == 'LOW_STOCK' || s.statusName == 'OUT_OF_STOCK'}">
+        <c:set var="alertCount" value="${alertCount + 1}" />
+      </c:if>
+    </c:forEach>
+  </c:if>
+
   <!-- tabs -->
   <div class="flex items-center gap-1 mb-5 border-b border-line">
     <button onclick="scmTab(event,'t-products')" class="scmtabbtn px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary">Products</button>
     <button onclick="scmTab(event,'t-stock')" class="scmtabbtn px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-ink/50">Stock by Warehouse</button>
-    <button onclick="scmTab(event,'t-alerts')" class="scmtabbtn px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-ink/50">Alerts <span class="ml-1 px-1.5 py-0.5 rounded-full bg-ambersoft text-amber text-[10px] font-mono">2</span></button>
+    <button onclick="scmTab(event,'t-alerts')" class="scmtabbtn px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-ink/50">Alerts 
+      <c:if test="${alertCount > 0}">
+        <span class="ml-1 px-1.5 py-0.5 rounded-full bg-ambersoft text-amber text-[10px] font-mono">${alertCount}</span>
+      </c:if>
+    </button>
   </div>
 
   <div id="t-products">
@@ -96,20 +109,38 @@
   </div>
 
   <div id="t-alerts" class="hidden space-y-3">
-    <div class="card p-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="w-9 h-9 rounded-lg bg-ambersoft text-amber flex items-center justify-center font-mono text-xs">!</span>
-        <div><div class="text-sm font-medium">Low stock &mdash; Steel Cargo Container Lock</div><div class="text-xs text-ink/40 font-mono">Singapore Regional Hub &middot; triggered 02 Aug 08:05</div></div>
-      </div>
-      <button class="px-3 py-1.5 rounded-lg border border-line text-xs font-medium hover:bg-bg">Resolve</button>
-    </div>
-    <div class="card p-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="w-9 h-9 rounded-lg bg-ambersoft text-amber flex items-center justify-center font-mono text-xs">!</span>
-        <div><div class="text-sm font-medium">Out of stock &mdash; Packaging Wrap Roll 500m</div><div class="text-xs text-ink/40 font-mono">Dubai Logistics Park &middot; triggered 03 Aug 08:05</div></div>
-      </div>
-      <button class="px-3 py-1.5 rounded-lg border border-line text-xs font-medium hover:bg-bg">Resolve</button>
-    </div>
+    <c:set var="alertCount" value="0" />
+    <c:choose>
+      <c:when test="${not empty stocks}">
+        <c:forEach var="s" items="${stocks}">
+          <c:if test="${s.statusName == 'LOW_STOCK' || s.statusName == 'OUT_OF_STOCK'}">
+            <c:set var="alertCount" value="${alertCount + 1}" />
+            <div class="card p-4 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-lg bg-amber text-white flex items-center justify-center font-mono font-bold text-lg shadow-sm">!</span>
+                <div>
+                  <div class="text-sm font-bold text-ink">
+                    <c:choose>
+                      <c:when test="${s.statusName == 'OUT_OF_STOCK'}">Out of stock</c:when>
+                      <c:otherwise>Low stock</c:otherwise>
+                    </c:choose> 
+                    &mdash; ${s.productName}
+                  </div>
+                  <div class="text-xs text-ink/40 font-mono">${s.warehouseName} &middot; ${s.stockQty} left</div>
+                </div>
+              </div>
+              <button onclick="openQuickUpdate(${s.id}, ${s.stockQty}, '${s.productName}', '${s.warehouseName}')" class="px-4 py-2 rounded-lg border border-amber/30 bg-amber/10 text-amber text-xs font-bold hover:bg-amber hover:text-white transition shadow-sm">Resolve</button>
+            </div>
+          </c:if>
+        </c:forEach>
+        <c:if test="${alertCount == 0}">
+          <div class="text-sm text-ink/50 py-4">No active alerts. All stock levels are sufficient.</div>
+        </c:if>
+      </c:when>
+      <c:otherwise>
+        <div class="text-sm text-ink/50 py-4">No active alerts.</div>
+      </c:otherwise>
+    </c:choose>
   </div>
 
 <script>
