@@ -26,6 +26,10 @@
         <class>com.globaltrade.core.entity.Vendor</class>
         <class>com.globaltrade.core.entity.VendorPerformance</class>
         <class>com.globaltrade.core.entity.Warehouse</class>
+        
+        <class>com.globaltrade.core.entity.Country</class>
+        <class>com.globaltrade.core.entity.Category</class>
+        <class>com.globaltrade.core.entity.OrderStatus</class>
 
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="none"/>

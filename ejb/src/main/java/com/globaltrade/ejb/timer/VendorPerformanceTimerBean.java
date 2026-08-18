@@ -19,7 +19,6 @@ public class VendorPerformanceTimerBean {
     @PersistenceContext(unitName = "SupplyChainPU")
     private EntityManager em;
 
-    // Run every hour for evaluation
     @Schedule(hour = "*", minute = "0", persistent = false)
     public void evaluateVendorPerformance() {
         System.out.println("--- Executing Timer Service: evaluateVendorPerformance ---");
@@ -27,7 +26,6 @@ public class VendorPerformanceTimerBean {
         List<Vendor> vendors = em.createQuery("SELECT v FROM Vendor v WHERE v.status = 'ACTIVE'", Vendor.class).getResultList();
 
         for (Vendor vendor : vendors) {
-            // Find delivered shipments for this vendor
             List<Shipment> deliveredShipments = em.createQuery(
                     "SELECT s FROM Shipment s WHERE s.vendor.id = :vendorId AND s.status = 'DELIVERED'", 
                     Shipment.class)
@@ -47,13 +45,10 @@ public class VendorPerformanceTimerBean {
 
             double onTimeRate = ((double) onTimeCount / deliveredShipments.size()) * 100.0;
 
-            // Generate a random quality score for demonstration (between 80 and 100)
             double qualityScore = 80.0 + (Math.random() * 20.0);
-            
-            // Generate a random response time in hours (between 2 and 12)
+
             double responseTime = 2.0 + (Math.random() * 10.0);
 
-            // Overall rating out of 5.0
             double overallRating = ((onTimeRate / 100) * 2.0) + ((qualityScore / 100) * 2.0) + (1.0 - (responseTime / 24.0));
             if (overallRating > 5.0) overallRating = 5.0;
 
@@ -66,8 +61,7 @@ public class VendorPerformanceTimerBean {
             vp.setOverallRating(BigDecimal.valueOf(overallRating).setScale(2, RoundingMode.HALF_UP));
 
             em.persist(vp);
-            
-            // Update vendor's current rating
+
             vendor.setRating(vp.getOverallRating());
             em.merge(vendor);
 

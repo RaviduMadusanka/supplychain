@@ -17,19 +17,16 @@ public class InventoryAlertTimerBean {
     @PersistenceContext(unitName = "SupplyChainPU")
     private EntityManager em;
 
-    // Run every minute for testing/demonstration purposes
     @Schedule(hour = "*", minute = "*", second = "0", persistent = false)
     public void checkLowStockLevels() {
         System.out.println("--- Executing Timer Service: checkLowStockLevels ---");
-        
-        // Find all stock where quantity is less than or equal to reorder level
+
         List<InventoryStock> lowStockItems = em.createQuery(
                 "SELECT s FROM InventoryStock s WHERE s.stockQty <= s.item.reorderLevel", 
                 InventoryStock.class)
                 .getResultList();
 
         for (InventoryStock stock : lowStockItems) {
-            // Check if an unresolved alert already exists for this item/warehouse
             Long alertCount = em.createQuery(
                     "SELECT COUNT(a) FROM InventoryAlert a WHERE a.item.id = :itemId AND a.warehouse.id = :warehouseId AND a.resolved = false", 
                     Long.class)
@@ -38,7 +35,6 @@ public class InventoryAlertTimerBean {
                     .getSingleResult();
 
             if (alertCount == 0) {
-                // Create a new alert
                 InventoryAlert alert = new InventoryAlert();
                 alert.setItem(stock.getItem());
                 alert.setWarehouse(stock.getWarehouse());
@@ -55,8 +51,7 @@ public class InventoryAlertTimerBean {
                 System.out.println(">>> Generated " + alert.getAlertType() + " alert for SKU: " + stock.getItem().getSku() + " at " + stock.getWarehouse().getWarehouseCode());
             }
         }
-        
-        // Auto-resolve alerts if stock has been replenished
+
         List<InventoryAlert> openAlerts = em.createQuery(
                 "SELECT a FROM InventoryAlert a WHERE a.resolved = false", 
                 InventoryAlert.class)

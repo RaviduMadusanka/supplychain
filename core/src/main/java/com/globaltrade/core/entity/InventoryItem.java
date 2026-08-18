@@ -18,8 +18,9 @@ public class InventoryItem implements Serializable {
     @Column(nullable = false, length = 150)
     private String name;
 
-    @Column(length = 100)
-    private String category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal weight;
@@ -37,8 +38,8 @@ public class InventoryItem implements Serializable {
     public void setSku(String sku) { this.sku = sku; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
     public BigDecimal getWeight() { return weight; }
     public void setWeight(BigDecimal weight) { this.weight = weight; }
     public Integer getReorderLevel() { return reorderLevel; }

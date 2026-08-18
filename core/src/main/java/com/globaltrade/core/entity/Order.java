@@ -24,8 +24,9 @@ public class Order implements Serializable {
     @JoinColumn(name = "vendor_id")
     private Vendor vendor;
 
-    @Column(length = 50)
-    private String status;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_status_id")
+    private OrderStatus orderStatus;
 
     @Column(name = "total_amount", precision = 12, scale = 2)
     private BigDecimal totalAmount;
@@ -47,8 +48,8 @@ public class Order implements Serializable {
     public void setCustomer(Customer customer) { this.customer = customer; }
     public Vendor getVendor() { return vendor; }
     public void setVendor(Vendor vendor) { this.vendor = vendor; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public OrderStatus getOrderStatus() { return orderStatus; }
+    public void setOrderStatus(OrderStatus orderStatus) { this.orderStatus = orderStatus; }
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
     public LocalDateTime getCreatedAt() { return createdAt; }

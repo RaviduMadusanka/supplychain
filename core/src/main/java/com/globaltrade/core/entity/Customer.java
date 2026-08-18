@@ -23,8 +23,9 @@ public class Customer implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String address;
 
-    @Column(length = 100)
-    private String country;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -41,8 +42,8 @@ public class Customer implements Serializable {
     public void setPhone(String phone) { this.phone = phone; }
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
+    public Country getCountry() { return country; }
+    public void setCountry(Country country) { this.country = country; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 }

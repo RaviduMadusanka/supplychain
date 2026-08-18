@@ -20,8 +20,9 @@ public class Warehouse implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String location;
 
-    @Column(length = 100)
-    private String country;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
 
     private Integer capacity;
 
@@ -41,8 +42,8 @@ public class Warehouse implements Serializable {
     public void setName(String name) { this.name = name; }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
+    public Country getCountry() { return country; }
+    public void setCountry(Country country) { this.country = country; }
     public Integer getCapacity() { return capacity; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }
     public Integer getCurrentUtilization() { return currentUtilization; }

@@ -28,8 +28,9 @@ public class Vendor implements Serializable {
     @Column(length = 50)
     private String phone;
 
-    @Column(length = 100)
-    private String country;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
 
     @Column(precision = 3, scale = 2)
     private BigDecimal rating;
@@ -62,8 +63,8 @@ public class Vendor implements Serializable {
     public void setEmail(String email) { this.email = email; }
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
+    public Country getCountry() { return country; }
+    public void setCountry(Country country) { this.country = country; }
     public BigDecimal getRating() { return rating; }
     public void setRating(BigDecimal rating) { this.rating = rating; }
     public String getStatus() { return status; }

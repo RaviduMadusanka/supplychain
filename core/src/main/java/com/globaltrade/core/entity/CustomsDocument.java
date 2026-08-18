@@ -22,8 +22,9 @@ public class CustomsDocument implements Serializable {
     @Column(name = "document_number", unique = true, length = 100)
     private String documentNumber;
 
-    @Column(length = 100)
-    private String country;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id")
+    private Country country;
 
     @Column(length = 50)
     private String status;
@@ -48,8 +49,8 @@ public class CustomsDocument implements Serializable {
     public void setDocumentType(String documentType) { this.documentType = documentType; }
     public String getDocumentNumber() { return documentNumber; }
     public void setDocumentNumber(String documentNumber) { this.documentNumber = documentNumber; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
+    public Country getCountry() { return country; }
+    public void setCountry(Country country) { this.country = country; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public LocalDateTime getSubmittedAt() { return submittedAt; }

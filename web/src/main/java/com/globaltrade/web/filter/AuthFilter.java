@@ -23,8 +23,7 @@ public class AuthFilter implements Filter {
         HttpSession session = req.getSession(false);
 
         String uri = req.getRequestURI();
-        
-        // Allow public pages
+
         if (uri.endsWith("login.jsp") || uri.endsWith("register.jsp") || uri.endsWith("error.jsp") || uri.endsWith("403.jsp") || uri.contains("/includes/")) {
             chain.doFilter(request, response);
             return;
@@ -34,8 +33,7 @@ public class AuthFilter implements Filter {
 
         if (isLoggedIn) {
             UserDTO user = (UserDTO) session.getAttribute("user");
-            
-            // Set user in context for EJBs
+
             com.globaltrade.core.context.UserContext.setUser(user);
             
             try {
