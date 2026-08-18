@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%
   String pageTitle = "Products & Inventory";
   String pageSubtitle = "3 SKUs \u00b7 3 warehouses \u00b7 2 active alerts";
@@ -17,16 +18,30 @@
   </div>
 
   <div id="t-products">
-    <div class="flex justify-end mb-4"><button onclick="toggleModal('addProductModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primarydk transition">+ Add Product</button></div>
+    <div class="flex justify-end mb-4"><a href="${pageContext.request.contextPath}/inventory/add" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primarydk transition">+ Add Inventory</a></div>
     <div class="card overflow-hidden">
       <table class="w-full text-sm">
         <thead><tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line bg-bg/50">
           <th class="px-5 py-3 font-medium">SKU</th><th class="px-5 py-3 font-medium">Name</th><th class="px-5 py-3 font-medium">Category</th><th class="px-5 py-3 font-medium">Weight</th><th class="px-5 py-3 font-medium">Reorder Level</th><th class="px-5 py-3 font-medium">Vendor</th>
         </tr></thead>
         <tbody class="divide-y divide-line">
-          <tr class="hover:bg-bg/60"><td class="px-5 py-3 font-mono text-xs">SKU-1001</td><td class="px-5 py-3">Industrial Circuit Board</td><td class="px-5 py-3 text-ink/60">Electronics</td><td class="px-5 py-3 text-ink/60">0.75 kg</td><td class="px-5 py-3 text-ink/60">50</td><td class="px-5 py-3 text-ink/60">Apex Tech Components</td></tr>
-          <tr class="hover:bg-bg/60"><td class="px-5 py-3 font-mono text-xs">SKU-1002</td><td class="px-5 py-3">Steel Cargo Container Lock</td><td class="px-5 py-3 text-ink/60">Hardware</td><td class="px-5 py-3 text-ink/60">1.20 kg</td><td class="px-5 py-3 text-ink/60">100</td><td class="px-5 py-3 text-ink/60">Global Parts Ltd</td></tr>
-          <tr class="hover:bg-bg/60"><td class="px-5 py-3 font-mono text-xs">SKU-1003</td><td class="px-5 py-3">Packaging Wrap Roll 500m</td><td class="px-5 py-3 text-ink/60">Packaging Materials</td><td class="px-5 py-3 text-ink/60">12.50 kg</td><td class="px-5 py-3 text-ink/60">30</td><td class="px-5 py-3 text-ink/60">Pacific Freight Supplies</td></tr>
+          <c:choose>
+            <c:when test="${not empty products}">
+              <c:forEach var="p" items="${products}">
+                <tr class="hover:bg-bg/60">
+                  <td class="px-5 py-3 font-mono text-xs">${p.sku}</td>
+                  <td class="px-5 py-3">${p.name}</td>
+                  <td class="px-5 py-3 text-ink/60">${p.category.name}</td>
+                  <td class="px-5 py-3 text-ink/60">${p.weight} kg</td>
+                  <td class="px-5 py-3 text-ink/60">${p.reorderLevel}</td>
+                  <td class="px-5 py-3 text-ink/60">${p.vendor.company.companyName}</td>
+                </tr>
+              </c:forEach>
+            </c:when>
+            <c:otherwise>
+              <tr><td colspan="6" class="px-5 py-6 text-center text-ink/50 text-sm">No products found.</td></tr>
+            </c:otherwise>
+          </c:choose>
         </tbody>
       </table>
     </div>
@@ -39,9 +54,42 @@
           <th class="px-5 py-3 font-medium">Product</th><th class="px-5 py-3 font-medium">Warehouse</th><th class="px-5 py-3 font-medium">Qty on Hand</th><th class="px-5 py-3 font-medium">Unit Price</th><th class="px-5 py-3 font-medium">Status</th><th class="px-5 py-3 font-medium">Updated</th>
         </tr></thead>
         <tbody class="divide-y divide-line">
-          <tr class="hover:bg-bg/60"><td class="px-5 py-3">Industrial Circuit Board</td><td class="px-5 py-3 text-ink/60">Colombo Central</td><td class="px-5 py-3 font-mono">420</td><td class="px-5 py-3 font-mono">$85.00</td><td class="px-5 py-3"><span class="tag tag-teal"><span class="tag-dot"></span>In Stock</span></td><td class="px-5 py-3 text-xs text-ink/40 font-mono">01 Aug 08:00</td></tr>
-          <tr class="hover:bg-bg/60"><td class="px-5 py-3">Steel Cargo Container Lock</td><td class="px-5 py-3 text-ink/60">Singapore Regional Hub</td><td class="px-5 py-3 font-mono">45</td><td class="px-5 py-3 font-mono">$29.20</td><td class="px-5 py-3"><span class="tag tag-amber"><span class="tag-dot"></span>Low Stock</span></td><td class="px-5 py-3 text-xs text-ink/40 font-mono">02 Aug 08:00</td></tr>
-          <tr class="hover:bg-bg/60"><td class="px-5 py-3">Packaging Wrap Roll 500m</td><td class="px-5 py-3 text-ink/60">Dubai Logistics Park</td><td class="px-5 py-3 font-mono">0</td><td class="px-5 py-3 font-mono">$49.50</td><td class="px-5 py-3"><span class="tag tag-amber"><span class="tag-dot"></span>Out of Stock</span></td><td class="px-5 py-3 text-xs text-ink/40 font-mono">03 Aug 08:00</td></tr>
+          <c:choose>
+            <c:when test="${not empty stocks}">
+              <c:forEach var="s" items="${stocks}">
+                <tr class="hover:bg-bg/60">
+                  <td class="px-5 py-3">${s.item.name}</td>
+                  <td class="px-5 py-3 text-ink/60">${s.warehouse.name}</td>
+                  <td class="px-5 py-3 font-mono ${s.stockQty < s.item.reorderLevel ? 'text-amber font-semibold' : ''}">
+                    <div class="flex items-center gap-2 group">
+                      <span>${s.stockQty}</span>
+                      <button onclick="openQuickUpdate(${s.id}, ${s.stockQty}, '${s.item.name}', '${s.warehouse.name}')" class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-bg transition text-ink/40 hover:text-primary" title="Update Quantity">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                      </button>
+                    </div>
+                  </td>
+                  <td class="px-5 py-3 font-mono">$${s.unitPrice}</td>
+                  <td class="px-5 py-3">
+                    <c:choose>
+                      <c:when test="${s.stockQty == 0}">
+                        <span class="tag tag-slate"><span class="tag-dot"></span>Out of Stock</span>
+                      </c:when>
+                      <c:when test="${s.stockQty < s.item.reorderLevel}">
+                        <span class="tag tag-amber"><span class="tag-dot"></span>Low Stock</span>
+                      </c:when>
+                      <c:otherwise>
+                        <span class="tag tag-teal"><span class="tag-dot"></span>In Stock</span>
+                      </c:otherwise>
+                    </c:choose>
+                  </td>
+                  <td class="px-5 py-3 text-xs text-ink/40 font-mono">${s.lastUpdated}</td>
+                </tr>
+              </c:forEach>
+            </c:when>
+            <c:otherwise>
+              <tr><td colspan="6" class="px-5 py-6 text-center text-ink/50 text-sm">No stock records found.</td></tr>
+            </c:otherwise>
+          </c:choose>
         </tbody>
       </table>
     </div>
@@ -118,5 +166,43 @@ function toggleModal(id) {
     </form>
   </div>
 </div>
+
+<!-- Quick Update Stock Modal -->
+<div id="updateStockModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-sm">
+  <div class="bg-white rounded-xl shadow-xl border border-line w-full max-w-sm p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display font-semibold text-lg">Quick Update Stock</h3>
+      <button onclick="toggleModal('updateStockModal')" class="text-ink/50 hover:text-ink">&times;</button>
+    </div>
+    <form action="${pageContext.request.contextPath}/inventory/quick-update" method="post" class="space-y-4">
+      <input type="hidden" id="quickUpdateStockId" name="stockId">
+      
+      <div class="p-3 bg-bg rounded-lg border border-line text-sm mb-4">
+        <div class="font-medium" id="quickUpdateProduct">Product Name</div>
+        <div class="text-xs text-ink/60" id="quickUpdateWarehouse">Warehouse Name</div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-ink/60 mb-1">New Quantity</label>
+        <input type="number" id="quickUpdateQty" name="newQty" min="0" class="w-full px-3 py-2 border border-line rounded-lg text-sm font-mono focus:outline-none focus:border-primary" required>
+      </div>
+      
+      <div class="mt-6 flex justify-end gap-3">
+        <button type="button" onclick="toggleModal('updateStockModal')" class="px-4 py-2 rounded-lg border border-line text-sm font-medium hover:bg-bg">Cancel</button>
+        <button type="submit" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primarydk transition">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openQuickUpdate(stockId, currentQty, productName, warehouseName) {
+  document.getElementById('quickUpdateStockId').value = stockId;
+  document.getElementById('quickUpdateQty').value = currentQty;
+  document.getElementById('quickUpdateProduct').textContent = productName;
+  document.getElementById('quickUpdateWarehouse').textContent = warehouseName;
+  toggleModal('updateStockModal');
+}
+</script>
 
 <%@ include file="includes/footer.jspf" %>

@@ -63,4 +63,76 @@ public class InventoryServiceBean implements InventoryService {
             em.merge(stock);
         }
     }
+
+    @Override
+    public java.util.List<com.globaltrade.core.entity.InventoryItem> getAllProducts() {
+        return em.createQuery("SELECT i FROM InventoryItem i", com.globaltrade.core.entity.InventoryItem.class).getResultList();
+    }
+
+    @Override
+    public java.util.List<com.globaltrade.core.entity.Warehouse> getAllWarehouses() {
+        return em.createQuery("SELECT w FROM Warehouse w", com.globaltrade.core.entity.Warehouse.class).getResultList();
+    }
+
+    @Override
+    public java.util.List<InventoryStock> getAllStock() {
+        return em.createQuery("SELECT s FROM InventoryStock s JOIN FETCH s.item JOIN FETCH s.warehouse JOIN FETCH s.status", InventoryStock.class).getResultList();
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void addOrUpdateStock(Long productId, Long warehouseId, Integer qty, java.math.BigDecimal unitPrice, Integer reorderLevel, Long statusId) {
+        // Update product reorder level
+        com.globaltrade.core.entity.InventoryItem item = em.find(com.globaltrade.core.entity.InventoryItem.class, productId);
+        if (item != null && reorderLevel != null) {
+            item.setReorderLevel(reorderLevel);
+            em.merge(item);
+        }
+
+        com.globaltrade.core.entity.Status status = null;
+        if (statusId != null) {
+            status = em.find(com.globaltrade.core.entity.Status.class, statusId);
+        } else {
+            // Find "ACTIVE" status by default if missing
+            try {
+                status = em.createQuery("SELECT s FROM Status s WHERE s.name = 'ACTIVE'", com.globaltrade.core.entity.Status.class).getSingleResult();
+            } catch (Exception e) {}
+        }
+
+        // Check if stock exists matching Product, Warehouse AND Price
+        java.util.List<InventoryStock> stocks = em.createQuery(
+                "SELECT s FROM InventoryStock s WHERE s.item.id = :itemId AND s.warehouse.id = :warehouseId AND s.unitPrice = :unitPrice", 
+                InventoryStock.class)
+                .setParameter("itemId", productId)
+                .setParameter("warehouseId", warehouseId)
+                .setParameter("unitPrice", unitPrice)
+                .getResultList();
+
+        if (stocks.isEmpty()) {
+            InventoryStock newStock = new InventoryStock();
+            newStock.setItem(item);
+            newStock.setWarehouse(em.find(com.globaltrade.core.entity.Warehouse.class, warehouseId));
+            newStock.setStockQty(qty);
+            newStock.setUnitPrice(unitPrice);
+            newStock.setStatus(status);
+            em.persist(newStock);
+        } else {
+            InventoryStock existingStock = stocks.get(0);
+            existingStock.setStockQty(existingStock.getStockQty() + qty);
+            if (status != null) {
+                existingStock.setStatus(status);
+            }
+            em.merge(existingStock);
+        }
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void quickUpdateStock(Long stockId, Integer newQty) {
+        InventoryStock stock = em.find(InventoryStock.class, stockId);
+        if (stock != null) {
+            stock.setStockQty(newQty);
+            em.merge(stock);
+        }
+    }
 }

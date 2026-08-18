@@ -10,16 +10,16 @@
 <%@ include file="includes/sidebar.jspf" %>
 
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-    <div class="card p-5">
-      <div class="text-xs text-ink/50 mb-1">Total SKUs</div>
+    <a href="products-inventory.jsp" class="card p-5 hover:border-primary transition group block">
+      <div class="text-xs text-ink/50 mb-1 group-hover:text-primary transition">Total SKUs</div>
       <div class="font-display text-3xl font-semibold">3</div>
       <div class="text-[10px] text-ink/40 font-mono mt-1 uppercase">Across 3 warehouses</div>
-    </div>
-    <div class="card p-5 border-amber/30 bg-ambersoft/20">
+    </a>
+    <a href="products-inventory.jsp" class="card p-5 border-amber/30 bg-ambersoft/20 hover:border-amber transition group block">
       <div class="text-xs text-amber/70 mb-1 font-semibold flex items-center justify-between">Low Stock Alerts <span class="tag tag-amber"><span class="tag-dot"></span>Attention</span></div>
       <div class="font-display text-3xl font-semibold text-amber">2</div>
       <div class="text-[10px] text-amber/60 font-mono mt-1 uppercase">Requires restocking</div>
-    </div>
+    </a>
     <div class="card p-5">
       <div class="text-xs text-ink/50 mb-1 flex items-center justify-between">Pending Shipments <span class="tag tag-blue"><span class="tag-dot"></span>Active</span></div>
       <div class="font-display text-3xl font-semibold text-primary">1</div>
@@ -36,7 +36,10 @@
     <div class="lg:col-span-2 space-y-6">
       <div class="card">
         <div class="px-5 py-4 border-b border-line flex items-center justify-between">
-          <h3 class="font-display font-semibold text-sm">Stock Levels</h3>
+          <div class="flex items-center gap-3">
+            <h3 class="font-display font-semibold text-sm">Stock Levels</h3>
+            <a href="products-inventory.jsp" class="text-xs text-primary hover:text-primarydk font-medium transition">View Inventory &rarr;</a>
+          </div>
           <button onclick="toggleModal('updateStockModal')" class="px-3 py-1.5 rounded-lg bg-bg text-ink text-xs font-semibold hover:bg-line transition border border-line">Update Stock</button>
         </div>
         <table class="w-full text-sm">

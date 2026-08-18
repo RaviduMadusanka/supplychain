@@ -17,11 +17,11 @@
     <div class="w-8 h-8 rounded-md bg-primary flex items-center justify-center font-display font-bold text-white text-sm">N</div>
     <div>
       <div class="font-display font-semibold text-white text-sm leading-none">NexTrade SCM</div>
-      <% if ("Admin".equalsIgnoreCase(userRole)) { %>
+      <% if ("ADMIN".equalsIgnoreCase(userRole)) { %>
       <div class="font-mono text-[10px] text-white/40 tracking-wider mt-1">ADMIN PANEL</div>
-      <% } else if ("Warehouse Manager".equalsIgnoreCase(userRole)) { %>
+      <% } else if ("WAREHOUSE_MANAGER".equalsIgnoreCase(userRole)) { %>
       <div class="font-mono text-[10px] text-white/40 tracking-wider mt-1">WAREHOUSE OPS</div>
-      <% } else if ("Vendor".equalsIgnoreCase(userRole)) { %>
+      <% } else if ("VENDOR".equalsIgnoreCase(userRole)) { %>
       <div class="font-mono text-[10px] text-white/40 tracking-wider mt-1">VENDOR PORTAL</div>
       <% } else { %>
       <div class="font-mono text-[10px] text-white/40 tracking-wider mt-1">CONTROL TOWER</div>
@@ -32,7 +32,7 @@
   <nav class="flex-1 overflow-y-auto scrollnice py-2">
 
     <%-- ===================== ADMIN NAVIGATION ===================== --%>
-    <% if ("Admin".equalsIgnoreCase(userRole)) { %>
+    <% if ("ADMIN".equalsIgnoreCase(userRole)) { %>
 
     <div class="navsection">Overview</div>
     <a href="dashboard-admin.jsp" class="navlink <%= "dashboard".equals(activePage) ? "active" : "" %> mx-2">
@@ -61,7 +61,7 @@
     </a>
 
     <%-- ===================== WAREHOUSE MANAGER NAVIGATION ===================== --%>
-    <% } else if ("Warehouse Manager".equalsIgnoreCase(userRole)) { %>
+    <% } else if ("WAREHOUSE_MANAGER".equalsIgnoreCase(userRole)) { %>
 
     <div class="navsection">Overview</div>
     <a href="dashboard-wh.jsp" class="navlink <%= "dashboard".equals(activePage) ? "active" : "" %> mx-2">
@@ -70,7 +70,7 @@
     </a>
 
     <div class="navsection">Inventory</div>
-    <a href="products-inventory.jsp" class="navlink <%= "products".equals(activePage) ? "active" : "" %> mx-2">
+    <a href="<%= request.getContextPath() %>/inventory" class="navlink <%= "products".equals(activePage) ? "active" : "" %> mx-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
       Products &amp; Stock
     </a>
@@ -112,7 +112,7 @@
     </a>
 
     <%-- ===================== VENDOR NAVIGATION ===================== --%>
-    <% } else if ("Vendor".equalsIgnoreCase(userRole)) { %>
+    <% } else if ("VENDOR".equalsIgnoreCase(userRole)) { %>
 
     <div class="navsection">Overview</div>
     <a href="dashboard-vendor.jsp" class="navlink <%= "dashboard".equals(activePage) ? "active" : "" %> mx-2">
