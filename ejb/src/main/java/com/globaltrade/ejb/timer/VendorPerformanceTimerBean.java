@@ -23,11 +23,11 @@ public class VendorPerformanceTimerBean {
     public void evaluateVendorPerformance() {
         System.out.println("--- Executing Timer Service: evaluateVendorPerformance ---");
 
-        List<Vendor> vendors = em.createQuery("SELECT v FROM Vendor v WHERE v.status = 'ACTIVE'", Vendor.class).getResultList();
+        List<Vendor> vendors = em.createQuery("SELECT v FROM Vendor v WHERE v.status.name = 'ACTIVE'", Vendor.class).getResultList();
 
         for (Vendor vendor : vendors) {
             List<Shipment> deliveredShipments = em.createQuery(
-                    "SELECT s FROM Shipment s WHERE s.vendor.id = :vendorId AND s.status = 'DELIVERED'", 
+                    "SELECT s FROM Shipment s WHERE s.vendor.id = :vendorId AND s.shipmentStatus.name = 'DELIVERED'", 
                     Shipment.class)
                     .setParameter("vendorId", vendor.getId())
                     .getResultList();
@@ -62,10 +62,11 @@ public class VendorPerformanceTimerBean {
 
             em.persist(vp);
 
+            // Update vendor's current rating
             vendor.setRating(vp.getOverallRating());
             em.merge(vendor);
 
-            System.out.println(">>> Updated Performance for Vendor: " + vendor.getCompanyName() + " | Rating: " + vp.getOverallRating());
+            System.out.println(">>> Updated Performance for Vendor: " + vendor.getCompany().getCompanyName() + " | Rating: " + vp.getOverallRating());
         }
     }
 }

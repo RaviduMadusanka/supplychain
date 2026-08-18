@@ -30,6 +30,12 @@
         <class>com.globaltrade.core.entity.Country</class>
         <class>com.globaltrade.core.entity.Category</class>
         <class>com.globaltrade.core.entity.OrderStatus</class>
+        
+        <class>com.globaltrade.core.entity.AccountStatus</class>
+        <class>com.globaltrade.core.entity.Role</class>
+        <class>com.globaltrade.core.entity.Company</class>
+        <class>com.globaltrade.core.entity.CustomsStatus</class>
+        <class>com.globaltrade.core.entity.ShipmentStatus</class>
 
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="none"/>

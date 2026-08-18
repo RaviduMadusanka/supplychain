@@ -24,10 +24,10 @@ public class AuthServiceBean implements AuthService {
                     .getSingleResult();
 
             if (user != null && PasswordUtil.checkPassword(plainPassword, user.getPasswordHash())) {
-                if (!"ACTIVE".equals(user.getStatus())) {
+                if (!"ACTIVE".equals(user.getStatus().getName())) {
                     throw new Exception("Account is not active.");
                 }
-                return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getFullName(), user.getRole());
+                return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getFullName(), user.getRole().getName());
             } else {
                 throw new Exception("Invalid username or password.");
             }

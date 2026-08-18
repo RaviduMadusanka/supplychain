@@ -33,7 +33,7 @@ public class LoginServlet extends HttpServlet {
                 case "admin":
                     redirectUrl = "dashboard-admin.jsp";
                     break;
-                case "warehouse manager":
+                case "warehouse_manager":
                     redirectUrl = "dashboard-wh.jsp";
                     break;
                 case "vendor":

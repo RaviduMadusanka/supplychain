@@ -26,8 +26,9 @@ public class CustomsDocument implements Serializable {
     @JoinColumn(name = "country_id")
     private Country country;
 
-    @Column(length = 50)
-    private String status;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customs_status_id")
+    private CustomsStatus customsStatus;
 
     @Column(name = "submitted_at")
     private LocalDateTime submittedAt;
@@ -51,8 +52,8 @@ public class CustomsDocument implements Serializable {
     public void setDocumentNumber(String documentNumber) { this.documentNumber = documentNumber; }
     public Country getCountry() { return country; }
     public void setCountry(Country country) { this.country = country; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public CustomsStatus getCustomsStatus() { return customsStatus; }
+    public void setCustomsStatus(CustomsStatus customsStatus) { this.customsStatus = customsStatus; }
     public LocalDateTime getSubmittedAt() { return submittedAt; }
     public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
     public LocalDateTime getApprovedAt() { return approvedAt; }

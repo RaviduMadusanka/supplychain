@@ -48,7 +48,7 @@ public class OrderServiceBean implements OrderService {
             order.setOrderCode("ORD-" + System.currentTimeMillis());
             order.setCustomer(customer);
             order.setVendor(vendor);
-            order.setStatus("CREATED");
+//            order.setOrderStatus("CREATED");
             order.setTotalAmount(BigDecimal.ZERO);
 
             em.persist(order);

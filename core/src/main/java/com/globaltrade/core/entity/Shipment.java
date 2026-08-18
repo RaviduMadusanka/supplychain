@@ -27,11 +27,12 @@ public class Shipment implements Serializable {
     @JoinColumn(name = "origin_warehouse_id")
     private Warehouse originWarehouse;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 200)
     private String destination;
 
-    @Column(length = 50)
-    private String status;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipment_status_id")
+    private ShipmentStatus shipmentStatus;
 
     @Column(name = "carrier_name", length = 100)
     private String carrierName;
@@ -63,8 +64,8 @@ public class Shipment implements Serializable {
     public void setOriginWarehouse(Warehouse originWarehouse) { this.originWarehouse = originWarehouse; }
     public String getDestination() { return destination; }
     public void setDestination(String destination) { this.destination = destination; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public ShipmentStatus getShipmentStatus() { return shipmentStatus; }
+    public void setShipmentStatus(ShipmentStatus shipmentStatus) { this.shipmentStatus = shipmentStatus; }
     public String getCarrierName() { return carrierName; }
     public void setCarrierName(String carrierName) { this.carrierName = carrierName; }
     public LocalDateTime getEstimatedDelivery() { return estimatedDelivery; }

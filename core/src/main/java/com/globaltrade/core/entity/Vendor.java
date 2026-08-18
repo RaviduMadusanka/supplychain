@@ -16,27 +16,16 @@ public class Vendor implements Serializable {
     @Column(name = "vendor_code", unique = true, nullable = false, length = 50)
     private String vendorCode;
 
-    @Column(name = "company_name", nullable = false, length = 150)
-    private String companyName;
-
-    @Column(name = "contact_person", length = 100)
-    private String contactPerson;
-
-    @Column(length = 100)
-    private String email;
-
-    @Column(length = 50)
-    private String phone;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    private Company company;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "country_id")
-    private Country country;
+    @JoinColumn(name = "status_id")
+    private AccountStatus status;
 
     @Column(precision = 3, scale = 2)
     private BigDecimal rating;
-
-    @Column(length = 20)
-    private String status = "ACTIVE";
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -55,20 +44,12 @@ public class Vendor implements Serializable {
     public void setId(Long id) { this.id = id; }
     public String getVendorCode() { return vendorCode; }
     public void setVendorCode(String vendorCode) { this.vendorCode = vendorCode; }
-    public String getCompanyName() { return companyName; }
-    public void setCompanyName(String companyName) { this.companyName = companyName; }
-    public String getContactPerson() { return contactPerson; }
-    public void setContactPerson(String contactPerson) { this.contactPerson = contactPerson; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
-    public Country getCountry() { return country; }
-    public void setCountry(Country country) { this.country = country; }
+    public Company getCompany() { return company; }
+    public void setCompany(Company company) { this.company = company; }
+    public AccountStatus getStatus() { return status; }
+    public void setStatus(AccountStatus status) { this.status = status; }
     public BigDecimal getRating() { return rating; }
     public void setRating(BigDecimal rating) { this.rating = rating; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public User getUser() { return user; }
