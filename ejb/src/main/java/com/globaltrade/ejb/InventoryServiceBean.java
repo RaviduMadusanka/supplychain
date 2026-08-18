@@ -12,8 +12,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.LockModeType;
 
+import jakarta.interceptor.Interceptors;
+import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
+
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
+@Interceptors(AuditLogInterceptor.class)
 public class InventoryServiceBean implements InventoryService {
 
     @PersistenceContext(unitName = "SupplyChainPU")

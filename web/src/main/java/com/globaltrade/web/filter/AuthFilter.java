@@ -35,10 +35,14 @@ public class AuthFilter implements Filter {
         if (isLoggedIn) {
             UserDTO user = (UserDTO) session.getAttribute("user");
             
-            // Basic role authorization logic could be added here, e.g.:
-            // if (uri.endsWith("system-config.jsp") && !"Admin".equals(user.getRole())) { res.sendRedirect(req.getContextPath() + "/403.jsp"); return; }
+            // Set user in context for EJBs
+            com.globaltrade.core.context.UserContext.setUser(user);
             
-            chain.doFilter(request, response);
+            try {
+                chain.doFilter(request, response);
+            } finally {
+                com.globaltrade.core.context.UserContext.clear();
+            }
         } else {
             res.sendRedirect(req.getContextPath() + "/login.jsp");
         }
