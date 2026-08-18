@@ -4,6 +4,7 @@ import com.globaltrade.core.entity.Customer;
 import com.globaltrade.core.entity.InventoryItem;
 import com.globaltrade.core.entity.InventoryStock;
 import com.globaltrade.core.entity.Order;
+import com.globaltrade.core.entity.OrderStatus;
 import com.globaltrade.core.entity.OrderItem;
 import com.globaltrade.core.entity.Vendor;
 import com.globaltrade.core.service.InventoryService;
@@ -48,7 +49,15 @@ public class OrderServiceBean implements OrderService {
             order.setOrderCode("ORD-" + System.currentTimeMillis());
             order.setCustomer(customer);
             order.setVendor(vendor);
-//            order.setOrderStatus("CREATED");
+            OrderStatus status;
+            try {
+                status = em.createQuery("SELECT o FROM OrderStatus o WHERE o.name = 'CREATED'", OrderStatus.class).getSingleResult();
+            } catch (jakarta.persistence.NoResultException e) {
+                status = new com.globaltrade.core.entity.OrderStatus();
+                status.setName("CREATED");
+                em.persist(status);
+            }
+            order.setOrderStatus(status);
             order.setTotalAmount(BigDecimal.ZERO);
 
             em.persist(order);
