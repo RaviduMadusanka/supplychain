@@ -1,8 +1,12 @@
 package com.globaltrade.ejb;
 
+import com.globaltrade.core.dto.ProductDTO;
+import com.globaltrade.core.dto.StockDTO;
+import com.globaltrade.core.dto.WarehouseDTO;
 import com.globaltrade.core.entity.InventoryStock;
 import com.globaltrade.core.exception.InsufficientStockException;
 import com.globaltrade.core.service.InventoryService;
+import java.util.stream.Collectors;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
@@ -65,18 +69,38 @@ public class InventoryServiceBean implements InventoryService {
     }
 
     @Override
-    public java.util.List<com.globaltrade.core.entity.InventoryItem> getAllProducts() {
-        return em.createQuery("SELECT i FROM InventoryItem i", com.globaltrade.core.entity.InventoryItem.class).getResultList();
+    public java.util.List<ProductDTO> getAllProducts() {
+        java.util.List<com.globaltrade.core.entity.InventoryItem> items = em.createQuery("SELECT i FROM InventoryItem i JOIN FETCH i.category JOIN FETCH i.vendor v JOIN FETCH v.company", com.globaltrade.core.entity.InventoryItem.class).getResultList();
+        return items.stream().map(i -> new ProductDTO(
+                i.getId(),
+                i.getSku(),
+                i.getName(),
+                i.getCategory() != null ? i.getCategory().getName() : "Uncategorized",
+                i.getWeight(),
+                i.getReorderLevel(),
+                (i.getVendor() != null && i.getVendor().getCompany() != null) ? i.getVendor().getCompany().getCompanyName() : "Unknown"
+        )).collect(Collectors.toList());
     }
 
     @Override
-    public java.util.List<com.globaltrade.core.entity.Warehouse> getAllWarehouses() {
-        return em.createQuery("SELECT w FROM Warehouse w", com.globaltrade.core.entity.Warehouse.class).getResultList();
+    public java.util.List<WarehouseDTO> getAllWarehouses() {
+        java.util.List<com.globaltrade.core.entity.Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w", com.globaltrade.core.entity.Warehouse.class).getResultList();
+        return warehouses.stream().map(w -> new WarehouseDTO(w.getId(), w.getName())).collect(Collectors.toList());
     }
 
     @Override
-    public java.util.List<InventoryStock> getAllStock() {
-        return em.createQuery("SELECT s FROM InventoryStock s JOIN FETCH s.item JOIN FETCH s.warehouse JOIN FETCH s.status", InventoryStock.class).getResultList();
+    public java.util.List<StockDTO> getAllStock() {
+        java.util.List<InventoryStock> stocks = em.createQuery("SELECT s FROM InventoryStock s JOIN FETCH s.item JOIN FETCH s.warehouse JOIN FETCH s.status", InventoryStock.class).getResultList();
+        return stocks.stream().map(s -> new StockDTO(
+                s.getId(),
+                s.getItem() != null ? s.getItem().getName() : "Unknown",
+                s.getWarehouse() != null ? s.getWarehouse().getName() : "Unknown",
+                s.getStockQty(),
+                s.getUnitPrice(),
+                s.getStatus() != null ? s.getStatus().getName() : "Unknown",
+                s.getItem() != null ? s.getItem().getReorderLevel() : 0,
+                s.getLastUpdated()
+        )).collect(Collectors.toList());
     }
 
     @Override
@@ -89,15 +113,7 @@ public class InventoryServiceBean implements InventoryService {
             em.merge(item);
         }
 
-        com.globaltrade.core.entity.Status status = null;
-        if (statusId != null) {
-            status = em.find(com.globaltrade.core.entity.Status.class, statusId);
-        } else {
-            // Find "ACTIVE" status by default if missing
-            try {
-                status = em.createQuery("SELECT s FROM Status s WHERE s.name = 'ACTIVE'", com.globaltrade.core.entity.Status.class).getSingleResult();
-            } catch (Exception e) {}
-        }
+        com.globaltrade.core.entity.Status status = resolveStatusForQty(qty);
 
         // Check if stock exists matching Product, Warehouse AND Price
         java.util.List<InventoryStock> stocks = em.createQuery(
@@ -119,10 +135,25 @@ public class InventoryServiceBean implements InventoryService {
         } else {
             InventoryStock existingStock = stocks.get(0);
             existingStock.setStockQty(existingStock.getStockQty() + qty);
-            if (status != null) {
-                existingStock.setStatus(status);
-            }
+            existingStock.setStatus(resolveStatusForQty(existingStock.getStockQty()));
             em.merge(existingStock);
+        }
+    }
+
+    private com.globaltrade.core.entity.Status resolveStatusForQty(Integer qty) {
+        String statusName = "IN_STOCK";
+        if (qty == 0) {
+            statusName = "OUT_OF_STOCK";
+        } else if (qty < 50) {
+            statusName = "LOW_STOCK";
+        }
+        
+        try {
+            return em.createQuery("SELECT s FROM Status s WHERE s.name = :name", com.globaltrade.core.entity.Status.class)
+                     .setParameter("name", statusName)
+                     .getSingleResult();
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -132,6 +163,7 @@ public class InventoryServiceBean implements InventoryService {
         InventoryStock stock = em.find(InventoryStock.class, stockId);
         if (stock != null) {
             stock.setStockQty(newQty);
+            stock.setStatus(resolveStatusForQty(newQty));
             em.merge(stock);
         }
     }

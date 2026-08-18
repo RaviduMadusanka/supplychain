@@ -49,7 +49,7 @@
             <select id="productId" name="productId" class="w-full px-3 py-2.5 bg-white border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition" required>
               <option value="">Search / select a product...</option>
               <c:forEach var="p" items="${products}">
-                <option value="${p.id}" data-category="${p.category.name}">${p.name} (${p.sku})</option>
+                <option value="${p.id}" data-category="${p.categoryName}">${p.name} (${p.sku})</option>
               </c:forEach>
             </select>
             <p class="text-[10px] text-ink/40 mt-1.5">Don't see the product? <a href="#" class="text-primary hover:underline">Create it first.</a></p>
