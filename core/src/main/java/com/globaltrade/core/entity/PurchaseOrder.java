@@ -6,23 +6,23 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "orders")
-public class Order implements Serializable {
+@Table(name = "purchase_orders")
+public class PurchaseOrder implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "order_code", unique = true, nullable = false, length = 50)
-    private String orderCode;
+    @Column(name = "po_code", unique = true, nullable = false, length = 100)
+    private String poCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @JoinColumn(name = "warehouse_id")
+    private Warehouse warehouse;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "vendor_id")
+    private Vendor vendor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_status_id")
@@ -36,18 +36,20 @@ public class Order implements Serializable {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public String getOrderCode() { return orderCode; }
-    public void setOrderCode(String orderCode) { this.orderCode = orderCode; }
-    public Customer getCustomer() { return customer; }
-    public void setCustomer(Customer customer) { this.customer = customer; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public String getPoCode() { return poCode; }
+    public void setPoCode(String poCode) { this.poCode = poCode; }
+    public Warehouse getWarehouse() { return warehouse; }
+    public void setWarehouse(Warehouse warehouse) { this.warehouse = warehouse; }
+    public Vendor getVendor() { return vendor; }
+    public void setVendor(Vendor vendor) { this.vendor = vendor; }
     public OrderStatus getOrderStatus() { return orderStatus; }
     public void setOrderStatus(OrderStatus orderStatus) { this.orderStatus = orderStatus; }
     public BigDecimal getTotalAmount() { return totalAmount; }

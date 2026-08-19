@@ -48,7 +48,7 @@ public class OrderServiceBean implements OrderService {
 
             order.setOrderCode("ORD-" + System.currentTimeMillis());
             order.setCustomer(customer);
-            order.setVendor(vendor);
+//            order.setVendor(vendor);
             OrderStatus status;
             try {
                 status = em.createQuery("SELECT o FROM OrderStatus o WHERE o.name = 'CREATED'", OrderStatus.class).getSingleResult();

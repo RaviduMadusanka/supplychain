@@ -35,13 +35,25 @@
     <div class="card overflow-hidden">
       <table class="w-full text-sm">
         <thead><tr class="text-left text-white/80 text-xs font-mono uppercase tracking-wider border-b border-ink bg-ink">
-          <th class="px-5 py-3.5 font-medium">SKU</th><th class="px-5 py-3.5 font-medium">Name</th><th class="px-5 py-3.5 font-medium">Category</th><th class="px-5 py-3.5 font-medium">Weight</th><th class="px-5 py-3.5 font-medium">Reorder Level</th><th class="px-5 py-3.5 font-medium">Vendor</th>
+          <th class="px-5 py-3.5 font-medium">Image</th><th class="px-5 py-3.5 font-medium">SKU</th><th class="px-5 py-3.5 font-medium">Name</th><th class="px-5 py-3.5 font-medium">Category</th><th class="px-5 py-3.5 font-medium">Weight</th><th class="px-5 py-3.5 font-medium">Reorder Level</th><th class="px-5 py-3.5 font-medium">Vendor</th>
         </tr></thead>
         <tbody class="divide-y divide-line">
           <c:choose>
             <c:when test="${not empty products}">
               <c:forEach var="p" items="${products}">
                 <tr class="hover:bg-bg/60">
+                  <td class="px-5 py-3">
+                    <c:choose>
+                      <c:when test="${not empty p.imageUrl}">
+                        <img src="${pageContext.request.contextPath}${p.imageUrl}" class="w-10 h-10 rounded-lg object-cover border border-line bg-white" alt="${p.name}">
+                      </c:when>
+                      <c:otherwise>
+                        <div class="w-10 h-10 rounded-lg bg-bg border border-line flex items-center justify-center text-ink/30">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                      </c:otherwise>
+                    </c:choose>
+                  </td>
                   <td class="px-5 py-3 font-mono text-xs">${p.sku}</td>
                   <td class="px-5 py-3">${p.name}</td>
                   <td class="px-5 py-3 text-ink/60">${p.categoryName}</td>
@@ -73,7 +85,7 @@
                 <tr class="hover:bg-bg/60">
                   <td class="px-5 py-3">${s.productName}</td>
                   <td class="px-5 py-3 text-ink/60">${s.warehouseName}</td>
-                  <td class="px-5 py-3 font-mono ${s.stockQty < s.productReorderLevel ? 'text-amber font-semibold' : ''}">
+                  <td class="px-5 py-3 font-mono ${s.stockQty <= s.productReorderLevel ? 'text-amber font-semibold' : ''}">
                     <div class="flex items-center gap-2 group">
                       <span>${s.stockQty}</span>
                       <button onclick="openQuickUpdate(${s.id}, ${s.stockQty}, '${s.productName}', '${s.warehouseName}')" class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-bg transition text-ink/40 hover:text-primary" title="Update Quantity">
@@ -87,7 +99,7 @@
                       <c:when test="${s.stockQty == 0}">
                         <span class="tag tag-slate"><span class="tag-dot"></span>Out of Stock</span>
                       </c:when>
-                      <c:when test="${s.stockQty < s.productReorderLevel}">
+                      <c:when test="${s.stockQty <= s.productReorderLevel}">
                         <span class="tag tag-amber"><span class="tag-dot"></span>Low Stock</span>
                       </c:when>
                       <c:otherwise>

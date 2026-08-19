@@ -88,7 +88,8 @@ public class InventoryServiceBean implements InventoryService {
                 i.getCategory() != null ? i.getCategory().getName() : "Uncategorized",
                 i.getWeight(),
                 i.getReorderLevel(),
-                (i.getVendor() != null && i.getVendor().getCompany() != null) ? i.getVendor().getCompany().getCompanyName() : "Unknown"
+                (i.getVendor() != null && i.getVendor().getCompany() != null) ? i.getVendor().getCompany().getCompanyName() : "Unknown",
+                i.getImageUrl()
         )).collect(Collectors.toList());
     }
 
@@ -123,7 +124,7 @@ public class InventoryServiceBean implements InventoryService {
             em.merge(item);
         }
 
-        com.globaltrade.core.entity.Status status = resolveStatusForQty(qty);
+        com.globaltrade.core.entity.Status status = resolveStatusForQty(qty, item.getReorderLevel());
 
         java.util.List<InventoryStock> stocks = em.createQuery(
                 "SELECT s FROM InventoryStock s WHERE s.item.id = :itemId AND s.warehouse.id = :warehouseId AND s.unitPrice = :unitPrice", 
@@ -144,16 +145,16 @@ public class InventoryServiceBean implements InventoryService {
         } else {
             InventoryStock existingStock = stocks.get(0);
             existingStock.setStockQty(existingStock.getStockQty() + qty);
-            existingStock.setStatus(resolveStatusForQty(existingStock.getStockQty()));
+            existingStock.setStatus(resolveStatusForQty(existingStock.getStockQty(), item.getReorderLevel()));
             em.merge(existingStock);
         }
     }
 
-    private com.globaltrade.core.entity.Status resolveStatusForQty(Integer qty) {
+    private com.globaltrade.core.entity.Status resolveStatusForQty(Integer qty, Integer reorderLevel) {
         String statusName = "IN_STOCK";
         if (qty == 0) {
             statusName = "OUT_OF_STOCK";
-        } else if (qty < 50) {
+        } else if (qty <= (reorderLevel != null ? reorderLevel : 0)) {
             statusName = "LOW_STOCK";
         }
         
@@ -172,7 +173,8 @@ public class InventoryServiceBean implements InventoryService {
         InventoryStock stock = em.find(InventoryStock.class, stockId);
         if (stock != null) {
             stock.setStockQty(newQty);
-            stock.setStatus(resolveStatusForQty(newQty));
+            Integer reorderLevel = (stock.getItem() != null) ? stock.getItem().getReorderLevel() : 0;
+            stock.setStatus(resolveStatusForQty(newQty, reorderLevel));
             em.merge(stock);
         }
     }

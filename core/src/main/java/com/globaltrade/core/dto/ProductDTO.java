@@ -17,7 +17,7 @@ public class ProductDTO implements Serializable {
 
     public ProductDTO() {}
 
-    public ProductDTO(Long id, String sku, String name, String categoryName, BigDecimal weight, Integer reorderLevel, String vendorCompanyName) {
+    public ProductDTO(Long id, String sku, String name, String categoryName, BigDecimal weight, Integer reorderLevel, String vendorCompanyName, String imageUrl) {
         this.id = id;
         this.sku = sku;
         this.name = name;
@@ -25,6 +25,7 @@ public class ProductDTO implements Serializable {
         this.weight = weight;
         this.reorderLevel = reorderLevel;
         this.vendorCompanyName = vendorCompanyName;
+        this.imageUrl = imageUrl;
     }
 
     public Long getId() { return id; }
