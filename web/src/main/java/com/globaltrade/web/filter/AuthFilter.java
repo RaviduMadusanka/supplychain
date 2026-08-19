@@ -1,5 +1,6 @@
 package com.globaltrade.web.filter;
 
+import com.globaltrade.core.context.UserContext;
 import com.globaltrade.core.dto.UserDTO;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -34,12 +35,12 @@ public class AuthFilter implements Filter {
         if (isLoggedIn) {
             UserDTO user = (UserDTO) session.getAttribute("user");
 
-            com.globaltrade.core.context.UserContext.setUser(user);
+            UserContext.setUser(user);
             
             try {
                 chain.doFilter(request, response);
             } finally {
-                com.globaltrade.core.context.UserContext.clear();
+                UserContext.clear();
             }
         } else {
             res.sendRedirect(req.getContextPath() + "/login.jsp");

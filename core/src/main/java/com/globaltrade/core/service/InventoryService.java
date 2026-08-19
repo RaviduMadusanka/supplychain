@@ -1,16 +1,16 @@
 package com.globaltrade.core.service;
 
+import com.globaltrade.core.dto.CategoryDTO;
 import com.globaltrade.core.dto.ProductDTO;
 import com.globaltrade.core.dto.StockDTO;
+import com.globaltrade.core.dto.VendorDTO;
 import com.globaltrade.core.dto.WarehouseDTO;
+import com.globaltrade.core.entity.InventoryItem;
 import com.globaltrade.core.exception.InsufficientStockException;
 import jakarta.ejb.Local;
+
 import java.math.BigDecimal;
 import java.util.List;
-
-import com.globaltrade.core.dto.CategoryDTO;
-import com.globaltrade.core.dto.VendorDTO;
-import com.globaltrade.core.entity.InventoryItem;
 
 @Local
 public interface InventoryService {

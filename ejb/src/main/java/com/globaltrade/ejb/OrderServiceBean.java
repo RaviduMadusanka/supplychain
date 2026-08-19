@@ -53,7 +53,7 @@ public class OrderServiceBean implements OrderService {
             try {
                 status = em.createQuery("SELECT o FROM OrderStatus o WHERE o.name = 'CREATED'", OrderStatus.class).getSingleResult();
             } catch (jakarta.persistence.NoResultException e) {
-                status = new com.globaltrade.core.entity.OrderStatus();
+                status = new OrderStatus();
                 status.setName("CREATED");
                 em.persist(status);
             }

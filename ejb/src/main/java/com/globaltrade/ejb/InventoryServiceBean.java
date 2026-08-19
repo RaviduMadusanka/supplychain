@@ -1,23 +1,33 @@
 package com.globaltrade.ejb;
 
+import com.globaltrade.core.dto.CategoryDTO;
 import com.globaltrade.core.dto.ProductDTO;
 import com.globaltrade.core.dto.StockDTO;
+import com.globaltrade.core.dto.VendorDTO;
 import com.globaltrade.core.dto.WarehouseDTO;
+import com.globaltrade.core.entity.Category;
+import com.globaltrade.core.entity.InventoryItem;
 import com.globaltrade.core.entity.InventoryStock;
+import com.globaltrade.core.entity.Status;
+import com.globaltrade.core.entity.Vendor;
+import com.globaltrade.core.entity.Warehouse;
 import com.globaltrade.core.exception.InsufficientStockException;
 import com.globaltrade.core.service.InventoryService;
-import java.util.stream.Collectors;
+import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
+
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
 import jakarta.ejb.TransactionManagement;
 import jakarta.ejb.TransactionManagementType;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.LockModeType;
-
 import jakarta.interceptor.Interceptors;
-import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PersistenceContext;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
@@ -69,18 +79,18 @@ public class InventoryServiceBean implements InventoryService {
     }
 
     @Override
-    public java.util.List<com.globaltrade.core.dto.CategoryDTO> getAllCategories() {
-        return em.createQuery("SELECT new com.globaltrade.core.dto.CategoryDTO(c.id, c.name) FROM Category c", com.globaltrade.core.dto.CategoryDTO.class).getResultList();
+    public List<CategoryDTO> getAllCategories() {
+        return em.createQuery("SELECT new com.globaltrade.core.dto.CategoryDTO(c.id, c.name) FROM Category c", CategoryDTO.class).getResultList();
     }
 
     @Override
-    public java.util.List<com.globaltrade.core.dto.VendorDTO> getAllVendors() {
-        return em.createQuery("SELECT new com.globaltrade.core.dto.VendorDTO(v.id, c.companyName) FROM Vendor v JOIN v.company c", com.globaltrade.core.dto.VendorDTO.class).getResultList();
+    public List<VendorDTO> getAllVendors() {
+        return em.createQuery("SELECT new com.globaltrade.core.dto.VendorDTO(v.id, c.companyName) FROM Vendor v JOIN v.company c", VendorDTO.class).getResultList();
     }
 
     @Override
-    public java.util.List<ProductDTO> getAllProducts() {
-        java.util.List<com.globaltrade.core.entity.InventoryItem> items = em.createQuery("SELECT i FROM InventoryItem i JOIN FETCH i.category JOIN FETCH i.vendor v JOIN FETCH v.company", com.globaltrade.core.entity.InventoryItem.class).getResultList();
+    public List<ProductDTO> getAllProducts() {
+        List<InventoryItem> items = em.createQuery("SELECT i FROM InventoryItem i JOIN FETCH i.category JOIN FETCH i.vendor v JOIN FETCH v.company", InventoryItem.class).getResultList();
         return items.stream().map(i -> new ProductDTO(
                 i.getId(),
                 i.getSku(),
@@ -94,14 +104,14 @@ public class InventoryServiceBean implements InventoryService {
     }
 
     @Override
-    public java.util.List<WarehouseDTO> getAllWarehouses() {
-        java.util.List<com.globaltrade.core.entity.Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w", com.globaltrade.core.entity.Warehouse.class).getResultList();
+    public List<WarehouseDTO> getAllWarehouses() {
+        List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w ORDER BY w.name ASC", Warehouse.class).getResultList();
         return warehouses.stream().map(w -> new WarehouseDTO(w.getId(), w.getName())).collect(Collectors.toList());
     }
 
     @Override
-    public java.util.List<StockDTO> getAllStock() {
-        java.util.List<InventoryStock> stocks = em.createQuery("SELECT s FROM InventoryStock s JOIN FETCH s.item JOIN FETCH s.warehouse JOIN FETCH s.status", InventoryStock.class).getResultList();
+    public List<StockDTO> getAllStock() {
+        List<InventoryStock> stocks = em.createQuery("SELECT s FROM InventoryStock s JOIN FETCH s.item JOIN FETCH s.warehouse JOIN FETCH s.status", InventoryStock.class).getResultList();
         return stocks.stream().map(s -> new StockDTO(
                 s.getId(),
                 s.getItem() != null ? s.getItem().getName() : "Unknown",
@@ -116,17 +126,17 @@ public class InventoryServiceBean implements InventoryService {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void addOrUpdateStock(Long productId, Long warehouseId, Integer qty, java.math.BigDecimal unitPrice, Integer reorderLevel, Long statusId) {
+    public void addOrUpdateStock(Long productId, Long warehouseId, Integer qty, BigDecimal unitPrice, Integer reorderLevel, Long statusId) {
 
-        com.globaltrade.core.entity.InventoryItem item = em.find(com.globaltrade.core.entity.InventoryItem.class, productId);
+        InventoryItem item = em.find(InventoryItem.class, productId);
         if (item != null && reorderLevel != null) {
             item.setReorderLevel(reorderLevel);
             em.merge(item);
         }
 
-        com.globaltrade.core.entity.Status status = resolveStatusForQty(qty, item.getReorderLevel());
+        Status status = resolveStatusForQty(qty, item != null ? item.getReorderLevel() : null);
 
-        java.util.List<InventoryStock> stocks = em.createQuery(
+        List<InventoryStock> stocks = em.createQuery(
                 "SELECT s FROM InventoryStock s WHERE s.item.id = :itemId AND s.warehouse.id = :warehouseId AND s.unitPrice = :unitPrice", 
                 InventoryStock.class)
                 .setParameter("itemId", productId)
@@ -137,7 +147,7 @@ public class InventoryServiceBean implements InventoryService {
         if (stocks.isEmpty()) {
             InventoryStock newStock = new InventoryStock();
             newStock.setItem(item);
-            newStock.setWarehouse(em.find(com.globaltrade.core.entity.Warehouse.class, warehouseId));
+            newStock.setWarehouse(em.find(Warehouse.class, warehouseId));
             newStock.setStockQty(qty);
             newStock.setUnitPrice(unitPrice);
             newStock.setStatus(status);
@@ -145,12 +155,12 @@ public class InventoryServiceBean implements InventoryService {
         } else {
             InventoryStock existingStock = stocks.get(0);
             existingStock.setStockQty(existingStock.getStockQty() + qty);
-            existingStock.setStatus(resolveStatusForQty(existingStock.getStockQty(), item.getReorderLevel()));
+            existingStock.setStatus(resolveStatusForQty(existingStock.getStockQty(), item != null ? item.getReorderLevel() : null));
             em.merge(existingStock);
         }
     }
 
-    private com.globaltrade.core.entity.Status resolveStatusForQty(Integer qty, Integer reorderLevel) {
+    private Status resolveStatusForQty(Integer qty, Integer reorderLevel) {
         String statusName = "IN_STOCK";
         if (qty == 0) {
             statusName = "OUT_OF_STOCK";
@@ -159,7 +169,7 @@ public class InventoryServiceBean implements InventoryService {
         }
         
         try {
-            return em.createQuery("SELECT s FROM Status s WHERE s.name = :name", com.globaltrade.core.entity.Status.class)
+            return em.createQuery("SELECT s FROM Status s WHERE s.name = :name", Status.class)
                      .setParameter("name", statusName)
                      .getSingleResult();
         } catch (Exception e) {
@@ -181,13 +191,13 @@ public class InventoryServiceBean implements InventoryService {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void addProduct(com.globaltrade.core.entity.InventoryItem item, Long categoryId, Long vendorId) {
+    public void addProduct(InventoryItem item, Long categoryId, Long vendorId) {
         if (categoryId != null) {
-            com.globaltrade.core.entity.Category cat = em.find(com.globaltrade.core.entity.Category.class, categoryId);
+            Category cat = em.find(Category.class, categoryId);
             item.setCategory(cat);
         }
         if (vendorId != null) {
-            com.globaltrade.core.entity.Vendor vendor = em.find(com.globaltrade.core.entity.Vendor.class, vendorId);
+            Vendor vendor = em.find(Vendor.class, vendorId);
             item.setVendor(vendor);
         }
         em.persist(item);
