@@ -35,15 +35,6 @@ public class InventoryItem implements Serializable {
     @JoinColumn(name = "vendor_id")
     private Vendor vendor;
 
-    @Column(name = "unit_price", precision = 10, scale = 2)
-    private BigDecimal unitPrice;
-
-    @Column(name = "unit_of_measure", length = 20)
-    private String unitOfMeasure;
-
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -61,10 +52,4 @@ public class InventoryItem implements Serializable {
     public void setVendor(Vendor vendor) { this.vendor = vendor; }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-    public BigDecimal getUnitPrice() { return unitPrice; }
-    public void setUnitPrice(BigDecimal unitPrice) { this.unitPrice = unitPrice; }
-    public String getUnitOfMeasure() { return unitOfMeasure; }
-    public void setUnitOfMeasure(String unitOfMeasure) { this.unitOfMeasure = unitOfMeasure; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
 }

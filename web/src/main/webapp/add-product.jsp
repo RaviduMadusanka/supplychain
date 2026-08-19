@@ -42,36 +42,35 @@
                 <select name="category" class="w-full px-4 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition bg-white" required>
                   <option value="">Select category...</option>
                   <c:forEach var="cat" items="${categories}">
-                    <option value="${cat}">${cat}</option>
+                    <option value="${cat.id}">${cat.name}</option>
                   </c:forEach>
                 </select>
               </div>
               <div>
-                <label class="block text-xs font-medium text-ink/70 mb-1.5">Unit Price (USD)</label>
-                <input type="number" step="0.01" name="unitPrice" class="w-full px-4 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition" placeholder="0.00" required>
+                <label class="block text-xs font-medium text-ink/70 mb-1.5">Vendor</label>
+                <select name="vendor" class="w-full px-4 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition bg-white" required>
+                  <option value="">Select vendor...</option>
+                  <c:forEach var="ven" items="${vendors}">
+                    <option value="${ven.id}">${ven.companyName}</option>
+                  </c:forEach>
+                </select>
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-5">
               <div>
-                <label class="block text-xs font-medium text-ink/70 mb-1.5">SKU / Product Code</label>
-                <input type="text" name="sku" class="w-full px-4 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition" placeholder="Auto-generated if left blank">
+                <label class="block text-xs font-medium text-ink/70 mb-1.5">Weight (Kg)</label>
+                <input type="number" step="0.01" name="weight" class="w-full px-4 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition" placeholder="0.00">
               </div>
               <div>
-                <label class="block text-xs font-medium text-ink/70 mb-1.5">Unit of Measure</label>
-                <select name="unitOfMeasure" class="w-full px-4 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition bg-white">
-                  <option value="Piece">Piece</option>
-                  <option value="Box">Box</option>
-                  <option value="Kg">Kg</option>
-                  <option value="Liter">Liter</option>
-                  <option value="Set">Set</option>
-                </select>
+                <label class="block text-xs font-medium text-ink/70 mb-1.5">Reorder Level</label>
+                <input type="number" name="reorderLevel" class="w-full px-4 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition" placeholder="0">
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-medium text-ink/70 mb-1.5">Description</label>
-              <textarea name="description" rows="4" class="w-full px-4 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition" placeholder="Materials, specs, intended use, handling notes..."></textarea>
+              <label class="block text-xs font-medium text-ink/70 mb-1.5">SKU / Product Code</label>
+              <input type="text" name="sku" class="w-full px-4 py-2.5 border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition" placeholder="Auto-generated if left blank">
             </div>
           </div>
         </div>

@@ -69,8 +69,13 @@ public class InventoryServiceBean implements InventoryService {
     }
 
     @Override
-    public java.util.List<String> getAllCategoryNames() {
-        return em.createQuery("SELECT c.name FROM Category c", String.class).getResultList();
+    public java.util.List<com.globaltrade.core.dto.CategoryDTO> getAllCategories() {
+        return em.createQuery("SELECT new com.globaltrade.core.dto.CategoryDTO(c.id, c.name) FROM Category c", com.globaltrade.core.dto.CategoryDTO.class).getResultList();
+    }
+
+    @Override
+    public java.util.List<com.globaltrade.core.dto.VendorDTO> getAllVendors() {
+        return em.createQuery("SELECT new com.globaltrade.core.dto.VendorDTO(v.id, c.companyName) FROM Vendor v JOIN v.company c", com.globaltrade.core.dto.VendorDTO.class).getResultList();
     }
 
     @Override
@@ -175,27 +180,15 @@ public class InventoryServiceBean implements InventoryService {
 
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void addProduct(ProductDTO dto) {
-        com.globaltrade.core.entity.InventoryItem item = new com.globaltrade.core.entity.InventoryItem();
-        item.setName(dto.getName());
-        item.setSku(dto.getSku());
-        item.setUnitPrice(dto.getUnitPrice());
-        item.setUnitOfMeasure(dto.getUnitOfMeasure());
-        item.setDescription(dto.getDescription());
-        item.setImageUrl(dto.getImageUrl());
-        item.setWeight(new java.math.BigDecimal(0)); // default
-        item.setReorderLevel(0); // default
-
-        // Find Category by Name
-        try {
-            com.globaltrade.core.entity.Category cat = em.createQuery("SELECT c FROM Category c WHERE c.name = :name", com.globaltrade.core.entity.Category.class)
-                .setParameter("name", dto.getCategoryName())
-                .getSingleResult();
+    public void addProduct(com.globaltrade.core.entity.InventoryItem item, Long categoryId, Long vendorId) {
+        if (categoryId != null) {
+            com.globaltrade.core.entity.Category cat = em.find(com.globaltrade.core.entity.Category.class, categoryId);
             item.setCategory(cat);
-        } catch (Exception e) {
-            // Category not found
         }
-        
+        if (vendorId != null) {
+            com.globaltrade.core.entity.Vendor vendor = em.find(com.globaltrade.core.entity.Vendor.class, vendorId);
+            item.setVendor(vendor);
+        }
         em.persist(item);
     }
 }

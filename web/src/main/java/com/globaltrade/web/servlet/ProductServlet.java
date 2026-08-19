@@ -1,6 +1,9 @@
 package com.globaltrade.web.servlet;
 
 import com.globaltrade.core.dto.ProductDTO;
+import com.globaltrade.core.entity.InventoryItem;
+import com.globaltrade.core.dto.CategoryDTO;
+import com.globaltrade.core.dto.VendorDTO;
 import com.globaltrade.core.service.InventoryService;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
@@ -46,7 +49,8 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("categories", inventoryService.getAllCategoryNames());
+        req.setAttribute("categories", inventoryService.getAllCategories());
+        req.setAttribute("vendors", inventoryService.getAllVendors());
         req.getRequestDispatcher("/add-product.jsp").forward(req, resp);
     }
 
@@ -55,18 +59,19 @@ public class ProductServlet extends HttpServlet {
         try {
             // Get form fields
             String name = req.getParameter("name");
-            String category = req.getParameter("category");
+            String categoryStr = req.getParameter("category");
+            String vendorStr = req.getParameter("vendor");
             String sku = req.getParameter("sku");
-            String unitPriceStr = req.getParameter("unitPrice");
-            String unitOfMeasure = req.getParameter("unitOfMeasure");
-            String description = req.getParameter("description");
+            String weightStr = req.getParameter("weight");
+            String reorderLevelStr = req.getParameter("reorderLevel");
             
             // Auto-generate SKU if blank
             if (sku == null || sku.trim().isEmpty()) {
                 sku = "SKU-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
             }
 
-            BigDecimal unitPrice = new BigDecimal(unitPriceStr != null && !unitPriceStr.isEmpty() ? unitPriceStr : "0.00");
+            BigDecimal weight = new BigDecimal(weightStr != null && !weightStr.isEmpty() ? weightStr : "0.00");
+            Integer reorderLevel = (reorderLevelStr != null && !reorderLevelStr.isEmpty()) ? Integer.parseInt(reorderLevelStr) : 0;
 
             // Handle file upload
             Part filePart = req.getPart("productImage");
@@ -87,17 +92,18 @@ public class ProductServlet extends HttpServlet {
                 imageUrl = "/images/" + fileName;
             }
 
-            // Create DTO and save
-            ProductDTO dto = new ProductDTO();
-            dto.setName(name);
-            dto.setCategoryName(category);
-            dto.setSku(sku);
-            dto.setUnitPrice(unitPrice);
-            dto.setUnitOfMeasure(unitOfMeasure);
-            dto.setDescription(description);
-            dto.setImageUrl(imageUrl);
+            // Create Entity and save
+            InventoryItem item = new InventoryItem();
+            item.setName(name);
+            item.setSku(sku);
+            item.setWeight(weight);
+            item.setReorderLevel(reorderLevel);
+            item.setImageUrl(imageUrl);
 
-            inventoryService.addProduct(dto);
+            Long categoryId = (categoryStr != null && !categoryStr.isEmpty()) ? Long.parseLong(categoryStr) : null;
+            Long vendorId = (vendorStr != null && !vendorStr.isEmpty()) ? Long.parseLong(vendorStr) : null;
+
+            inventoryService.addProduct(item, categoryId, vendorId);
 
             // Redirect to inventory list
             resp.sendRedirect(req.getContextPath() + "/inventory?success=ProductAdded");
