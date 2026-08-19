@@ -11,6 +11,12 @@ public class ProductDTO implements Serializable {
     private BigDecimal weight;
     private Integer reorderLevel;
     private String vendorCompanyName;
+    
+    // New fields
+    private BigDecimal unitPrice;
+    private String unitOfMeasure;
+    private String description;
+    private String imageUrl;
 
     public ProductDTO() {}
 
@@ -38,4 +44,13 @@ public class ProductDTO implements Serializable {
     public void setReorderLevel(Integer reorderLevel) { this.reorderLevel = reorderLevel; }
     public String getVendorCompanyName() { return vendorCompanyName; }
     public void setVendorCompanyName(String vendorCompanyName) { this.vendorCompanyName = vendorCompanyName; }
+
+    public BigDecimal getUnitPrice() { return unitPrice; }
+    public void setUnitPrice(BigDecimal unitPrice) { this.unitPrice = unitPrice; }
+    public String getUnitOfMeasure() { return unitOfMeasure; }
+    public void setUnitOfMeasure(String unitOfMeasure) { this.unitOfMeasure = unitOfMeasure; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

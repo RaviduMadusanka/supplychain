@@ -69,6 +69,11 @@ public class InventoryServiceBean implements InventoryService {
     }
 
     @Override
+    public java.util.List<String> getAllCategoryNames() {
+        return em.createQuery("SELECT c.name FROM Category c", String.class).getResultList();
+    }
+
+    @Override
     public java.util.List<ProductDTO> getAllProducts() {
         java.util.List<com.globaltrade.core.entity.InventoryItem> items = em.createQuery("SELECT i FROM InventoryItem i JOIN FETCH i.category JOIN FETCH i.vendor v JOIN FETCH v.company", com.globaltrade.core.entity.InventoryItem.class).getResultList();
         return items.stream().map(i -> new ProductDTO(
@@ -166,5 +171,31 @@ public class InventoryServiceBean implements InventoryService {
             stock.setStatus(resolveStatusForQty(newQty));
             em.merge(stock);
         }
+    }
+
+    @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void addProduct(ProductDTO dto) {
+        com.globaltrade.core.entity.InventoryItem item = new com.globaltrade.core.entity.InventoryItem();
+        item.setName(dto.getName());
+        item.setSku(dto.getSku());
+        item.setUnitPrice(dto.getUnitPrice());
+        item.setUnitOfMeasure(dto.getUnitOfMeasure());
+        item.setDescription(dto.getDescription());
+        item.setImageUrl(dto.getImageUrl());
+        item.setWeight(new java.math.BigDecimal(0)); // default
+        item.setReorderLevel(0); // default
+
+        // Find Category by Name
+        try {
+            com.globaltrade.core.entity.Category cat = em.createQuery("SELECT c FROM Category c WHERE c.name = :name", com.globaltrade.core.entity.Category.class)
+                .setParameter("name", dto.getCategoryName())
+                .getSingleResult();
+            item.setCategory(cat);
+        } catch (Exception e) {
+            // Category not found
+        }
+        
+        em.persist(item);
     }
 }

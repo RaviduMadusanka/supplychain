@@ -13,9 +13,11 @@ public interface InventoryService {
     void reserveStock(Long itemId, Long warehouseId, Integer quantity) throws InsufficientStockException;
     void updateStockLevels(Long itemId, Long warehouseId, Integer quantityToAdd);
     
+    List<String> getAllCategoryNames();
     List<ProductDTO> getAllProducts();
     List<WarehouseDTO> getAllWarehouses();
     List<StockDTO> getAllStock();
     void addOrUpdateStock(Long productId, Long warehouseId, Integer qty, BigDecimal unitPrice, Integer reorderLevel, Long statusId);
     void quickUpdateStock(Long stockId, Integer newQty);
+    void addProduct(ProductDTO productDTO);
 }
