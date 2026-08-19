@@ -22,10 +22,8 @@ public class WarehouseDashboardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<StockDTO> allStocks = inventoryService.getAllStock();
-        
-        // Count total SKUs
+
         long totalSkus = allStocks.stream().map(StockDTO::getProductName).distinct().count();
-        // Count low/out of stock
         long lowStockCount = allStocks.stream()
             .filter(s -> "LOW_STOCK".equals(s.getStatusName()) || "OUT_OF_STOCK".equals(s.getStatusName()))
             .count();

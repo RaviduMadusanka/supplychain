@@ -26,7 +26,7 @@ import java.util.UUID;
 
 @WebServlet("/product/add")
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 1, // 1 MB
+    fileSizeThreshold = 1024 * 1024 * 1,
     maxFileSize = 1024 * 1024 * 5,      // 5 MB
     maxRequestSize = 1024 * 1024 * 10   // 10 MB
 )
@@ -35,12 +35,10 @@ public class ProductServlet extends HttpServlet {
     @EJB
     private InventoryService inventoryService;
 
-    // Define the external folder in the user's Documents
     private static final String UPLOAD_DIR = "C:\\Users\\ravid\\Documents\\SupplyChain_Images";
 
     @Override
     public void init() throws ServletException {
-        // Create upload directory if it doesn't exist
         File uploadDir = new File(UPLOAD_DIR);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
@@ -57,15 +55,13 @@ public class ProductServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            // Get form fields
             String name = req.getParameter("name");
             String categoryStr = req.getParameter("category");
             String vendorStr = req.getParameter("vendor");
             String sku = req.getParameter("sku");
             String weightStr = req.getParameter("weight");
             String reorderLevelStr = req.getParameter("reorderLevel");
-            
-            // Auto-generate SKU if blank
+
             if (sku == null || sku.trim().isEmpty()) {
                 sku = "SKU-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
             }
@@ -73,7 +69,6 @@ public class ProductServlet extends HttpServlet {
             BigDecimal weight = new BigDecimal(weightStr != null && !weightStr.isEmpty() ? weightStr : "0.00");
             Integer reorderLevel = (reorderLevelStr != null && !reorderLevelStr.isEmpty()) ? Integer.parseInt(reorderLevelStr) : 0;
 
-            // Handle file upload
             Part filePart = req.getPart("productImage");
             String fileName = null;
             String imageUrl = null;
@@ -87,12 +82,10 @@ public class ProductServlet extends HttpServlet {
                 try (InputStream input = filePart.getInputStream()) {
                     Files.copy(input, uploadPath, StandardCopyOption.REPLACE_EXISTING);
                 }
-                
-                // Set the URL path that the ImageServlet will serve
+
                 imageUrl = "/images/" + fileName;
             }
 
-            // Create Entity and save
             InventoryItem item = new InventoryItem();
             item.setName(name);
             item.setSku(sku);
@@ -105,7 +98,6 @@ public class ProductServlet extends HttpServlet {
 
             inventoryService.addProduct(item, categoryId, vendorId);
 
-            // Redirect to inventory list
             resp.sendRedirect(req.getContextPath() + "/inventory?success=ProductAdded");
         } catch (Exception e) {
             e.printStackTrace();

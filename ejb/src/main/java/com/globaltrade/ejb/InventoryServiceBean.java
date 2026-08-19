@@ -116,7 +116,7 @@ public class InventoryServiceBean implements InventoryService {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void addOrUpdateStock(Long productId, Long warehouseId, Integer qty, java.math.BigDecimal unitPrice, Integer reorderLevel, Long statusId) {
-        // Update product reorder level
+
         com.globaltrade.core.entity.InventoryItem item = em.find(com.globaltrade.core.entity.InventoryItem.class, productId);
         if (item != null && reorderLevel != null) {
             item.setReorderLevel(reorderLevel);
@@ -125,7 +125,6 @@ public class InventoryServiceBean implements InventoryService {
 
         com.globaltrade.core.entity.Status status = resolveStatusForQty(qty);
 
-        // Check if stock exists matching Product, Warehouse AND Price
         java.util.List<InventoryStock> stocks = em.createQuery(
                 "SELECT s FROM InventoryStock s WHERE s.item.id = :itemId AND s.warehouse.id = :warehouseId AND s.unitPrice = :unitPrice", 
                 InventoryStock.class)

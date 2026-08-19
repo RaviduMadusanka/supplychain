@@ -73,7 +73,6 @@ public class OrderServiceBean implements OrderService {
                     throw new IllegalArgumentException("Invalid Item ID: " + itemId);
                 }
 
-                // Unit price is warehouse-specific (lives on inventory_stock, not on the product itself)
                 InventoryStock stock = em.createQuery(
                                 "SELECT s FROM InventoryStock s WHERE s.item.id = :itemId AND s.warehouse.id = :warehouseId",
                                 InventoryStock.class)

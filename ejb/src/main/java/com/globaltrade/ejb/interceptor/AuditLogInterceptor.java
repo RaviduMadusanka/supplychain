@@ -20,16 +20,13 @@ public class AuditLogInterceptor {
 
     @AroundInvoke
     public Object logAudit(InvocationContext ic) throws Exception {
-        // Proceed with the actual method execution first
         Object result = null;
         try {
             result = ic.proceed();
         } catch (Exception e) {
-            // Even if it failed, we could log it, but usually we log successful actions
             throw e;
         }
 
-        // After successful execution, log the audit
         try {
             UserDTO currentUserDTO = UserContext.getUser();
             if (currentUserDTO != null) {
@@ -39,14 +36,10 @@ public class AuditLogInterceptor {
                 log.setEntityName(ic.getTarget().getClass().getSimpleName());
                 log.setAction(ic.getMethod().getName());
                 log.setPerformedBy(performedBy);
-                
-                // Construct details from parameters
+
                 String details = "Method " + ic.getMethod().getName() + " called with arguments: " + 
                                  Arrays.toString(ic.getParameters());
                 log.setDetails(details);
-
-                // We don't have a specific entityId here universally unless we parse the return type or arguments, 
-                // so we just log the general action.
                 log.setEntityId(0L); 
 
                 em.persist(log);

@@ -22,15 +22,12 @@ public class InventoryServlet extends HttpServlet {
         String path = req.getServletPath();
 
         if ("/inventory".equals(path)) {
-            // Load all stock and products for the main inventory page
             req.setAttribute("products", inventoryService.getAllProducts());
             req.setAttribute("stocks", inventoryService.getAllStock());
             req.getRequestDispatcher("/products-inventory.jsp").forward(req, resp);
         } else if ("/inventory/add".equals(path)) {
-            // Load products, warehouses for the Add Inventory dropdowns
             req.setAttribute("products", inventoryService.getAllProducts());
             req.setAttribute("warehouses", inventoryService.getAllWarehouses());
-            // In a real app we'd load Statuses too, but we can hardcode Active/Inactive mapping or assume "ACTIVE" is id 1
             req.getRequestDispatcher("/add-inventory.jsp").forward(req, resp);
         }
     }
@@ -46,7 +43,6 @@ public class InventoryServlet extends HttpServlet {
                 Integer quantity = Integer.parseInt(req.getParameter("stockQuantity"));
                 BigDecimal unitPrice = new BigDecimal(req.getParameter("unitPrice"));
                 Integer lowStockThreshold = Integer.parseInt(req.getParameter("lowStockThreshold"));
-                // Long statusId = Long.parseLong(req.getParameter("statusId")); // simplified
                 
                 inventoryService.addOrUpdateStock(productId, warehouseId, quantity, unitPrice, lowStockThreshold, null);
                 
@@ -54,7 +50,6 @@ public class InventoryServlet extends HttpServlet {
                 resp.sendRedirect(req.getContextPath() + "/inventory");
             } catch (Exception e) {
                 req.setAttribute("errorMsg", "Failed to update inventory: " + e.getMessage());
-                // Reload form
                 req.setAttribute("products", inventoryService.getAllProducts());
                 req.setAttribute("warehouses", inventoryService.getAllWarehouses());
                 req.getRequestDispatcher("/add-inventory.jsp").forward(req, resp);

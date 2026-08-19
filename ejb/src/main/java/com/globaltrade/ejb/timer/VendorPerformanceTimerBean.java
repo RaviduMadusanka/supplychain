@@ -62,7 +62,6 @@ public class VendorPerformanceTimerBean {
 
             em.persist(vp);
 
-            // Update vendor's current rating
             vendor.setRating(vp.getOverallRating());
             em.merge(vendor);
 
