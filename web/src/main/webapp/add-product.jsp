@@ -83,13 +83,14 @@
         <div class="card p-6 shadow-sm">
           <h3 class="font-display font-semibold text-lg mb-6">Product Image</h3>
           
-          <div class="w-full h-40 border-2 border-dashed border-primary/20 bg-primary/5 rounded-xl flex items-center justify-center mb-4">
-            <svg class="w-10 h-10 text-primary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <div id="imagePreviewContainer" class="w-full h-40 border-2 border-dashed border-primary/20 bg-primary/5 rounded-xl flex items-center justify-center mb-4 overflow-hidden relative">
+            <svg id="imagePreviewIcon" class="w-10 h-10 text-primary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <img id="imagePreview" class="hidden absolute inset-0 w-full h-full object-cover" />
           </div>
           
           <div>
             <label class="block text-xs font-medium text-ink/70 mb-1.5">Upload Image</label>
-            <input type="file" name="productImage" accept=".png, .jpg, .jpeg" class="w-full text-sm text-ink/60 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-bg file:text-ink hover:file:bg-line transition">
+            <input type="file" id="productImage" name="productImage" accept=".png, .jpg, .jpeg" class="w-full text-sm text-ink/60 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-bg file:text-ink hover:file:bg-line transition">
             <p class="text-[10px] text-ink/40 mt-2">PNG or JPG, up to 5MB. Optional &mdash; a placeholder icon is used if left blank.</p>
           </div>
         </div>
@@ -119,5 +120,25 @@
       </button>
     </div>
   </form>
+
+  <script>
+    document.getElementById('productImage').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('imagePreviewIcon').classList.add('hidden');
+          const img = document.getElementById('imagePreview');
+          img.src = e.target.result;
+          img.classList.remove('hidden');
+        }
+        reader.readAsDataURL(file);
+      } else {
+        document.getElementById('imagePreviewIcon').classList.remove('hidden');
+        document.getElementById('imagePreview').classList.add('hidden');
+        document.getElementById('imagePreview').src = '';
+      }
+    });
+  </script>
 
 <%@ include file="includes/footer.jspf" %>
