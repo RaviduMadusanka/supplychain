@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebFilter("*.jsp")
+@WebFilter("/*")
 public class AuthFilter implements Filter {
 
     @Override
@@ -24,7 +24,7 @@ public class AuthFilter implements Filter {
 
         String uri = req.getRequestURI();
 
-        if (uri.endsWith("login.jsp") || uri.endsWith("register.jsp") || uri.endsWith("error.jsp") || uri.endsWith("403.jsp") || uri.contains("/includes/")) {
+        if (uri.endsWith("login.jsp") || uri.endsWith("register.jsp") || uri.endsWith("error.jsp") || uri.endsWith("403.jsp") || uri.contains("/includes/") || uri.endsWith("/login") || uri.endsWith("/register") || uri.contains("/images/")) {
             chain.doFilter(request, response);
             return;
         }

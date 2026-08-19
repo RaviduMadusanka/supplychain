@@ -64,7 +64,7 @@
     <% } else if ("WAREHOUSE_MANAGER".equalsIgnoreCase(userRole)) { %>
 
     <div class="navsection">Overview</div>
-    <a href="dashboard-wh.jsp" class="navlink <%= "dashboard".equals(activePage) ? "active" : "" %> mx-2">
+    <a href="<%= request.getContextPath() %>/dashboard/warehouse" class="navlink <%= "dashboard".equals(activePage) ? "active" : "" %> mx-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h4v8H3zM10 3h4v18h-4zM17 8h4v13h-4z"/></svg>
       Dashboard
     </a>
