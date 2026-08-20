@@ -39,6 +39,8 @@ public class StockDTO implements Serializable {
     public void setUnitPrice(BigDecimal unitPrice) { this.unitPrice = unitPrice; }
     public String getStatusName() { return statusName; }
     public void setStatusName(String statusName) { this.statusName = statusName; }
+    public String getStatus() { return statusName; }
+    public Integer getQuantity() { return stockQty; }
     public Integer getProductReorderLevel() { return productReorderLevel; }
     public void setProductReorderLevel(Integer productReorderLevel) { this.productReorderLevel = productReorderLevel; }
     public LocalDateTime getLastUpdated() { return lastUpdated; }

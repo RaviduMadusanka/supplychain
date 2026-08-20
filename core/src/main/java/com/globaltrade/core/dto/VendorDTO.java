@@ -17,4 +17,5 @@ public class VendorDTO implements Serializable {
     public void setId(Long id) { this.id = id; }
     public String getCompanyName() { return companyName; }
     public void setCompanyName(String companyName) { this.companyName = companyName; }
+    public String getVendorCode() { return "VEN-" + String.format("%03d", id != null ? id : 0); }
 }

@@ -47,6 +47,7 @@ public class WarehouseDTO implements Serializable {
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
     public String getCountryName() { return countryName; }
+    public String getCountry() { return countryName; }
     public void setCountryName(String countryName) { this.countryName = countryName; }
     public Integer getCapacity() { return capacity; }
     public void setCapacity(Integer capacity) { this.capacity = capacity; }

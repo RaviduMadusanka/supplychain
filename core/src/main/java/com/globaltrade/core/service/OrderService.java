@@ -9,7 +9,6 @@ import java.util.Map;
 @Local
 public interface OrderService {
     Order createOrderWithBMT(Long customerId, Long vendorId, Map<Long, Integer> itemsWithQuantities, Long warehouseId) throws Exception;
-    
     List<OrderDTO> getAllOrders();
     OrderDTO getOrderDetails(Long orderId);
     void startProcessingOrder(Long orderId);
