@@ -27,7 +27,7 @@ public class VendorPerformanceTimerBean {
 
         for (Vendor vendor : vendors) {
             List<Shipment> deliveredShipments = em.createQuery(
-                    "SELECT s FROM Shipment s WHERE s.vendor.id = :vendorId AND s.shipmentStatus.name = 'DELIVERED'", 
+                    "SELECT DISTINCT s FROM Shipment s, OrderItem oi WHERE s.order.id = oi.order.id AND oi.item.vendor.id = :vendorId AND s.shipmentStatus.name = 'DELIVERED'", 
                     Shipment.class)
                     .setParameter("vendorId", vendor.getId())
                     .getResultList();

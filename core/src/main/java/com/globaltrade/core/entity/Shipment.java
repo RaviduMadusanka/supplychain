@@ -16,12 +16,8 @@ public class Shipment implements Serializable {
     private String shipmentCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vendor_id")
-    private Vendor vendor;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "origin_warehouse_id")
@@ -48,7 +44,9 @@ public class Shipment implements Serializable {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
     }
 
     // Getters and Setters
@@ -56,10 +54,8 @@ public class Shipment implements Serializable {
     public void setId(Long id) { this.id = id; }
     public String getShipmentCode() { return shipmentCode; }
     public void setShipmentCode(String shipmentCode) { this.shipmentCode = shipmentCode; }
-    public Vendor getVendor() { return vendor; }
-    public void setVendor(Vendor vendor) { this.vendor = vendor; }
-    public Customer getCustomer() { return customer; }
-    public void setCustomer(Customer customer) { this.customer = customer; }
+    public Order getOrder() { return order; }
+    public void setOrder(Order order) { this.order = order; }
     public Warehouse getOriginWarehouse() { return originWarehouse; }
     public void setOriginWarehouse(Warehouse originWarehouse) { this.originWarehouse = originWarehouse; }
     public String getDestination() { return destination; }

@@ -138,8 +138,13 @@
                 </td>
 
                 <!-- Total Amount -->
-                <td class="px-5 py-4 font-mono font-semibold text-ink">
-                  $${o.totalAmount}
+                <td class="px-5 py-4">
+                  <div class="font-mono font-bold text-ink text-sm">$${o.totalAmount}</div>
+                  <c:if test="${o.taxAmount > 0}">
+                    <div class="text-[11px] font-mono text-ink/50 mt-0.5">
+                      Sub: $${o.subtotal} + <span class="text-amber font-medium">Tax: $${o.taxAmount}</span>
+                    </div>
+                  </c:if>
                 </td>
 
                 <!-- Placed Date -->
@@ -178,36 +183,46 @@
                       View Items
                     </button>
 
-                    <!-- STEP 1: PENDING -> Start Packing (PROCESSING) -->
-                    <c:if test="${o.statusName == 'PENDING' || o.statusName == 'CREATED'}">
-                      <form action="${pageContext.request.contextPath}/orders/action" method="POST" class="inline">
-                        <input type="hidden" name="action" value="process">
-                        <input type="hidden" name="orderId" value="${o.id}">
-                        <button type="submit" class="px-3 py-1.5 rounded-lg bg-amber text-white text-xs font-semibold hover:opacity-90 transition shadow-sm inline-flex items-center gap-1">
-                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                          Start Packing
-                        </button>
-                      </form>
-                    </c:if>
+                    <!-- Active Actions for PENDING & PROCESSING -->
+                    <c:if test="${o.statusName != 'COMPLETED'}">
+                      
+                      <!-- Start Packing (if PENDING) -->
+                      <c:if test="${(o.statusName == 'PENDING' || o.statusName == 'CREATED') && empty o.shipmentCode}">
+                        <form action="${pageContext.request.contextPath}/orders/action" method="POST" class="inline">
+                          <input type="hidden" name="action" value="process">
+                          <input type="hidden" name="orderId" value="${o.id}">
+                          <button type="submit" class="px-3 py-1.5 rounded-lg bg-amber text-white text-xs font-semibold hover:opacity-90 transition shadow-sm inline-flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Start Packing
+                          </button>
+                        </form>
+                      </c:if>
 
-                    <!-- STEP 2: PROCESSING -> Create Shipment -->
-                    <c:if test="${o.statusName == 'PROCESSING'}">
+                      <!-- Create Shipment button (ONLY shown when no shipment created yet) -->
                       <c:if test="${empty o.shipmentCode}">
-                        <button onclick="openShipmentModal(${o.id}, '${o.orderCode}', '${o.customerName}', '${o.customerAddress}')" class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primarydk transition shadow-sm inline-flex items-center gap-1">
+                        <button type="button"
+                                data-order-id="${o.id}" 
+                                data-order-code="${o.orderCode}" 
+                                data-customer-name="${o.customerName}" 
+                                data-destination="${o.customerAddress}"
+                                onclick="openShipmentModal(this)" 
+                                class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primarydk transition shadow-sm inline-flex items-center gap-1">
                           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                           Create Shipment
                         </button>
                       </c:if>
 
-                      <!-- STEP 3: Complete / Dispatch Order -->
-                      <form action="${pageContext.request.contextPath}/orders/action" method="POST" class="inline">
-                        <input type="hidden" name="action" value="complete">
-                        <input type="hidden" name="orderId" value="${o.id}">
-                        <button type="submit" class="px-3 py-1.5 rounded-lg bg-teal text-white text-xs font-semibold hover:opacity-90 transition shadow-sm inline-flex items-center gap-1" onclick="return confirm('Confirm dispatch & completion of order ${o.orderCode}?')">
-                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                          Dispatch &amp; Complete
-                        </button>
-                      </form>
+                      <!-- Dispatch & Complete (Shown when shipment is created or order is processing) -->
+                      <c:if test="${not empty o.shipmentCode || o.statusName == 'PROCESSING'}">
+                        <form action="${pageContext.request.contextPath}/orders/action" method="POST" class="inline">
+                          <input type="hidden" name="action" value="complete">
+                          <input type="hidden" name="orderId" value="${o.id}">
+                          <button type="submit" class="px-3 py-1.5 rounded-lg bg-teal text-white text-xs font-semibold hover:opacity-90 transition shadow-sm inline-flex items-center gap-1" onclick="return confirm('Confirm dispatch & completion of order ${o.orderCode}?')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Dispatch &amp; Complete
+                          </button>
+                        </form>
+                      </c:if>
                     </c:if>
 
                     <!-- COMPLETED State -->
@@ -232,7 +247,7 @@
                         Order Line Items &middot; ${o.orderCode}
                       </div>
                       <div class="text-xs text-ink/50">
-                        Deliver to: <strong class="text-ink">${o.customerAddress}</strong> (Ph: ${o.customerPhone})
+                        Deliver to: <strong class="text-ink">${o.customerAddress}</strong> <c:if test="${not empty o.countryName}">(${o.countryName})</c:if> (Ph: ${o.customerPhone})
                       </div>
                     </div>
                     
@@ -243,7 +258,7 @@
                           <th class="pb-2 font-medium">Product Name</th>
                           <th class="pb-2 font-medium text-center">Quantity</th>
                           <th class="pb-2 font-medium text-right font-mono">Unit Price</th>
-                          <th class="pb-2 font-medium text-right font-mono">Subtotal</th>
+                          <th class="pb-2 font-medium text-right font-mono">Line Total</th>
                         </tr>
                       </thead>
                       <tbody class="divide-y divide-line/60">
@@ -258,9 +273,28 @@
                         </c:forEach>
                       </tbody>
                       <tfoot>
+                        <tr class="border-t border-line text-xs text-ink/70">
+                          <td colspan="4" class="pt-3 text-right font-medium">Items Subtotal:</td>
+                          <td class="pt-3 text-right font-mono font-semibold text-ink">$${o.subtotal}</td>
+                        </tr>
+                        <c:if test="${o.taxAmount > 0}">
+                          <tr class="text-xs text-amber">
+                            <td colspan="4" class="pt-1.5 text-right font-medium">
+                              <c:choose>
+                                <c:when test="${o.crossBorder && o.importTaxPercentage > 0}">
+                                  Estimated VAT (${o.vatPercentage}%) + Import Tariff (${o.importTaxPercentage}%) <c:if test="${not empty o.countryName}">[${o.countryName}]</c:if>:
+                                </c:when>
+                                <c:otherwise>
+                                  Estimated VAT (${o.vatPercentage}%) <c:if test="${not empty o.countryName}">[${o.countryName}]</c:if>:
+                                </c:otherwise>
+                              </c:choose>
+                            </td>
+                            <td class="pt-1.5 text-right font-mono font-semibold">+$${o.taxAmount}</td>
+                          </tr>
+                        </c:if>
                         <tr class="border-t border-line font-bold text-xs">
-                          <td colspan="4" class="pt-3 text-right">Total Order Value:</td>
-                          <td class="pt-3 text-right font-mono text-primary text-sm">$${o.totalAmount}</td>
+                          <td colspan="4" class="pt-2.5 text-right text-ink">Total Order Value:</td>
+                          <td class="pt-2.5 text-right font-mono text-primary text-sm">$${o.totalAmount}</td>
                         </tr>
                       </tfoot>
                     </table>
@@ -283,7 +317,7 @@
   </div>
 
   <!-- Create Shipment Modal -->
-  <div id="createShipmentModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/60 backdrop-blur-sm p-4">
+  <div id="createShipmentModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/60 backdrop-blur-sm p-4" style="display: none;">
     <div class="bg-white rounded-2xl border border-line shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
       
       <div class="h-16 px-6 border-b border-line flex items-center justify-between bg-bg/50">
@@ -296,7 +330,7 @@
             <p id="modalSubtitle" class="text-xs text-ink/50 font-mono">Order #</p>
           </div>
         </div>
-        <button onclick="closeShipmentModal()" class="text-ink/40 hover:text-ink transition p-1 rounded-lg hover:bg-bg">
+        <button type="button" onclick="closeShipmentModal()" class="text-ink/40 hover:text-ink transition p-1 rounded-lg hover:bg-bg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
@@ -383,19 +417,24 @@
       }
     }
 
-    function openShipmentModal(orderId, orderCode, customerName, address) {
+    function openShipmentModal(btn) {
+      const orderId = btn.getAttribute('data-order-id');
+      const orderCode = btn.getAttribute('data-order-code');
+      const customerName = btn.getAttribute('data-customer-name');
+      const destination = btn.getAttribute('data-destination') || '';
+
       document.getElementById('modalOrderId').value = orderId;
       document.getElementById('modalSubtitle').textContent = orderCode + ' · ' + customerName;
-      document.getElementById('modalDestination').value = address || '';
+      document.getElementById('modalDestination').value = destination;
       
       const modal = document.getElementById('createShipmentModal');
       modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      modal.style.display = 'flex';
     }
 
     function closeShipmentModal() {
       const modal = document.getElementById('createShipmentModal');
-      modal.classList.remove('flex');
+      modal.style.display = 'none';
       modal.classList.add('hidden');
     }
   </script>

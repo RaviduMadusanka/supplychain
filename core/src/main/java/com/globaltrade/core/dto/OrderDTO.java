@@ -14,7 +14,13 @@ public class OrderDTO implements Serializable {
     private String customerEmail;
     private String customerPhone;
     private String customerAddress;
-    private BigDecimal totalAmount;
+    private String countryName;
+    private boolean crossBorder = false;
+    private BigDecimal vatPercentage = BigDecimal.ZERO;
+    private BigDecimal importTaxPercentage = BigDecimal.ZERO;
+    private BigDecimal subtotal = BigDecimal.ZERO;
+    private BigDecimal taxAmount = BigDecimal.ZERO;
+    private BigDecimal totalAmount = BigDecimal.ZERO;
     private String statusName;
     private LocalDateTime createdAt;
     private List<OrderItemDTO> items = new ArrayList<>();
@@ -24,7 +30,7 @@ public class OrderDTO implements Serializable {
 
     public OrderDTO() {}
 
-    public OrderDTO(Long id, String orderCode, Long customerId, String customerName, String customerEmail, String customerPhone, String customerAddress, BigDecimal totalAmount, String statusName, LocalDateTime createdAt) {
+    public OrderDTO(Long id, String orderCode, Long customerId, String customerName, String customerEmail, String customerPhone, String customerAddress, BigDecimal subtotal, BigDecimal taxAmount, BigDecimal totalAmount, String statusName, LocalDateTime createdAt) {
         this.id = id;
         this.orderCode = orderCode;
         this.customerId = customerId;
@@ -32,7 +38,9 @@ public class OrderDTO implements Serializable {
         this.customerEmail = customerEmail;
         this.customerPhone = customerPhone;
         this.customerAddress = customerAddress;
-        this.totalAmount = totalAmount;
+        this.subtotal = subtotal != null ? subtotal : BigDecimal.ZERO;
+        this.taxAmount = taxAmount != null ? taxAmount : BigDecimal.ZERO;
+        this.totalAmount = totalAmount != null ? totalAmount : BigDecimal.ZERO;
         this.statusName = statusName;
         this.createdAt = createdAt;
     }
@@ -55,6 +63,18 @@ public class OrderDTO implements Serializable {
     public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
     public String getCustomerAddress() { return customerAddress; }
     public void setCustomerAddress(String customerAddress) { this.customerAddress = customerAddress; }
+    public String getCountryName() { return countryName; }
+    public void setCountryName(String countryName) { this.countryName = countryName; }
+    public boolean isCrossBorder() { return crossBorder; }
+    public void setCrossBorder(boolean crossBorder) { this.crossBorder = crossBorder; }
+    public BigDecimal getVatPercentage() { return vatPercentage; }
+    public void setVatPercentage(BigDecimal vatPercentage) { this.vatPercentage = vatPercentage; }
+    public BigDecimal getImportTaxPercentage() { return importTaxPercentage; }
+    public void setImportTaxPercentage(BigDecimal importTaxPercentage) { this.importTaxPercentage = importTaxPercentage; }
+    public BigDecimal getSubtotal() { return subtotal; }
+    public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
+    public BigDecimal getTaxAmount() { return taxAmount; }
+    public void setTaxAmount(BigDecimal taxAmount) { this.taxAmount = taxAmount; }
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
     public String getStatusName() { return statusName; }

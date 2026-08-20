@@ -108,11 +108,29 @@ public class OrderServiceBean implements OrderService {
                 orderItem.setUnitPrice(stock.getUnitPrice());
                 em.persist(orderItem);
 
-                BigDecimal subtotal = stock.getUnitPrice().multiply(new BigDecimal(quantity));
-                totalAmount = totalAmount.add(subtotal);
+                BigDecimal lineTotal = stock.getUnitPrice().multiply(new BigDecimal(quantity));
+                totalAmount = totalAmount.add(lineTotal);
             }
 
-            order.setTotalAmount(totalAmount);
+            BigDecimal subtotal = totalAmount;
+            Warehouse wh = em.find(Warehouse.class, warehouseId);
+            BigDecimal vatRate = BigDecimal.ZERO;
+            BigDecimal importTaxRate = BigDecimal.ZERO;
+
+            if (customer.getCountry() != null) {
+                vatRate = customer.getCountry().getVatPercentage() != null ? customer.getCountry().getVatPercentage() : BigDecimal.ZERO;
+                if (wh != null && wh.getCountry() != null && !wh.getCountry().getId().equals(customer.getCountry().getId())) {
+                    importTaxRate = customer.getCountry().getImportTaxPercentage() != null ? customer.getCountry().getImportTaxPercentage() : BigDecimal.ZERO;
+                }
+            }
+
+            BigDecimal totalTaxRate = vatRate.add(importTaxRate);
+            BigDecimal taxAmount = subtotal.multiply(totalTaxRate).divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
+            BigDecimal finalTotal = subtotal.add(taxAmount);
+
+            order.setSubtotal(subtotal);
+            order.setTaxAmount(taxAmount);
+            order.setTotalAmount(finalTotal);
             em.merge(order);
 
             userTransaction.commit();
@@ -133,7 +151,7 @@ public class OrderServiceBean implements OrderService {
 
     @Override
     public List<OrderDTO> getAllOrders() {
-        List<Order> orders = em.createQuery("SELECT o FROM Order o LEFT JOIN FETCH o.customer LEFT JOIN FETCH o.orderStatus ORDER BY o.id DESC", Order.class).getResultList();
+        List<Order> orders = em.createQuery("SELECT o FROM Order o LEFT JOIN FETCH o.customer c LEFT JOIN FETCH c.country LEFT JOIN FETCH o.orderStatus ORDER BY o.id DESC", Order.class).getResultList();
         List<OrderDTO> dtos = new ArrayList<>();
 
         for (Order o : orders) {
@@ -143,6 +161,57 @@ public class OrderServiceBean implements OrderService {
             String custAddr = o.getCustomer() != null ? o.getCustomer().getAddress() : "";
             String statusName = o.getOrderStatus() != null ? o.getOrderStatus().getName() : "PENDING";
 
+            BigDecimal subtotal = (o.getSubtotal() != null && o.getSubtotal().compareTo(BigDecimal.ZERO) > 0) 
+                    ? o.getSubtotal() 
+                    : (o.getTotalAmount() != null ? o.getTotalAmount() : BigDecimal.ZERO);
+            BigDecimal taxAmount = (o.getTaxAmount() != null && o.getTaxAmount().compareTo(BigDecimal.ZERO) > 0) 
+                    ? o.getTaxAmount() 
+                    : BigDecimal.ZERO;
+            
+            BigDecimal vatRate = BigDecimal.ZERO;
+            BigDecimal importRate = BigDecimal.ZERO;
+            String countryName = "";
+
+            if (o.getCustomer() != null && o.getCustomer().getCountry() != null) {
+                countryName = o.getCustomer().getCountry().getName();
+                vatRate = o.getCustomer().getCountry().getVatPercentage() != null ? o.getCustomer().getCountry().getVatPercentage() : BigDecimal.ZERO;
+                importRate = o.getCustomer().getCountry().getImportTaxPercentage() != null ? o.getCustomer().getCountry().getImportTaxPercentage() : BigDecimal.ZERO;
+            }
+
+            // Check linked shipment & Origin Warehouse
+            List<Shipment> shipments = em.createQuery("SELECT s FROM Shipment s LEFT JOIN FETCH s.originWarehouse ow LEFT JOIN FETCH ow.country LEFT JOIN FETCH s.shipmentStatus WHERE s.order.id = :oid ORDER BY s.id DESC", Shipment.class)
+                    .setParameter("oid", o.getId())
+                    .getResultList();
+
+            boolean isCrossBorder = false;
+            String shpCode = null;
+            String carrier = null;
+            String shpStatus = null;
+
+            if (!shipments.isEmpty()) {
+                Shipment sh = shipments.get(0);
+                shpCode = sh.getShipmentCode();
+                carrier = sh.getCarrierName();
+                shpStatus = sh.getShipmentStatus() != null ? sh.getShipmentStatus().getName() : "IN_TRANSIT";
+                
+                if (sh.getOriginWarehouse() != null && sh.getOriginWarehouse().getCountry() != null && o.getCustomer() != null && o.getCustomer().getCountry() != null) {
+                    isCrossBorder = !sh.getOriginWarehouse().getCountry().getId().equals(o.getCustomer().getCountry().getId());
+                }
+            }
+
+            if (!isCrossBorder) {
+                importRate = BigDecimal.ZERO;
+            }
+
+            if (taxAmount.compareTo(BigDecimal.ZERO) == 0 && (vatRate.compareTo(BigDecimal.ZERO) > 0 || importRate.compareTo(BigDecimal.ZERO) > 0)) {
+                BigDecimal totalRate = vatRate.add(importRate);
+                taxAmount = subtotal.multiply(totalRate).divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
+            }
+
+            BigDecimal finalTotal = (o.getTotalAmount() != null && o.getSubtotal() != null && o.getSubtotal().compareTo(BigDecimal.ZERO) > 0) 
+                    ? o.getTotalAmount() 
+                    : subtotal.add(taxAmount);
+
             OrderDTO dto = new OrderDTO(
                     o.getId(),
                     o.getOrderCode(),
@@ -151,10 +220,20 @@ public class OrderServiceBean implements OrderService {
                     custEmail,
                     custPhone,
                     custAddr,
-                    o.getTotalAmount(),
+                    subtotal,
+                    taxAmount,
+                    finalTotal,
                     statusName,
                     o.getCreatedAt()
             );
+
+            dto.setCountryName(countryName);
+            dto.setVatPercentage(vatRate);
+            dto.setImportTaxPercentage(importRate);
+            dto.setCrossBorder(isCrossBorder);
+            dto.setShipmentCode(shpCode);
+            dto.setCarrierName(carrier);
+            dto.setShipmentStatus(shpStatus);
 
             // Fetch line items
             List<OrderItem> items = em.createQuery("SELECT oi FROM OrderItem oi JOIN FETCH oi.item WHERE oi.order.id = :oid", OrderItem.class)
@@ -174,20 +253,6 @@ public class OrderServiceBean implements OrderService {
             }
             dto.setItems(itemDtos);
 
-            // Check linked shipment
-            if (o.getCustomer() != null) {
-                List<Shipment> shipments = em.createQuery("SELECT s FROM Shipment s LEFT JOIN FETCH s.shipmentStatus WHERE s.customer.id = :cid ORDER BY s.id DESC", Shipment.class)
-                        .setParameter("cid", o.getCustomer().getId())
-                        .setMaxResults(1)
-                        .getResultList();
-                if (!shipments.isEmpty()) {
-                    Shipment sh = shipments.get(0);
-                    dto.setShipmentCode(sh.getShipmentCode());
-                    dto.setCarrierName(sh.getCarrierName());
-                    dto.setShipmentStatus(sh.getShipmentStatus() != null ? sh.getShipmentStatus().getName() : "IN_TRANSIT");
-                }
-            }
-
             dtos.add(dto);
         }
 
@@ -205,6 +270,57 @@ public class OrderServiceBean implements OrderService {
         String custAddr = o.getCustomer() != null ? o.getCustomer().getAddress() : "";
         String statusName = o.getOrderStatus() != null ? o.getOrderStatus().getName() : "PENDING";
 
+        BigDecimal subtotal = (o.getSubtotal() != null && o.getSubtotal().compareTo(BigDecimal.ZERO) > 0) 
+                ? o.getSubtotal() 
+                : (o.getTotalAmount() != null ? o.getTotalAmount() : BigDecimal.ZERO);
+        BigDecimal taxAmount = (o.getTaxAmount() != null && o.getTaxAmount().compareTo(BigDecimal.ZERO) > 0) 
+                ? o.getTaxAmount() 
+                : BigDecimal.ZERO;
+
+        BigDecimal vatRate = BigDecimal.ZERO;
+        BigDecimal importRate = BigDecimal.ZERO;
+        String countryName = "";
+
+        if (o.getCustomer() != null && o.getCustomer().getCountry() != null) {
+            countryName = o.getCustomer().getCountry().getName();
+            vatRate = o.getCustomer().getCountry().getVatPercentage() != null ? o.getCustomer().getCountry().getVatPercentage() : BigDecimal.ZERO;
+            importRate = o.getCustomer().getCountry().getImportTaxPercentage() != null ? o.getCustomer().getCountry().getImportTaxPercentage() : BigDecimal.ZERO;
+        }
+
+        // Check linked shipment & Origin Warehouse
+        List<Shipment> shipments = em.createQuery("SELECT s FROM Shipment s LEFT JOIN FETCH s.originWarehouse ow LEFT JOIN FETCH ow.country LEFT JOIN FETCH s.shipmentStatus WHERE s.order.id = :oid ORDER BY s.id DESC", Shipment.class)
+                .setParameter("oid", o.getId())
+                .getResultList();
+
+        boolean isCrossBorder = false;
+        String shpCode = null;
+        String carrier = null;
+        String shpStatus = null;
+
+        if (!shipments.isEmpty()) {
+            Shipment sh = shipments.get(0);
+            shpCode = sh.getShipmentCode();
+            carrier = sh.getCarrierName();
+            shpStatus = sh.getShipmentStatus() != null ? sh.getShipmentStatus().getName() : "IN_TRANSIT";
+
+            if (sh.getOriginWarehouse() != null && sh.getOriginWarehouse().getCountry() != null && o.getCustomer() != null && o.getCustomer().getCountry() != null) {
+                isCrossBorder = !sh.getOriginWarehouse().getCountry().getId().equals(o.getCustomer().getCountry().getId());
+            }
+        }
+
+        if (!isCrossBorder) {
+            importRate = BigDecimal.ZERO;
+        }
+
+        if (taxAmount.compareTo(BigDecimal.ZERO) == 0 && (vatRate.compareTo(BigDecimal.ZERO) > 0 || importRate.compareTo(BigDecimal.ZERO) > 0)) {
+            BigDecimal totalRate = vatRate.add(importRate);
+            taxAmount = subtotal.multiply(totalRate).divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
+        }
+
+        BigDecimal finalTotal = (o.getTotalAmount() != null && o.getSubtotal() != null && o.getSubtotal().compareTo(BigDecimal.ZERO) > 0) 
+                ? o.getTotalAmount() 
+                : subtotal.add(taxAmount);
+
         OrderDTO dto = new OrderDTO(
                 o.getId(),
                 o.getOrderCode(),
@@ -213,10 +329,20 @@ public class OrderServiceBean implements OrderService {
                 custEmail,
                 custPhone,
                 custAddr,
-                o.getTotalAmount(),
+                subtotal,
+                taxAmount,
+                finalTotal,
                 statusName,
                 o.getCreatedAt()
         );
+
+        dto.setCountryName(countryName);
+        dto.setVatPercentage(vatRate);
+        dto.setImportTaxPercentage(importRate);
+        dto.setCrossBorder(isCrossBorder);
+        dto.setShipmentCode(shpCode);
+        dto.setCarrierName(carrier);
+        dto.setShipmentStatus(shpStatus);
 
         List<OrderItem> items = em.createQuery("SELECT oi FROM OrderItem oi JOIN FETCH oi.item WHERE oi.order.id = :oid", OrderItem.class)
                 .setParameter("oid", o.getId())
@@ -271,8 +397,12 @@ public class OrderServiceBean implements OrderService {
             ShipmentStatus inTransitStatus = getOrCreateShipmentStatus("IN_TRANSIT", "Dispatched and in transit");
 
             Shipment shipment = new Shipment();
-            shipment.setShipmentCode("SHP-" + (System.currentTimeMillis() % 100000));
-            shipment.setCustomer(order.getCustomer());
+            String shpCode = "SHP-" + order.getOrderCode();
+            if (shpCode.length() > 50) {
+                shpCode = shpCode.substring(0, 50);
+            }
+            shipment.setShipmentCode(shpCode);
+            shipment.setOrder(order);
             shipment.setOriginWarehouse(warehouse);
             shipment.setCarrierName(carrierName != null && !carrierName.trim().isEmpty() ? carrierName : "DHL Express");
             
@@ -344,18 +474,16 @@ public class OrderServiceBean implements OrderService {
                 em.merge(order);
 
                 // Mark linked shipment as DELIVERED
-                if (order.getCustomer() != null) {
-                    List<Shipment> shipments = em.createQuery("SELECT s FROM Shipment s WHERE s.customer.id = :cid ORDER BY s.id DESC", Shipment.class)
-                            .setParameter("cid", order.getCustomer().getId())
-                            .setMaxResults(1)
-                            .getResultList();
-                    if (!shipments.isEmpty()) {
-                        ShipmentStatus deliveredStatus = getOrCreateShipmentStatus("DELIVERED", "Package delivered to customer");
-                        Shipment sh = shipments.get(0);
-                        sh.setShipmentStatus(deliveredStatus);
-                        sh.setActualDelivery(LocalDateTime.now());
-                        em.merge(sh);
-                    }
+                List<Shipment> shipments = em.createQuery("SELECT s FROM Shipment s WHERE s.order.id = :oid ORDER BY s.id DESC", Shipment.class)
+                        .setParameter("oid", order.getId())
+                        .setMaxResults(1)
+                        .getResultList();
+                if (!shipments.isEmpty()) {
+                    ShipmentStatus deliveredStatus = getOrCreateShipmentStatus("DELIVERED", "Package delivered to customer");
+                    Shipment sh = shipments.get(0);
+                    sh.setShipmentStatus(deliveredStatus);
+                    sh.setActualDelivery(LocalDateTime.now());
+                    em.merge(sh);
                 }
             }
             userTransaction.commit();
