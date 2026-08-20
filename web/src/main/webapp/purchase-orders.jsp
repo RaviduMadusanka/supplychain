@@ -69,6 +69,31 @@
     }
   };
 
+  window.addPOItemRow = function() {
+    var container = document.getElementById('poItemsContainer');
+    if (!container) return;
+    var rows = container.querySelectorAll('.po-item-row');
+    if (rows.length > 0) {
+      var clone = rows[0].cloneNode(true);
+      var select = clone.querySelector('select');
+      var input = clone.querySelector('input');
+      if (select) select.selectedIndex = 0;
+      if (input) input.value = "50";
+      container.appendChild(clone);
+    }
+  };
+
+  window.removePOItemRow = function(btn) {
+    var container = document.getElementById('poItemsContainer');
+    if (!container) return;
+    var rows = container.querySelectorAll('.po-item-row');
+    if (rows.length > 1) {
+      btn.closest('.po-item-row').remove();
+    } else {
+      alert("At least one product item is required in the Purchase Order.");
+    }
+  };
+
   document.addEventListener('DOMContentLoaded', function() {
     var createBtns = document.querySelectorAll('.btn-create-po');
     createBtns.forEach(function(btn) {
@@ -392,7 +417,7 @@
 
 <!-- Create Purchase Order Modal — placed outside main/space-y-6 at body level -->
 <div id="createPOModal" style="display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; background:rgba(18,23,43,0.6); backdrop-filter:blur(4px); padding:1rem;">
-  <div style="background:#fff; border-radius:1rem; border:1px solid #E4E7EF; box-shadow:0 25px 50px rgba(0,0,0,0.25); width:100%; max-width:32rem; overflow:hidden;">
+  <div style="background:#fff; border-radius:1rem; border:1px solid #E4E7EF; box-shadow:0 25px 50px rgba(0,0,0,0.25); width:100%; max-width:38rem; max-height:92vh; display:flex; flex-direction:column; overflow:hidden;">
 
     <div style="height:4rem; padding:0 1.5rem; border-bottom:1px solid #E4E7EF; display:flex; align-items:center; justify-content:space-between; background:#F5F6FA;">
       <div style="display:flex; align-items:center; gap:0.5rem;">
@@ -409,7 +434,7 @@
       </button>
     </div>
 
-    <form action="${pageContext.request.contextPath}/purchase-orders/action" method="POST" style="padding:1.5rem; display:flex; flex-direction:column; gap:1rem;">
+    <form action="${pageContext.request.contextPath}/purchase-orders/action" method="POST" style="padding:1.5rem; display:flex; flex-direction:column; gap:1rem; overflow-y:auto; max-height:calc(92vh - 4rem);">
       <input type="hidden" name="action" value="create">
 
       <div>
@@ -432,25 +457,43 @@
         </select>
       </div>
 
-      <div style="display:grid; grid-template-columns:2fr 1fr; gap:1rem;">
-        <div>
-          <label style="display:block; font-size:0.65rem; font-weight:700; color:#12172BB3; margin-bottom:0.375rem; text-transform:uppercase; font-family:monospace;">Product to Restock *</label>
-          <select name="productId" required style="width:100%; padding:0.625rem 0.875rem; border:1px solid #E4E7EF; border-radius:0.5rem; font-size:0.875rem; background:#fff; outline:none;">
-            <option value="">-- Select Product --</option>
-            <c:forEach var="p" items="${products}">
-              <option value="${p.id}">${p.name} (${p.sku})</option>
-            </c:forEach>
-          </select>
+      <!-- Products & Restock Quantities Dynamic List -->
+      <div class="border border-line rounded-xl p-3.5 bg-bg/40">
+        <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-line">
+          <div>
+            <label class="block text-xs font-semibold text-ink uppercase font-mono">Restock Products List <span class="text-amber">*</span></label>
+            <span class="text-[11px] text-ink/50">Add one or more products to this purchase order</span>
+          </div>
+          <button type="button" onclick="addPOItemRow()" class="px-2.5 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white text-xs font-semibold transition inline-flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            + Add Product
+          </button>
         </div>
-        <div>
-          <label style="display:block; font-size:0.65rem; font-weight:700; color:#12172BB3; margin-bottom:0.375rem; text-transform:uppercase; font-family:monospace;">Quantity *</label>
-          <input type="number" name="quantity" value="100" min="1" required style="width:100%; padding:0.625rem 0.875rem; border:1px solid #E4E7EF; border-radius:0.5rem; font-size:0.875rem; background:#fff; font-family:monospace; outline:none; box-sizing:border-box;">
+
+        <div id="poItemsContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+          <!-- Item Row Template -->
+          <div class="po-item-row flex items-center gap-2 bg-white p-2 rounded-lg border border-line">
+            <div class="flex-1">
+              <select name="productId" required class="w-full px-2.5 py-1.5 border border-line rounded-md text-xs bg-white focus:border-primary focus:outline-none">
+                <option value="">-- Select Product --</option>
+                <c:forEach var="p" items="${products}">
+                  <option value="${p.id}">${p.name} (${p.sku}) &middot; ${p.weight}kg</option>
+                </c:forEach>
+              </select>
+            </div>
+            <div class="w-24">
+              <input type="number" name="quantity" value="100" min="1" required class="w-full px-2.5 py-1.5 border border-line rounded-md text-xs bg-white font-mono focus:border-primary focus:outline-none" placeholder="Qty">
+            </div>
+            <button type="button" onclick="removePOItemRow(this)" class="p-1.5 text-ink/40 hover:text-amber rounded-md hover:bg-amber/10 transition" title="Remove Product">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
       <div style="padding:0.875rem; border-radius:0.75rem; background:#F5F6FA; border:1px solid #E4E7EF; font-size:0.7rem; color:#12172B99;">
-        <div style="font-weight:600; color:#12172B; margin-bottom:0.25rem;">⚠ Tax &amp; Stock Policy</div>
-        VAT &amp; Customs Tariffs calculated automatically by warehouse country. Stock updated on goods receipt.
+        <div style="font-weight:600; color:#12172B; margin-bottom:0.25rem;">⚠ Automated Cost &amp; Multi-Stock Policy</div>
+        VAT, Customs Tariffs and Weight-based Cargo Freight will be auto-calculated for all selected products. When stock is received, all products in this order will be automatically added to the destination warehouse inventory.
       </div>
 
       <div style="padding-top:1rem; border-top:1px solid #E4E7EF; display:flex; align-items:center; justify-content:flex-end; gap:0.75rem;">

@@ -71,23 +71,36 @@ public class PurchaseOrderServlet extends HttpServlet {
             if ("create".equalsIgnoreCase(action)) {
                 String warehouseIdStr = request.getParameter("warehouseId");
                 String vendorIdStr = request.getParameter("vendorId");
-                String productIdStr = request.getParameter("productId");
-                String quantityStr = request.getParameter("quantity");
+                String[] productIds = request.getParameterValues("productId");
+                String[] quantities = request.getParameterValues("quantity");
 
-                if (warehouseIdStr == null || vendorIdStr == null || productIdStr == null || quantityStr == null) {
-                    throw new IllegalArgumentException("Missing required fields to create purchase order.");
+                if (warehouseIdStr == null || vendorIdStr == null || productIds == null || productIds.length == 0) {
+                    throw new IllegalArgumentException("Destination Warehouse, Vendor and at least one Product are required.");
                 }
 
                 Long warehouseId = Long.parseLong(warehouseIdStr);
                 Long vendorId = Long.parseLong(vendorIdStr);
-                Long productId = Long.parseLong(productIdStr);
-                int quantity = Integer.parseInt(quantityStr);
 
                 Map<Long, Integer> productQuantities = new HashMap<>();
-                productQuantities.put(productId, quantity);
+                for (int i = 0; i < productIds.length; i++) {
+                    String pIdStr = productIds[i];
+                    if (pIdStr == null || pIdStr.trim().isEmpty()) continue;
+                    
+                    int qty = 1;
+                    if (quantities != null && i < quantities.length && quantities[i] != null && !quantities[i].trim().isEmpty()) {
+                        qty = Math.max(1, Integer.parseInt(quantities[i].trim()));
+                    }
+
+                    Long pId = Long.parseLong(pIdStr.trim());
+                    productQuantities.merge(pId, qty, Integer::sum);
+                }
+
+                if (productQuantities.isEmpty()) {
+                    throw new IllegalArgumentException("Please select at least one valid product to restock.");
+                }
 
                 purchaseOrderService.createPurchaseOrder(warehouseId, vendorId, productQuantities);
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=PO+Created+Successfully");
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=PO+Created+with+" + productQuantities.size() + "+Items+Successfully");
                 return;
 
             } else if ("receive".equalsIgnoreCase(action)) {
