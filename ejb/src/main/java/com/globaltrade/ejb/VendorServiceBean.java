@@ -96,7 +96,6 @@ public class VendorServiceBean implements VendorService {
             em.persist(status);
         }
 
-        // Resolve session user by id
         User createdByUser = null;
         if (userId != null) {
             createdByUser = em.find(User.class, userId);

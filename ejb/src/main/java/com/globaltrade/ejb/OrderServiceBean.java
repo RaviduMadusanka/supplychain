@@ -128,8 +128,7 @@ public class OrderServiceBean implements OrderService {
 
             BigDecimal totalTaxRate = vatRate.add(importTaxRate);
             BigDecimal taxAmount = subtotal.multiply(totalTaxRate).divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
-            
-            // Calculate total weight and shipping fee
+
             BigDecimal totalWeightKg = BigDecimal.ZERO;
             for (Map.Entry<Long, Integer> entry : itemsWithQuantities.entrySet()) {
                 InventoryItem itm = em.find(InventoryItem.class, entry.getKey());
@@ -198,7 +197,6 @@ public class OrderServiceBean implements OrderService {
                 importRate = o.getCustomer().getCountry().getImportTaxPercentage() != null ? o.getCustomer().getCountry().getImportTaxPercentage() : BigDecimal.ZERO;
             }
 
-            // Check linked shipment & Origin Warehouse
             List<Shipment> shipments = em.createQuery("SELECT s FROM Shipment s LEFT JOIN FETCH s.originWarehouse ow LEFT JOIN FETCH ow.country LEFT JOIN FETCH s.shipmentStatus WHERE s.order.id = :oid ORDER BY s.id DESC", Shipment.class)
                     .setParameter("oid", o.getId())
                     .getResultList();
@@ -228,7 +226,6 @@ public class OrderServiceBean implements OrderService {
                 taxAmount = subtotal.multiply(totalRate).divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
             }
 
-            // Fetch line items
             List<OrderItem> items = em.createQuery("SELECT oi FROM OrderItem oi JOIN FETCH oi.item WHERE oi.order.id = :oid", OrderItem.class)
                     .setParameter("oid", o.getId())
                     .getResultList();
@@ -324,7 +321,6 @@ public class OrderServiceBean implements OrderService {
             importRate = o.getCustomer().getCountry().getImportTaxPercentage() != null ? o.getCustomer().getCountry().getImportTaxPercentage() : BigDecimal.ZERO;
         }
 
-        // Check linked shipment & Origin Warehouse
         List<Shipment> shipments = em.createQuery("SELECT s FROM Shipment s LEFT JOIN FETCH s.originWarehouse ow LEFT JOIN FETCH ow.country LEFT JOIN FETCH s.shipmentStatus WHERE s.order.id = :oid ORDER BY s.id DESC", Shipment.class)
                 .setParameter("oid", o.getId())
                 .getResultList();
@@ -354,7 +350,6 @@ public class OrderServiceBean implements OrderService {
             taxAmount = subtotal.multiply(totalRate).divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
         }
 
-        // Fetch line items
         List<OrderItem> items = em.createQuery("SELECT oi FROM OrderItem oi JOIN FETCH oi.item WHERE oi.order.id = :oid", OrderItem.class)
                 .setParameter("oid", o.getId())
                 .getResultList();
@@ -468,7 +463,6 @@ public class OrderServiceBean implements OrderService {
 
             em.persist(shipment);
 
-            // Fetch order items to link into shipment and deduct warehouse stock
             List<OrderItem> orderItems = em.createQuery("SELECT oi FROM OrderItem oi JOIN FETCH oi.item WHERE oi.order.id = :oid", OrderItem.class)
                     .setParameter("oid", orderId)
                     .getResultList();
@@ -480,7 +474,6 @@ public class OrderServiceBean implements OrderService {
                 si.setQuantity(oi.getQuantity());
                 em.persist(si);
 
-                // Deduct stock from the origin warehouse
                 if (oi.getItem() != null) {
                     List<InventoryStock> stocks = em.createQuery("SELECT s FROM InventoryStock s WHERE s.item.id = :itemId AND s.warehouse.id = :whId", InventoryStock.class)
                             .setParameter("itemId", oi.getItem().getId())
@@ -506,7 +499,6 @@ public class OrderServiceBean implements OrderService {
                 }
             }
 
-            // Ensure order status is at least PROCESSING
             OrderStatus processingStatus = getOrCreateOrderStatus("PROCESSING", "Being packed and shipped");
             order.setOrderStatus(processingStatus);
             em.merge(order);
@@ -528,7 +520,6 @@ public class OrderServiceBean implements OrderService {
                 order.setOrderStatus(completedStatus);
                 em.merge(order);
 
-                // Mark linked shipment as DELIVERED
                 List<Shipment> shipments = em.createQuery("SELECT s FROM Shipment s WHERE s.order.id = :oid ORDER BY s.id DESC", Shipment.class)
                         .setParameter("oid", order.getId())
                         .setMaxResults(1)

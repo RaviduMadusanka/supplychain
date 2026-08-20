@@ -41,7 +41,6 @@ public class PurchaseOrderServlet extends HttpServlet {
             List<ProductDTO> products = inventoryService.getAllProducts();
             List<StockDTO> allStocks = inventoryService.getAllStock();
 
-            // Filter low stock alerts
             List<StockDTO> lowStocks = allStocks.stream()
                     .filter(s -> "LOW_STOCK".equalsIgnoreCase(s.getStatusName()) || "OUT_OF_STOCK".equalsIgnoreCase(s.getStatusName()) || (s.getStockQty() != null && s.getStockQty() <= 10))
                     .collect(Collectors.toList());

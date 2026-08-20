@@ -139,8 +139,7 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
                     throw new IllegalArgumentException("Product not found: " + productId);
                 }
 
-                // Determine unit purchase price (from item or from warehouse stock)
-                BigDecimal unitPrice = BigDecimal.valueOf(50.00); // default fallback
+                BigDecimal unitPrice = BigDecimal.valueOf(50.00);
                 List<InventoryStock> existingStocks = em.createQuery(
                         "SELECT s FROM InventoryStock s WHERE s.item.id = :itemId", InventoryStock.class)
                         .setParameter("itemId", item.getId())
@@ -167,15 +166,13 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
                 }
             }
 
-            // Calculate VAT, Customs Duty and Freight Shipping
             BigDecimal vatRate = BigDecimal.ZERO;
             BigDecimal importRate = BigDecimal.ZERO;
             boolean crossBorder = false;
 
             if (warehouse.getCountry() != null) {
                 vatRate = warehouse.getCountry().getVatPercentage() != null ? warehouse.getCountry().getVatPercentage() : BigDecimal.ZERO;
-                
-                // If Cross-border (Vendor Country != Warehouse Country), apply import tariff
+
                 Country vendorCountry = (vendor.getCompany() != null) ? vendor.getCompany().getCountry() : null;
                 if (vendorCountry != null && !warehouse.getCountry().getId().equals(vendorCountry.getId())) {
                     importRate = warehouse.getCountry().getImportTaxPercentage() != null ? warehouse.getCountry().getImportTaxPercentage() : BigDecimal.ZERO;
@@ -185,8 +182,7 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
 
             BigDecimal totalTaxRate = vatRate.add(importRate);
             BigDecimal taxAmount = subtotal.multiply(totalTaxRate).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-            
-            // Freight / Shipping Calculation (Weight-based)
+
             BigDecimal shippingRatePerKg = crossBorder ? new BigDecimal("5.00") : new BigDecimal("2.00");
             BigDecimal minShipping = crossBorder ? new BigDecimal("25.00") : new BigDecimal("10.00");
             BigDecimal shippingAmount = totalWeightKg.multiply(shippingRatePerKg).setScale(2, RoundingMode.HALF_UP);
@@ -250,7 +246,6 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
                 InventoryItem item = poi.getItem();
                 if (item == null) continue;
 
-                // Find existing stock in target warehouse or create a new stock entry
                 List<InventoryStock> stocks = em.createQuery(
                         "SELECT s FROM InventoryStock s WHERE s.item.id = :itemId AND s.warehouse.id = :whId", InventoryStock.class)
                         .setParameter("itemId", item.getId())
@@ -272,7 +267,6 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
                     stock.setUnitPrice(poi.getUnitPrice() != null ? poi.getUnitPrice() : BigDecimal.valueOf(50.00));
                 }
 
-                // Check reorder level status
                 Integer reorderLvl = item.getReorderLevel() != null ? item.getReorderLevel() : 0;
                 String stName = (stock.getStockQty() == 0) ? "OUT_OF_STOCK" : (stock.getStockQty() <= reorderLvl ? "LOW_STOCK" : "IN_STOCK");
                 try {
@@ -351,7 +345,6 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
                 ? po.getShippingAmount() 
                 : BigDecimal.ZERO;
 
-        // Auto-calculate shipping for existing records if was 0
         if (shippingAmount.compareTo(BigDecimal.ZERO) == 0 && !items.isEmpty()) {
             BigDecimal shippingRatePerKg = crossBorder ? new BigDecimal("5.00") : new BigDecimal("2.00");
             BigDecimal minShipping = crossBorder ? new BigDecimal("25.00") : new BigDecimal("10.00");

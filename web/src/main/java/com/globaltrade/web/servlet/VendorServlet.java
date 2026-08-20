@@ -50,7 +50,6 @@ public class VendorServlet extends HttpServlet {
                 rating = new BigDecimal(ratingStr.trim());
             }
 
-            // Get logged-in user's ID from session
             Long sessionUserId = null;
             com.globaltrade.core.dto.UserDTO sessionUser =
                     (com.globaltrade.core.dto.UserDTO) req.getSession().getAttribute("user");
