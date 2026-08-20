@@ -20,6 +20,7 @@ public class OrderDTO implements Serializable {
     private BigDecimal importTaxPercentage = BigDecimal.ZERO;
     private BigDecimal subtotal = BigDecimal.ZERO;
     private BigDecimal taxAmount = BigDecimal.ZERO;
+    private BigDecimal shippingAmount = BigDecimal.ZERO;
     private BigDecimal totalAmount = BigDecimal.ZERO;
     private String statusName;
     private LocalDateTime createdAt;
@@ -75,6 +76,8 @@ public class OrderDTO implements Serializable {
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
     public BigDecimal getTaxAmount() { return taxAmount; }
     public void setTaxAmount(BigDecimal taxAmount) { this.taxAmount = taxAmount; }
+    public BigDecimal getShippingAmount() { return shippingAmount; }
+    public void setShippingAmount(BigDecimal shippingAmount) { this.shippingAmount = shippingAmount; }
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
     public String getStatusName() { return statusName; }

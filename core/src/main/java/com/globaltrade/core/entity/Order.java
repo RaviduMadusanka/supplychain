@@ -34,6 +34,9 @@ public class Order implements Serializable {
     @Column(name = "tax_amount", precision = 12, scale = 2)
     private BigDecimal taxAmount = BigDecimal.ZERO;
 
+    @Column(name = "shipping_amount", precision = 12, scale = 2)
+    private BigDecimal shippingAmount = BigDecimal.ZERO;
+
     @Column(name = "total_amount", precision = 12, scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
@@ -62,6 +65,8 @@ public class Order implements Serializable {
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
     public BigDecimal getTaxAmount() { return taxAmount; }
     public void setTaxAmount(BigDecimal taxAmount) { this.taxAmount = taxAmount; }
+    public BigDecimal getShippingAmount() { return shippingAmount; }
+    public void setShippingAmount(BigDecimal shippingAmount) { this.shippingAmount = shippingAmount; }
     public BigDecimal getTotalAmount() { return totalAmount; }
     public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
     public LocalDateTime getCreatedAt() { return createdAt; }

@@ -116,20 +116,40 @@ public class OrderServiceBean implements OrderService {
             Warehouse wh = em.find(Warehouse.class, warehouseId);
             BigDecimal vatRate = BigDecimal.ZERO;
             BigDecimal importTaxRate = BigDecimal.ZERO;
+            boolean isCrossBorder = false;
 
             if (customer.getCountry() != null) {
                 vatRate = customer.getCountry().getVatPercentage() != null ? customer.getCountry().getVatPercentage() : BigDecimal.ZERO;
                 if (wh != null && wh.getCountry() != null && !wh.getCountry().getId().equals(customer.getCountry().getId())) {
                     importTaxRate = customer.getCountry().getImportTaxPercentage() != null ? customer.getCountry().getImportTaxPercentage() : BigDecimal.ZERO;
+                    isCrossBorder = true;
                 }
             }
 
             BigDecimal totalTaxRate = vatRate.add(importTaxRate);
             BigDecimal taxAmount = subtotal.multiply(totalTaxRate).divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
-            BigDecimal finalTotal = subtotal.add(taxAmount);
+            
+            // Calculate total weight and shipping fee
+            BigDecimal totalWeightKg = BigDecimal.ZERO;
+            for (Map.Entry<Long, Integer> entry : itemsWithQuantities.entrySet()) {
+                InventoryItem itm = em.find(InventoryItem.class, entry.getKey());
+                if (itm != null && itm.getWeight() != null && entry.getValue() != null) {
+                    totalWeightKg = totalWeightKg.add(itm.getWeight().multiply(BigDecimal.valueOf(entry.getValue())));
+                }
+            }
+
+            BigDecimal shippingRatePerKg = isCrossBorder ? new BigDecimal("5.00") : new BigDecimal("2.00");
+            BigDecimal minShipping = isCrossBorder ? new BigDecimal("25.00") : new BigDecimal("10.00");
+            BigDecimal shippingAmount = totalWeightKg.multiply(shippingRatePerKg).setScale(2, java.math.RoundingMode.HALF_UP);
+            if (shippingAmount.compareTo(minShipping) < 0) {
+                shippingAmount = minShipping;
+            }
+
+            BigDecimal finalTotal = subtotal.add(taxAmount).add(shippingAmount);
 
             order.setSubtotal(subtotal);
             order.setTaxAmount(taxAmount);
+            order.setShippingAmount(shippingAmount);
             order.setTotalAmount(finalTotal);
             em.merge(order);
 
@@ -208,9 +228,42 @@ public class OrderServiceBean implements OrderService {
                 taxAmount = subtotal.multiply(totalRate).divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
             }
 
-            BigDecimal finalTotal = (o.getTotalAmount() != null && o.getSubtotal() != null && o.getSubtotal().compareTo(BigDecimal.ZERO) > 0) 
-                    ? o.getTotalAmount() 
-                    : subtotal.add(taxAmount);
+            // Fetch line items
+            List<OrderItem> items = em.createQuery("SELECT oi FROM OrderItem oi JOIN FETCH oi.item WHERE oi.order.id = :oid", OrderItem.class)
+                    .setParameter("oid", o.getId())
+                    .getResultList();
+
+            List<OrderItemDTO> itemDtos = new ArrayList<>();
+            BigDecimal totalWeightKg = BigDecimal.ZERO;
+            for (OrderItem oi : items) {
+                itemDtos.add(new OrderItemDTO(
+                        oi.getId(),
+                        oi.getItem() != null ? oi.getItem().getId() : null,
+                        oi.getItem() != null ? oi.getItem().getSku() : "N/A",
+                        oi.getItem() != null ? oi.getItem().getName() : "Item",
+                        oi.getQuantity(),
+                        oi.getUnitPrice()
+                ));
+
+                if (oi.getItem() != null && oi.getItem().getWeight() != null && oi.getQuantity() != null) {
+                    totalWeightKg = totalWeightKg.add(oi.getItem().getWeight().multiply(BigDecimal.valueOf(oi.getQuantity())));
+                }
+            }
+
+            BigDecimal shippingAmount = (o.getShippingAmount() != null && o.getShippingAmount().compareTo(BigDecimal.ZERO) > 0) 
+                    ? o.getShippingAmount() 
+                    : BigDecimal.ZERO;
+
+            if (shippingAmount.compareTo(BigDecimal.ZERO) == 0 && !items.isEmpty()) {
+                BigDecimal shippingRatePerKg = isCrossBorder ? new BigDecimal("5.00") : new BigDecimal("2.00");
+                BigDecimal minShipping = isCrossBorder ? new BigDecimal("25.00") : new BigDecimal("10.00");
+                shippingAmount = totalWeightKg.multiply(shippingRatePerKg).setScale(2, java.math.RoundingMode.HALF_UP);
+                if (shippingAmount.compareTo(minShipping) < 0) {
+                    shippingAmount = minShipping;
+                }
+            }
+
+            BigDecimal finalTotal = subtotal.add(taxAmount).add(shippingAmount);
 
             OrderDTO dto = new OrderDTO(
                     o.getId(),
@@ -227,6 +280,7 @@ public class OrderServiceBean implements OrderService {
                     o.getCreatedAt()
             );
 
+            dto.setShippingAmount(shippingAmount);
             dto.setCountryName(countryName);
             dto.setVatPercentage(vatRate);
             dto.setImportTaxPercentage(importRate);
@@ -234,23 +288,6 @@ public class OrderServiceBean implements OrderService {
             dto.setShipmentCode(shpCode);
             dto.setCarrierName(carrier);
             dto.setShipmentStatus(shpStatus);
-
-            // Fetch line items
-            List<OrderItem> items = em.createQuery("SELECT oi FROM OrderItem oi JOIN FETCH oi.item WHERE oi.order.id = :oid", OrderItem.class)
-                    .setParameter("oid", o.getId())
-                    .getResultList();
-
-            List<OrderItemDTO> itemDtos = new ArrayList<>();
-            for (OrderItem oi : items) {
-                itemDtos.add(new OrderItemDTO(
-                        oi.getId(),
-                        oi.getItem() != null ? oi.getItem().getId() : null,
-                        oi.getItem() != null ? oi.getItem().getSku() : "N/A",
-                        oi.getItem() != null ? oi.getItem().getName() : "Item",
-                        oi.getQuantity(),
-                        oi.getUnitPrice()
-                ));
-            }
             dto.setItems(itemDtos);
 
             dtos.add(dto);
@@ -317,9 +354,42 @@ public class OrderServiceBean implements OrderService {
             taxAmount = subtotal.multiply(totalRate).divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
         }
 
-        BigDecimal finalTotal = (o.getTotalAmount() != null && o.getSubtotal() != null && o.getSubtotal().compareTo(BigDecimal.ZERO) > 0) 
-                ? o.getTotalAmount() 
-                : subtotal.add(taxAmount);
+        // Fetch line items
+        List<OrderItem> items = em.createQuery("SELECT oi FROM OrderItem oi JOIN FETCH oi.item WHERE oi.order.id = :oid", OrderItem.class)
+                .setParameter("oid", o.getId())
+                .getResultList();
+
+        List<OrderItemDTO> itemDtos = new ArrayList<>();
+        BigDecimal totalWeightKg = BigDecimal.ZERO;
+        for (OrderItem oi : items) {
+            itemDtos.add(new OrderItemDTO(
+                    oi.getId(),
+                    oi.getItem() != null ? oi.getItem().getId() : null,
+                    oi.getItem() != null ? oi.getItem().getSku() : "N/A",
+                    oi.getItem() != null ? oi.getItem().getName() : "Item",
+                    oi.getQuantity(),
+                    oi.getUnitPrice()
+            ));
+
+            if (oi.getItem() != null && oi.getItem().getWeight() != null && oi.getQuantity() != null) {
+                totalWeightKg = totalWeightKg.add(oi.getItem().getWeight().multiply(BigDecimal.valueOf(oi.getQuantity())));
+            }
+        }
+
+        BigDecimal shippingAmount = (o.getShippingAmount() != null && o.getShippingAmount().compareTo(BigDecimal.ZERO) > 0) 
+                ? o.getShippingAmount() 
+                : BigDecimal.ZERO;
+
+        if (shippingAmount.compareTo(BigDecimal.ZERO) == 0 && !items.isEmpty()) {
+            BigDecimal shippingRatePerKg = isCrossBorder ? new BigDecimal("5.00") : new BigDecimal("2.00");
+            BigDecimal minShipping = isCrossBorder ? new BigDecimal("25.00") : new BigDecimal("10.00");
+            shippingAmount = totalWeightKg.multiply(shippingRatePerKg).setScale(2, java.math.RoundingMode.HALF_UP);
+            if (shippingAmount.compareTo(minShipping) < 0) {
+                shippingAmount = minShipping;
+            }
+        }
+
+        BigDecimal finalTotal = subtotal.add(taxAmount).add(shippingAmount);
 
         OrderDTO dto = new OrderDTO(
                 o.getId(),
@@ -336,6 +406,7 @@ public class OrderServiceBean implements OrderService {
                 o.getCreatedAt()
         );
 
+        dto.setShippingAmount(shippingAmount);
         dto.setCountryName(countryName);
         dto.setVatPercentage(vatRate);
         dto.setImportTaxPercentage(importRate);
@@ -343,22 +414,6 @@ public class OrderServiceBean implements OrderService {
         dto.setShipmentCode(shpCode);
         dto.setCarrierName(carrier);
         dto.setShipmentStatus(shpStatus);
-
-        List<OrderItem> items = em.createQuery("SELECT oi FROM OrderItem oi JOIN FETCH oi.item WHERE oi.order.id = :oid", OrderItem.class)
-                .setParameter("oid", o.getId())
-                .getResultList();
-
-        List<OrderItemDTO> itemDtos = new ArrayList<>();
-        for (OrderItem oi : items) {
-            itemDtos.add(new OrderItemDTO(
-                    oi.getId(),
-                    oi.getItem() != null ? oi.getItem().getId() : null,
-                    oi.getItem() != null ? oi.getItem().getSku() : "N/A",
-                    oi.getItem() != null ? oi.getItem().getName() : "Item",
-                    oi.getQuantity(),
-                    oi.getUnitPrice()
-            ));
-        }
         dto.setItems(itemDtos);
         return dto;
     }

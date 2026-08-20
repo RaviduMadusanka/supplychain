@@ -137,14 +137,18 @@
                   </span>
                 </td>
 
-                <!-- Total Amount -->
+                <!-- Total Amount & Breakdown -->
                 <td class="px-5 py-4">
                   <div class="font-mono font-bold text-ink text-sm">$${o.totalAmount}</div>
-                  <c:if test="${o.taxAmount > 0}">
-                    <div class="text-[11px] font-mono text-ink/50 mt-0.5">
-                      Sub: $${o.subtotal} + <span class="text-amber font-medium">Tax: $${o.taxAmount}</span>
-                    </div>
-                  </c:if>
+                  <div class="text-[11px] font-mono text-ink/50 mt-0.5">
+                    <span>Sub: $${o.subtotal}</span>
+                    <c:if test="${o.taxAmount > 0}">
+                      &middot; <span class="text-amber font-medium">Tax: +$${o.taxAmount}</span>
+                    </c:if>
+                    <c:if test="${o.shippingAmount > 0}">
+                      &middot; <span class="text-primary font-medium">Shipping: +$${o.shippingAmount}</span>
+                    </c:if>
+                  </div>
                 </td>
 
                 <!-- Placed Date -->
@@ -290,6 +294,21 @@
                               </c:choose>
                             </td>
                             <td class="pt-1.5 text-right font-mono font-semibold">+$${o.taxAmount}</td>
+                          </tr>
+                        </c:if>
+                        <c:if test="${o.shippingAmount > 0}">
+                          <tr class="text-xs text-primary">
+                            <td colspan="4" class="pt-1.5 text-right font-medium">
+                              <c:choose>
+                                <c:when test="${o.crossBorder}">
+                                  International Freight &amp; Delivery (Weight-based):
+                                </c:when>
+                                <c:otherwise>
+                                  Domestic Delivery &amp; Handling:
+                                </c:otherwise>
+                              </c:choose>
+                            </td>
+                            <td class="pt-1.5 text-right font-mono font-semibold">+$${o.shippingAmount}</td>
                           </tr>
                         </c:if>
                         <tr class="border-t border-line font-bold text-xs">

@@ -126,6 +126,7 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
             em.persist(po);
 
             BigDecimal subtotal = BigDecimal.ZERO;
+            BigDecimal totalWeightKg = BigDecimal.ZERO;
 
             for (Map.Entry<Long, Integer> entry : productQuantities.entrySet()) {
                 Long productId = entry.getKey();
@@ -159,11 +160,17 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
 
                 BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
                 subtotal = subtotal.add(lineTotal);
+
+                if (item.getWeight() != null) {
+                    BigDecimal itemTotalWeight = item.getWeight().multiply(BigDecimal.valueOf(quantity));
+                    totalWeightKg = totalWeightKg.add(itemTotalWeight);
+                }
             }
 
-            // Calculate VAT and Customs Duty
+            // Calculate VAT, Customs Duty and Freight Shipping
             BigDecimal vatRate = BigDecimal.ZERO;
             BigDecimal importRate = BigDecimal.ZERO;
+            boolean crossBorder = false;
 
             if (warehouse.getCountry() != null) {
                 vatRate = warehouse.getCountry().getVatPercentage() != null ? warehouse.getCountry().getVatPercentage() : BigDecimal.ZERO;
@@ -172,15 +179,26 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
                 Country vendorCountry = (vendor.getCompany() != null) ? vendor.getCompany().getCountry() : null;
                 if (vendorCountry != null && !warehouse.getCountry().getId().equals(vendorCountry.getId())) {
                     importRate = warehouse.getCountry().getImportTaxPercentage() != null ? warehouse.getCountry().getImportTaxPercentage() : BigDecimal.ZERO;
+                    crossBorder = true;
                 }
             }
 
             BigDecimal totalTaxRate = vatRate.add(importRate);
             BigDecimal taxAmount = subtotal.multiply(totalTaxRate).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-            BigDecimal totalAmount = subtotal.add(taxAmount);
+            
+            // Freight / Shipping Calculation (Weight-based)
+            BigDecimal shippingRatePerKg = crossBorder ? new BigDecimal("5.00") : new BigDecimal("2.00");
+            BigDecimal minShipping = crossBorder ? new BigDecimal("25.00") : new BigDecimal("10.00");
+            BigDecimal shippingAmount = totalWeightKg.multiply(shippingRatePerKg).setScale(2, RoundingMode.HALF_UP);
+            if (shippingAmount.compareTo(minShipping) < 0) {
+                shippingAmount = minShipping;
+            }
+
+            BigDecimal totalAmount = subtotal.add(taxAmount).add(shippingAmount);
 
             po.setSubtotal(subtotal);
             po.setTaxAmount(taxAmount);
+            po.setShippingAmount(shippingAmount);
             po.setTotalAmount(totalAmount);
 
             em.merge(po);
@@ -307,7 +325,43 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
             taxAmount = subtotal.multiply(totalRate).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
         }
 
-        BigDecimal totalAmount = (po.getTotalAmount() != null && po.getSubtotal() != null && po.getSubtotal().compareTo(BigDecimal.ZERO) > 0) ? po.getTotalAmount() : subtotal.add(taxAmount);
+        List<PurchaseOrderItem> items = em.createQuery(
+                "SELECT poi FROM PurchaseOrderItem poi JOIN FETCH poi.item WHERE poi.purchaseOrder.id = :poid", PurchaseOrderItem.class)
+                .setParameter("poid", po.getId())
+                .getResultList();
+
+        List<PurchaseOrderItemDTO> itemDtos = new ArrayList<>();
+        BigDecimal totalWeightKg = BigDecimal.ZERO;
+        for (PurchaseOrderItem poi : items) {
+            itemDtos.add(new PurchaseOrderItemDTO(
+                    poi.getId(),
+                    poi.getItem() != null ? poi.getItem().getId() : null,
+                    poi.getItem() != null ? poi.getItem().getSku() : "N/A",
+                    poi.getItem() != null ? poi.getItem().getName() : "Item",
+                    poi.getQuantity(),
+                    poi.getUnitPrice()
+            ));
+
+            if (poi.getItem() != null && poi.getItem().getWeight() != null && poi.getQuantity() != null) {
+                totalWeightKg = totalWeightKg.add(poi.getItem().getWeight().multiply(BigDecimal.valueOf(poi.getQuantity())));
+            }
+        }
+
+        BigDecimal shippingAmount = (po.getShippingAmount() != null && po.getShippingAmount().compareTo(BigDecimal.ZERO) > 0) 
+                ? po.getShippingAmount() 
+                : BigDecimal.ZERO;
+
+        // Auto-calculate shipping for existing records if was 0
+        if (shippingAmount.compareTo(BigDecimal.ZERO) == 0 && !items.isEmpty()) {
+            BigDecimal shippingRatePerKg = crossBorder ? new BigDecimal("5.00") : new BigDecimal("2.00");
+            BigDecimal minShipping = crossBorder ? new BigDecimal("25.00") : new BigDecimal("10.00");
+            shippingAmount = totalWeightKg.multiply(shippingRatePerKg).setScale(2, RoundingMode.HALF_UP);
+            if (shippingAmount.compareTo(minShipping) < 0) {
+                shippingAmount = minShipping;
+            }
+        }
+
+        BigDecimal totalAmount = subtotal.add(taxAmount).add(shippingAmount);
 
         PurchaseOrderDTO dto = new PurchaseOrderDTO(
                 po.getId(),
@@ -327,26 +381,10 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
                 po.getCreatedAt()
         );
 
+        dto.setShippingAmount(shippingAmount);
         dto.setVatPercentage(vatRate);
         dto.setImportTaxPercentage(importRate);
         dto.setCrossBorder(crossBorder);
-
-        List<PurchaseOrderItem> items = em.createQuery(
-                "SELECT poi FROM PurchaseOrderItem poi JOIN FETCH poi.item WHERE poi.purchaseOrder.id = :poid", PurchaseOrderItem.class)
-                .setParameter("poid", po.getId())
-                .getResultList();
-
-        List<PurchaseOrderItemDTO> itemDtos = new ArrayList<>();
-        for (PurchaseOrderItem poi : items) {
-            itemDtos.add(new PurchaseOrderItemDTO(
-                    poi.getId(),
-                    poi.getItem() != null ? poi.getItem().getId() : null,
-                    poi.getItem() != null ? poi.getItem().getSku() : "N/A",
-                    poi.getItem() != null ? poi.getItem().getName() : "Item",
-                    poi.getQuantity(),
-                    poi.getUnitPrice()
-            ));
-        }
         dto.setItems(itemDtos);
 
         return dto;

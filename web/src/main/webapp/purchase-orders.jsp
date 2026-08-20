@@ -144,7 +144,7 @@
     <!-- Create PO Button -->
     <button type="button" onclick="openCreatePOModal()" class="btn-create-po px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primarydk transition shadow-sm shadow-primary/20 inline-flex items-center gap-2 self-start sm:self-auto">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      + Create Purchase Order
+      Create Purchase Order
     </button>
   </div>
 
@@ -152,15 +152,15 @@
   <div class="bg-white rounded-2xl border border-line shadow-sm overflow-hidden">
     <table class="w-full text-sm">
       <thead>
-        <tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line bg-bg/40">
-          <th class="px-5 py-3 font-medium">PO Code</th>
-          <th class="px-5 py-3 font-medium">Destination WH</th>
-          <th class="px-5 py-3 font-medium">Supplier / Vendor</th>
-          <th class="px-5 py-3 font-medium">Items</th>
-          <th class="px-5 py-3 font-medium">Cost &amp; Taxes</th>
-          <th class="px-5 py-3 font-medium">Order Date</th>
-          <th class="px-5 py-3 font-medium">Status</th>
-          <th class="px-5 py-3 font-medium text-right">Inbound Actions</th>
+        <tr class="text-left text-white/80 text-xs font-mono uppercase tracking-wider border-b border-ink bg-ink">
+          <th class="px-5 py-3.5 font-medium">PO Code</th>
+          <th class="px-5 py-3.5 font-medium">Destination WH</th>
+          <th class="px-5 py-3.5 font-medium">Supplier / Vendor</th>
+          <th class="px-5 py-3.5 font-medium">Items</th>
+          <th class="px-5 py-3.5 font-medium">Cost &amp; Freight</th>
+          <th class="px-5 py-3.5 font-medium">Order Date</th>
+          <th class="px-5 py-3.5 font-medium">Status</th>
+          <th class="px-5 py-3.5 font-medium text-right">Inbound Actions</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-line">
@@ -193,14 +193,18 @@
                   </span>
                 </td>
 
-                <!-- Cost & Taxes -->
+                <!-- Cost & Taxes & Freight -->
                 <td class="px-5 py-4">
                   <div class="font-mono font-bold text-ink text-sm">$${po.totalAmount}</div>
-                  <c:if test="${po.taxAmount > 0}">
-                    <div class="text-[11px] font-mono text-ink/50 mt-0.5">
-                      Sub: $${po.subtotal} + <span class="text-amber font-medium">Tax: $${po.taxAmount}</span>
-                    </div>
-                  </c:if>
+                  <div class="text-[11px] font-mono text-ink/50 mt-0.5">
+                    <span>Sub: $${po.subtotal}</span>
+                    <c:if test="${po.taxAmount > 0}">
+                      &middot; <span class="text-amber font-medium">Tax: +$${po.taxAmount}</span>
+                    </c:if>
+                    <c:if test="${po.shippingAmount > 0}">
+                      &middot; <span class="text-primary font-medium">Freight: +$${po.shippingAmount}</span>
+                    </c:if>
+                  </div>
                 </td>
 
                 <!-- Created Date -->
@@ -235,24 +239,56 @@
                       View Items
                     </button>
 
-                    <!-- Receive Goods (Stock-In) Action -->
-                    <c:if test="${po.statusName != 'COMPLETED'}">
-                      <form action="${pageContext.request.contextPath}/purchase-orders/action" method="POST" class="inline">
-                        <input type="hidden" name="action" value="receive">
-                        <input type="hidden" name="poId" value="${po.id}">
-                        <button type="submit" class="px-3 py-1.5 rounded-lg bg-teal text-white text-xs font-semibold hover:opacity-90 transition shadow-sm inline-flex items-center gap-1" onclick="return confirm('Confirm receipt of goods for ${po.poCode}? This will automatically add the stock to ${po.warehouseName}.')">
-                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                          Receive Stock
-                        </button>
-                      </form>
-                    </c:if>
+                    <!-- Actions based on PO status -->
+                    <c:choose>
+                      
+                      <%-- PENDING: Awaiting Vendor acceptance --%>
+                      <c:when test="${po.statusName == 'PENDING'}">
+                        <c:choose>
+                          <c:when test="${sessionScope.user != null && sessionScope.user.role == 'VENDOR'}">
+                            <form action="${pageContext.request.contextPath}/purchase-orders/action" method="POST" class="inline">
+                              <input type="hidden" name="action" value="accept">
+                              <input type="hidden" name="poId" value="${po.id}">
+                              <button type="submit" class="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primarydk transition shadow-sm inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Accept &amp; Dispatch
+                              </button>
+                            </form>
+                          </c:when>
+                          <c:otherwise>
+                            <span class="text-xs text-amber font-mono inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber/10 border border-amber/20">
+                              <span class="w-1.5 h-1.5 rounded-full bg-amber animate-pulse"></span>
+                              Awaiting Vendor
+                            </span>
+                          </c:otherwise>
+                        </c:choose>
+                      </c:when>
 
-                    <c:if test="${po.statusName == 'COMPLETED'}">
-                      <span class="text-xs text-teal font-semibold font-mono inline-flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        Restocked
-                      </span>
-                    </c:if>
+                      <%-- PROCESSING / IN_TRANSIT: Vendor has dispatched goods -> WH Manager can Receive Stock --%>
+                      <c:when test="${po.statusName == 'PROCESSING' || po.statusName == 'IN_TRANSIT'}">
+                        <form action="${pageContext.request.contextPath}/purchase-orders/action" method="POST" class="inline">
+                          <input type="hidden" name="action" value="receive">
+                          <input type="hidden" name="poId" value="${po.id}">
+                          <button type="submit" class="px-3 py-1.5 rounded-lg bg-teal text-white text-xs font-semibold hover:opacity-90 transition shadow-sm inline-flex items-center gap-1" onclick="return confirm('Confirm receipt of goods for ${po.poCode}? This will automatically add the stock to ${po.warehouseName}.')">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Receive Stock
+                          </button>
+                        </form>
+                      </c:when>
+
+                      <%-- COMPLETED: Stock received & added to inventory --%>
+                      <c:when test="${po.statusName == 'COMPLETED'}">
+                        <span class="text-xs text-teal font-semibold font-mono inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-teal/10 border border-teal/20">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                          Restocked
+                        </span>
+                      </c:when>
+
+                      <c:otherwise>
+                        <span class="text-xs text-ink/40 font-mono">${po.statusName}</span>
+                      </c:otherwise>
+
+                    </c:choose>
 
                   </div>
                 </td>
@@ -311,6 +347,21 @@
                               </c:choose>
                             </td>
                             <td class="pt-1.5 text-right font-mono font-semibold">+$${po.taxAmount}</td>
+                          </tr>
+                        </c:if>
+                        <c:if test="${po.shippingAmount > 0}">
+                          <tr class="text-xs text-primary">
+                            <td colspan="4" class="pt-1.5 text-right font-medium">
+                              <c:choose>
+                                <c:when test="${po.crossBorder}">
+                                  International Freight &amp; Handling (Weight-based):
+                                </c:when>
+                                <c:otherwise>
+                                  Domestic Freight &amp; Logistics:
+                                </c:otherwise>
+                              </c:choose>
+                            </td>
+                            <td class="pt-1.5 text-right font-mono font-semibold">+$${po.shippingAmount}</td>
                           </tr>
                         </c:if>
                         <tr class="border-t border-line font-bold text-xs">
