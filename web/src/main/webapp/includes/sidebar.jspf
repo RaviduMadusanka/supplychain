@@ -93,7 +93,7 @@
       Purchase Orders
     </a>
     <div class="navsection">Suppliers</div>
-    <a href="vendors.jsp" class="navlink <%= "vendors".equals(activePage) ? "active" : "" %> mx-2">
+    <a href="<%= request.getContextPath() %>/vendors" class="navlink <%= "vendors".equals(activePage) ? "active" : "" %> mx-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M5 21V7l8-4v18M13 21V11l6 3v7M9 9h.01M9 12h.01M9 15h.01"/></svg>
       Vendors
     </a>
