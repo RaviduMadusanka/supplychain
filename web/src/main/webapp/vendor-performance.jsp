@@ -1,89 +1,135 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%
   String pageTitle = "Vendor Performance";
-  String pageSubtitle = "Evaluation period ending 30 Jun 2026";
+  String pageSubtitle = "Monitor supplier reliability, ratings, and operational status";
   String activePage = "vendorperf";
+  
+  // Try to get from session
   String userName = "Saman Kumara";
   String userRole = "Warehouse Manager";
+  com.globaltrade.core.dto.UserDTO sessionUser = (com.globaltrade.core.dto.UserDTO) session.getAttribute("user");
+  if (sessionUser != null) {
+      userName = sessionUser.getFullName();
+      userRole = sessionUser.getRole();
+  }
 %>
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
-    <!-- Apex Tech -->
-    <div class="card p-5">
-      <div class="flex items-center justify-between mb-4">
-        <div><div class="font-medium text-sm">Apex Tech Components</div><div class="font-mono text-xs text-ink/40">VEN-001</div></div>
-        <span class="tag tag-teal"><span class="tag-dot"></span>4.50</span>
-      </div>
-      <div class="space-y-3">
-        <div>
-          <div class="flex justify-between text-xs mb-1"><span class="text-ink/50">On-time delivery</span><span class="font-mono font-medium">92.5%</span></div>
-          <div class="h-1.5 bg-line rounded-full overflow-hidden"><div class="h-full bg-teal" style="width:92.5%"></div></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-xs mb-1"><span class="text-ink/50">Quality score</span><span class="font-mono font-medium">88.0%</span></div>
-          <div class="h-1.5 bg-line rounded-full overflow-hidden"><div class="h-full bg-primary" style="width:88%"></div></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-xs mb-1"><span class="text-ink/50">Avg. response time</span><span class="font-mono font-medium">4.5 hrs</span></div>
-        </div>
-      </div>
-    </div>
-    <!-- Global Parts -->
-    <div class="card p-5">
-      <div class="flex items-center justify-between mb-4">
-        <div><div class="font-medium text-sm">Global Parts Ltd</div><div class="font-mono text-xs text-ink/40">VEN-002</div></div>
-        <span class="tag tag-teal"><span class="tag-dot"></span>4.10</span>
-      </div>
-      <div class="space-y-3">
-        <div>
-          <div class="flex justify-between text-xs mb-1"><span class="text-ink/50">On-time delivery</span><span class="font-mono font-medium">85.0%</span></div>
-          <div class="h-1.5 bg-line rounded-full overflow-hidden"><div class="h-full bg-teal" style="width:85%"></div></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-xs mb-1"><span class="text-ink/50">Quality score</span><span class="font-mono font-medium">90.0%</span></div>
-          <div class="h-1.5 bg-line rounded-full overflow-hidden"><div class="h-full bg-primary" style="width:90%"></div></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-xs mb-1"><span class="text-ink/50">Avg. response time</span><span class="font-mono font-medium">6.0 hrs</span></div>
-        </div>
-      </div>
-    </div>
-    <!-- Pacific Freight -->
-    <div class="card p-5 ring-1 ring-amber/30">
-      <div class="flex items-center justify-between mb-4">
-        <div><div class="font-medium text-sm">Pacific Freight Supplies</div><div class="font-mono text-xs text-ink/40">VEN-003</div></div>
-        <span class="tag tag-amber"><span class="tag-dot"></span>3.80</span>
-      </div>
-      <div class="space-y-3">
-        <div>
-          <div class="flex justify-between text-xs mb-1"><span class="text-ink/50">On-time delivery</span><span class="font-mono font-medium">78.3%</span></div>
-          <div class="h-1.5 bg-line rounded-full overflow-hidden"><div class="h-full bg-amber" style="width:78.3%"></div></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-xs mb-1"><span class="text-ink/50">Quality score</span><span class="font-mono font-medium">82.5%</span></div>
-          <div class="h-1.5 bg-line rounded-full overflow-hidden"><div class="h-full bg-primary" style="width:82.5%"></div></div>
-        </div>
-        <div>
-          <div class="flex justify-between text-xs mb-1"><span class="text-ink/50">Avg. response time</span><span class="font-mono font-medium">8.2 hrs</span></div>
-        </div>
-      </div>
-    </div>
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="text-xl font-display font-bold text-ink">Vendor Performance Overview</h2>
+    <p class="text-sm text-ink/50 mt-0.5"><%= pageSubtitle %></p>
   </div>
+</div>
 
-  <div class="card">
-    <div class="px-5 py-4 border-b border-line"><h3 class="font-display font-semibold text-sm">Evaluation History</h3></div>
-    <table class="w-full text-sm">
-      <thead><tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line">
-        <th class="px-5 py-2.5 font-medium">Vendor</th><th class="px-5 py-2.5 font-medium">Date</th><th class="px-5 py-2.5 font-medium">On-time</th><th class="px-5 py-2.5 font-medium">Quality</th><th class="px-5 py-2.5 font-medium">Response</th><th class="px-5 py-2.5 font-medium">Overall</th>
-      </tr></thead>
-      <tbody class="divide-y divide-line">
-        <tr class="hover:bg-bg/60"><td class="px-5 py-3">Apex Tech Components</td><td class="px-5 py-3 font-mono text-xs text-ink/50">2026-06-30</td><td class="px-5 py-3">92.50%</td><td class="px-5 py-3">88.00%</td><td class="px-5 py-3">4.50 hrs</td><td class="px-5 py-3 font-semibold text-teal">4.50</td></tr>
-        <tr class="hover:bg-bg/60"><td class="px-5 py-3">Global Parts Ltd</td><td class="px-5 py-3 font-mono text-xs text-ink/50">2026-06-30</td><td class="px-5 py-3">85.00%</td><td class="px-5 py-3">90.00%</td><td class="px-5 py-3">6.00 hrs</td><td class="px-5 py-3 font-semibold text-teal">4.10</td></tr>
-        <tr class="hover:bg-bg/60"><td class="px-5 py-3">Pacific Freight Supplies</td><td class="px-5 py-3 font-mono text-xs text-ink/50">2026-06-30</td><td class="px-5 py-3">78.30%</td><td class="px-5 py-3">82.50%</td><td class="px-5 py-3">8.20 hrs</td><td class="px-5 py-3 font-semibold text-amber">3.80</td></tr>
-      </tbody>
-    </table>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+  <div class="card p-5 border-t-4 border-t-teal hover:shadow-md transition">
+    <div class="text-xs text-ink/50 mb-1 font-mono uppercase tracking-wide">Average Rating</div>
+    <div class="font-display text-3xl font-bold flex items-baseline gap-2">
+      ${avgRating != null ? avgRating : '0.00'}
+      <span class="text-amber text-lg">&#9733;</span>
+    </div>
+    <div class="text-[10px] text-ink/40 font-mono mt-1 uppercase">Across ${totalVendors} suppliers</div>
   </div>
+  
+  <div class="card p-5 hover:shadow-md transition">
+    <div class="text-xs text-ink/50 mb-1 font-mono uppercase tracking-wide flex items-center justify-between">
+      Active Partners <span class="tag tag-teal"><span class="tag-dot"></span>Active</span>
+    </div>
+    <div class="font-display text-3xl font-bold text-ink">${activeCount != null ? activeCount : 0}</div>
+    <div class="text-[10px] text-ink/40 font-mono mt-1 uppercase">Currently approved</div>
+  </div>
+  
+  <div class="card p-5 hover:shadow-md transition">
+    <div class="text-xs text-ink/50 mb-1 font-mono uppercase tracking-wide flex items-center justify-between">
+      Suspended <span class="tag tag-amber"><span class="tag-dot"></span>Alert</span>
+    </div>
+    <div class="font-display text-3xl font-bold ${suspendedCount > 0 ? 'text-amber' : 'text-ink'}">${suspendedCount != null ? suspendedCount : 0}</div>
+    <div class="text-[10px] text-ink/40 font-mono mt-1 uppercase">Action required</div>
+  </div>
+  
+  <div class="card p-5 hover:shadow-md transition">
+    <div class="text-xs text-ink/50 mb-1 font-mono uppercase tracking-wide">Total Suppliers</div>
+    <div class="font-display text-3xl font-bold text-primary">${totalVendors != null ? totalVendors : 0}</div>
+    <div class="text-[10px] text-ink/40 font-mono mt-1 uppercase">Global network</div>
+  </div>
+</div>
+
+<div class="flex items-center gap-3 mb-5">
+  <input type="text" id="perfSearch" onkeyup="filterPerformance()" placeholder="Search by vendor code or company name..." class="flex-1 px-3.5 py-2 rounded-lg border border-line bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+</div>
+
+<div class="bg-white rounded-2xl border border-line shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-white/80 text-xs font-mono uppercase tracking-wider border-b border-ink bg-ink">
+        <th class="px-5 py-3.5">Vendor</th>
+        <th class="px-5 py-3.5">Origin</th>
+        <th class="px-5 py-3.5">Quality Rating</th>
+        <th class="px-5 py-3.5 w-1/4">Performance Bar</th>
+        <th class="px-5 py-3.5">Status</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-line">
+      <c:choose>
+        <c:when test="${not empty vendors}">
+          <c:forEach var="v" items="${vendors}">
+            <tr class="perf-row hover:bg-bg/60 transition">
+              <td class="px-5 py-4">
+                <div class="font-medium text-ink">${v.companyName}</div>
+                <div class="font-mono text-[10px] text-primary font-semibold mt-0.5">${v.vendorCode}</div>
+              </td>
+              <td class="px-5 py-4 text-ink/70">
+                <div class="flex items-center gap-1.5 text-xs">
+                  <span class="text-sm">&#127760;</span> ${v.countryName}
+                </div>
+              </td>
+              <td class="px-5 py-4">
+                <span class="font-mono font-bold ${v.rating >= 4.0 ? 'text-teal' : (v.rating >= 2.5 ? 'text-ink' : 'text-amber')} text-base">${v.rating}</span>
+                <span class="text-amber ml-0.5">&#9733;</span>
+              </td>
+              <td class="px-5 py-4">
+                <div class="w-full bg-line rounded-full h-2.5 mb-1 overflow-hidden">
+                  <div class="h-2.5 rounded-full ${v.rating >= 4.0 ? 'bg-teal' : (v.rating >= 2.5 ? 'bg-primary' : 'bg-amber')}" style="width: ${(v.rating / 5.0) * 100}%"></div>
+                </div>
+                <div class="text-[10px] text-ink/50 font-mono text-right">${(v.rating / 5.0) * 100}% Satisfaction</div>
+              </td>
+              <td class="px-5 py-4">
+                <c:choose>
+                  <c:when test="${v.statusName == 'ACTIVE'}">
+                    <span class="tag tag-teal"><span class="tag-dot"></span>Active</span>
+                  </c:when>
+                  <c:otherwise>
+                    <span class="tag tag-amber"><span class="tag-dot"></span>${v.statusName}</span>
+                  </c:otherwise>
+                </c:choose>
+              </td>
+            </tr>
+          </c:forEach>
+        </c:when>
+        <c:otherwise>
+          <tr>
+            <td colspan="5" class="p-12 text-center text-ink/50 text-sm">
+              No performance records available.
+            </td>
+          </tr>
+        </c:otherwise>
+      </c:choose>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function filterPerformance() {
+    var query = (document.getElementById('perfSearch').value || '').toLowerCase();
+    document.querySelectorAll('.perf-row').forEach(function(row) {
+      var text = row.querySelector('td:first-child').textContent.toLowerCase();
+      row.style.display = (!query || text.indexOf(query) !== -1) ? '' : 'none';
+    });
+  }
+</script>
 
 <%@ include file="includes/footer.jspf" %>
