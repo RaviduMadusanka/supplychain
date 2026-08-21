@@ -7,7 +7,9 @@ import com.globaltrade.core.entity.Country;
 import com.globaltrade.core.entity.User;
 import com.globaltrade.core.entity.Vendor;
 import com.globaltrade.core.service.VendorService;
+import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
 import jakarta.ejb.Stateless;
+import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
+@Interceptors(AuditLogInterceptor.class)
 public class VendorServiceBean implements VendorService {
 
     @PersistenceContext(unitName = "SupplyChainPU")

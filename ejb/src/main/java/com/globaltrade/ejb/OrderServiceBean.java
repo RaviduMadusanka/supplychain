@@ -17,11 +17,13 @@ import com.globaltrade.core.entity.Warehouse;
 import com.globaltrade.core.service.InventoryService;
 import com.globaltrade.core.service.OrderService;
 
+import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
 import jakarta.annotation.Resource;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionManagement;
 import jakarta.ejb.TransactionManagementType;
+import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.UserTransaction;
@@ -34,6 +36,7 @@ import java.util.Map;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
+@Interceptors(AuditLogInterceptor.class)
 public class OrderServiceBean implements OrderService {
 
     @PersistenceContext(unitName = "SupplyChainPU")

@@ -7,8 +7,10 @@ import com.globaltrade.core.entity.User;
 import com.globaltrade.core.service.EmailService;
 import com.globaltrade.core.service.UserService;
 import com.globaltrade.core.util.PasswordUtil;
+import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
+@Interceptors(AuditLogInterceptor.class)
 public class UserServiceBean implements UserService {
 
     @PersistenceContext(unitName = "SupplyChainPU")
