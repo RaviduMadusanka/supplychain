@@ -1,9 +1,9 @@
 package com.globaltrade.web.servlet;
 
-import com.globaltrade.core.dto.ProductDTO;
-import com.globaltrade.core.entity.InventoryItem;
 import com.globaltrade.core.dto.CategoryDTO;
+import com.globaltrade.core.dto.ProductDTO;
 import com.globaltrade.core.dto.VendorDTO;
+import com.globaltrade.core.entity.InventoryItem;
 import com.globaltrade.core.service.InventoryService;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
@@ -22,9 +22,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 
-@WebServlet("/product/add")
+@WebServlet(urlPatterns = {"/products", "/product/add"})
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024 * 1,
     maxFileSize = 1024 * 1024 * 5,      // 5 MB
@@ -47,9 +48,25 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("categories", inventoryService.getAllCategories());
-        req.setAttribute("vendors", inventoryService.getAllVendors());
-        req.getRequestDispatcher("/add-product.jsp").forward(req, resp);
+        String path = req.getServletPath();
+
+        if ("/products".equals(path)) {
+            List<ProductDTO> products = inventoryService.getAllProducts();
+            List<CategoryDTO> categories = inventoryService.getAllCategories();
+            List<VendorDTO> vendors = inventoryService.getAllVendors();
+
+            req.setAttribute("products", products);
+            req.setAttribute("categories", categories);
+            req.setAttribute("vendors", vendors);
+            req.getRequestDispatcher("/products.jsp").forward(req, resp);
+            return;
+        }
+
+        if ("/product/add".equals(path)) {
+            req.setAttribute("categories", inventoryService.getAllCategories());
+            req.setAttribute("vendors", inventoryService.getAllVendors());
+            req.getRequestDispatcher("/add-product.jsp").forward(req, resp);
+        }
     }
 
     @Override
@@ -98,11 +115,13 @@ public class ProductServlet extends HttpServlet {
 
             inventoryService.addProduct(item, categoryId, vendorId);
 
-            resp.sendRedirect(req.getContextPath() + "/inventory?success=ProductAdded");
+            resp.sendRedirect(req.getContextPath() + "/products?success=ProductAdded");
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("error", "Failed to add product: " + e.getMessage());
-            doGet(req, resp);
+            req.setAttribute("categories", inventoryService.getAllCategories());
+            req.setAttribute("vendors", inventoryService.getAllVendors());
+            req.getRequestDispatcher("/add-product.jsp").forward(req, resp);
         }
     }
 }
