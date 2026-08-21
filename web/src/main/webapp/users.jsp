@@ -17,7 +17,10 @@
     <button onclick="filterUsers('WAREHOUSE_MANAGER', this)" class="user-filter-btn px-3 py-1.5 text-xs font-medium rounded-md text-ink/60 hover:bg-bg transition">WH Managers</button>
     <button onclick="filterUsers('VENDOR', this)" class="user-filter-btn px-3 py-1.5 text-xs font-medium rounded-md text-ink/60 hover:bg-bg transition">Vendors</button>
   </div>
-  <button onclick="toggleModal('addUserModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold shadow-sm hover:bg-primarydk transition">+ Add User</button>
+  <button onclick="toggleModal('addUserModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-xs font-bold shadow-sm hover:bg-primarydk transition flex items-center gap-1.5">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+    Add Warehouse Manager
+  </button>
 </div>
 
 <!-- Alerts -->
@@ -43,13 +46,13 @@
 <div class="card overflow-hidden">
   <table class="w-full text-sm">
     <thead>
-      <tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line bg-bg/50">
-        <th class="px-5 py-3 font-medium">User</th>
-        <th class="px-5 py-3 font-medium">Username</th>
-        <th class="px-5 py-3 font-medium">Email</th>
-        <th class="px-5 py-3 font-medium">Role</th>
-        <th class="px-5 py-3 font-medium">Status</th>
-        <th class="px-5 py-3 font-medium text-right w-28">Actions</th>
+      <tr class="text-left text-white text-xs font-mono uppercase tracking-wider bg-gradient-to-r from-[#12172B] via-[#1B254B] to-[#1E2538] border-b border-slate-700">
+        <th class="px-5 py-3.5 font-semibold text-white">User</th>
+        <th class="px-5 py-3.5 font-semibold text-slate-200">Username</th>
+        <th class="px-5 py-3.5 font-semibold text-slate-200">Email Address</th>
+        <th class="px-5 py-3.5 font-semibold text-slate-200">Role</th>
+        <th class="px-5 py-3.5 font-semibold text-slate-200">Status</th>
+        <th class="px-5 py-3.5 font-semibold text-right w-28 text-slate-300">Actions</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-line">
@@ -100,7 +103,7 @@
 <div id="addUserModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm p-4">
   <div class="w-full max-w-md bg-white rounded-2xl border border-line shadow-2xl overflow-hidden">
     <div class="h-16 px-6 border-b border-line flex items-center justify-between bg-bg">
-      <div class="font-display font-semibold text-sm text-ink">Register New User</div>
+      <div class="font-display font-semibold text-sm text-ink">Register New Warehouse Manager</div>
       <button onclick="toggleModal('addUserModal')" class="text-ink/40 hover:text-ink transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
     </div>
     
@@ -114,24 +117,25 @@
         <input type="email" name="email" required placeholder="kasun@example.com" class="w-full px-3.5 py-2.5 rounded-lg border border-line text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
       </div>
       <div>
-        <label class="block text-xs font-semibold text-ink/70 uppercase font-mono mb-1.5">System Role <span class="text-amber">*</span></label>
-        <select name="roleName" required class="w-full px-3.5 py-2.5 rounded-lg border border-line text-sm bg-white focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
-          <option value="">-- Select Role --</option>
-          <option value="ADMIN">Administrator (Full Access)</option>
-          <option value="WAREHOUSE_MANAGER">Warehouse Manager (Operations)</option>
-          <option value="VENDOR">Vendor / Supplier</option>
-          <option value="CUSTOMER">Customer / Buyer</option>
-        </select>
+        <label class="block text-xs font-semibold text-ink/70 uppercase font-mono mb-1.5">Assigned System Role</label>
+        <div class="px-3.5 py-2.5 rounded-lg border border-line bg-slate-50 flex items-center justify-between">
+          <span class="text-sm font-semibold text-ink flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-teal"></span>
+            Warehouse Manager (Operations)
+          </span>
+          <span class="tag tag-teal text-[9px]">Authorized</span>
+        </div>
+        <input type="hidden" name="roleName" value="WAREHOUSE_MANAGER" />
       </div>
       
       <div class="p-3.5 rounded-xl bg-primary/5 border border-primary/20 text-xs text-primary/80 leading-relaxed mt-2">
         <strong class="text-primary font-semibold">Automated Provisioning:</strong> 
-        A secure random password and username will be automatically generated. The credentials will be sent directly to the user's email address.
+        A secure random password and username will be automatically generated and dispatched directly to the Warehouse Manager's email address.
       </div>
       
       <div class="pt-4 border-t border-line flex items-center justify-end gap-3">
         <button type="button" onclick="toggleModal('addUserModal')" class="px-4 py-2.5 rounded-lg border border-line text-xs font-semibold text-ink/70 hover:bg-bg transition">Cancel</button>
-        <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primarydk shadow-sm transition">Provision User</button>
+        <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primarydk shadow-sm transition">Provision Manager</button>
       </div>
     </form>
   </div>

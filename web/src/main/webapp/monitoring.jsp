@@ -49,13 +49,13 @@
 <div class="card overflow-hidden">
   <div class="max-h-[600px] overflow-y-auto scrollnice">
     <table class="w-full text-sm">
-      <thead class="sticky top-0 bg-bg/95 backdrop-blur-sm z-10 shadow-sm">
-        <tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line">
-          <th class="px-5 py-3 font-medium w-44">Timestamp</th>
-          <th class="px-5 py-3 font-medium">User</th>
-          <th class="px-5 py-3 font-medium">Action</th>
-          <th class="px-5 py-3 font-medium">Entity</th>
-          <th class="px-5 py-3 font-medium">Details</th>
+      <thead class="sticky top-0 z-10 shadow-md">
+        <tr class="text-left text-white text-xs font-mono uppercase tracking-wider bg-gradient-to-r from-[#12172B] via-[#1B254B] to-[#1E2538] border-b border-slate-700">
+          <th class="px-5 py-3.5 font-semibold w-44 text-slate-300">Timestamp</th>
+          <th class="px-5 py-3.5 font-semibold text-white">Performed By</th>
+          <th class="px-5 py-3.5 font-semibold text-teal">Action</th>
+          <th class="px-5 py-3.5 font-semibold text-slate-200">Entity</th>
+          <th class="px-5 py-3.5 font-semibold text-slate-200">Event Details</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-line" id="auditTableBody">

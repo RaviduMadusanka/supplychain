@@ -1,7 +1,6 @@
 package com.globaltrade.core.dto;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 public class CategoryDTO implements Serializable {
     private Long id;
@@ -11,11 +10,39 @@ public class CategoryDTO implements Serializable {
 
     public CategoryDTO() {}
 
+    public CategoryDTO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+        this.description = "";
+        this.productCount = 0L;
+    }
+
+    public CategoryDTO(Integer id, String name) {
+        this.id = id != null ? id.longValue() : null;
+        this.name = name;
+        this.description = "";
+        this.productCount = 0L;
+    }
+
+    public CategoryDTO(Long id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.productCount = 0L;
+    }
+
+    public CategoryDTO(Integer id, String name, String description) {
+        this.id = id != null ? id.longValue() : null;
+        this.name = name;
+        this.description = description;
+        this.productCount = 0L;
+    }
+
     public CategoryDTO(Long id, String name, String description, Long productCount) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.productCount = productCount;
+        this.productCount = productCount != null ? productCount : 0L;
     }
 
     public Long getId() { return id; }

@@ -77,12 +77,12 @@
   <div class="card overflow-hidden shadow-sm">
     <table class="w-full text-sm">
       <thead>
-        <tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide bg-bg/50 border-b border-line">
-          <th class="px-5 py-3 font-medium w-16">ID</th>
-          <th class="px-5 py-3 font-medium">Category Name</th>
-          <th class="px-5 py-3 font-medium">Description</th>
-          <th class="px-5 py-3 font-medium text-center">Linked Products</th>
-          <th class="px-5 py-3 font-medium text-right w-24">Actions</th>
+        <tr class="text-left text-white text-xs font-mono uppercase tracking-wider bg-gradient-to-r from-[#12172B] via-[#1B254B] to-[#1E2538] border-b border-slate-700">
+          <th class="px-5 py-3.5 font-semibold w-16 text-slate-300">ID</th>
+          <th class="px-5 py-3.5 font-semibold text-white">Category Name</th>
+          <th class="px-5 py-3.5 font-semibold text-slate-200">Description</th>
+          <th class="px-5 py-3.5 font-semibold text-center text-teal">Linked Products</th>
+          <th class="px-5 py-3.5 font-semibold text-right w-24 text-slate-300">Actions</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-line">
@@ -130,11 +130,11 @@
   <div class="card overflow-hidden shadow-sm">
     <table class="w-full text-sm">
       <thead>
-        <tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide bg-bg/50 border-b border-line">
-          <th class="px-5 py-3 font-medium w-16">ID</th>
-          <th class="px-5 py-3 font-medium">Status Identifier</th>
-          <th class="px-5 py-3 font-medium">Workflow Description</th>
-          <th class="px-5 py-3 font-medium text-right w-24">Actions</th>
+        <tr class="text-left text-white text-xs font-mono uppercase tracking-wider bg-gradient-to-r from-[#12172B] via-[#1B254B] to-[#1E2538] border-b border-slate-700">
+          <th class="px-5 py-3.5 font-semibold w-16 text-slate-300">ID</th>
+          <th class="px-5 py-3.5 font-semibold text-white">Status Identifier</th>
+          <th class="px-5 py-3.5 font-semibold text-slate-200">Workflow Description</th>
+          <th class="px-5 py-3.5 font-semibold text-right w-24 text-slate-300">Actions</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-line">
@@ -274,6 +274,19 @@
 </div>
 
 <script>
+  function toggleModal(id) {
+    const el = document.getElementById(id);
+    if (el) {
+      if (el.classList.contains('hidden')) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      } else {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+    }
+  }
+
   function switchTab(tabId, btn) {
     document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(el => {

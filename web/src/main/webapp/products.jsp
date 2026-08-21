@@ -181,13 +181,13 @@
 <div id="productTableView" class="card overflow-hidden hidden">
   <table class="w-full text-sm">
     <thead>
-      <tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line bg-bg/50">
-        <th class="px-5 py-3 font-medium">SKU</th>
-        <th class="px-5 py-3 font-medium">Product Name</th>
-        <th class="px-5 py-3 font-medium">Category</th>
-        <th class="px-5 py-3 font-medium">Unit Weight</th>
-        <th class="px-5 py-3 font-medium">Reorder Level</th>
-        <th class="px-5 py-3 font-medium">Supplier / Vendor</th>
+      <tr class="text-left text-white text-xs font-mono uppercase tracking-wider bg-gradient-to-r from-[#12172B] via-[#1B254B] to-[#1E2538] border-b border-slate-700">
+        <th class="px-5 py-3.5 font-semibold text-slate-300">SKU</th>
+        <th class="px-5 py-3.5 font-semibold text-white">Product Name</th>
+        <th class="px-5 py-3.5 font-semibold text-teal">Category</th>
+        <th class="px-5 py-3.5 font-semibold text-slate-200">Unit Weight</th>
+        <th class="px-5 py-3.5 font-semibold text-slate-200">Reorder Level</th>
+        <th class="px-5 py-3.5 font-semibold text-slate-200">Supplier / Vendor</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-line">

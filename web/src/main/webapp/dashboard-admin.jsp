@@ -41,7 +41,7 @@
     <div class="flex flex-wrap items-center gap-3">
       <a href="${pageContext.request.contextPath}/users" class="px-4 py-2.5 rounded-xl bg-white text-ink hover:bg-slate-100 text-xs font-bold transition shadow-lg flex items-center gap-2 hover:scale-[1.02]">
         <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-        <span>Add New User</span>
+        <span>Add WH Manager</span>
       </a>
       <a href="${pageContext.request.contextPath}/monitoring" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs font-semibold transition flex items-center gap-2">
         <svg class="w-4 h-4 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
