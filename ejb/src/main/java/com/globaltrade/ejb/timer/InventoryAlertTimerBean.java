@@ -7,69 +7,79 @@ import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
 import java.util.List;
+import java.util.logging.Logger;
 
 @Singleton
 @Startup
 public class InventoryAlertTimerBean {
+
+    private static final Logger LOGGER = Logger.getLogger(InventoryAlertTimerBean.class.getName());
 
     @PersistenceContext(unitName = "SupplyChainPU")
     private EntityManager em;
 
     @Schedule(hour = "*", minute = "*", second = "0", persistent = false)
     public void checkLowStockLevels() {
-        System.out.println("--- Executing Timer Service: checkLowStockLevels ---");
+        LOGGER.info("--- Executing Timer Service: checkLowStockLevels ---");
 
-        List<InventoryStock> lowStockItems = em.createQuery(
-                "SELECT s FROM InventoryStock s WHERE s.stockQty <= s.item.reorderLevel", 
-                InventoryStock.class)
-                .getResultList();
-
-        for (InventoryStock stock : lowStockItems) {
-            Long alertCount = em.createQuery(
-                    "SELECT COUNT(a) FROM InventoryAlert a WHERE a.item.id = :itemId AND a.warehouse.id = :warehouseId AND a.resolved = false", 
-                    Long.class)
-                    .setParameter("itemId", stock.getItem().getId())
-                    .setParameter("warehouseId", stock.getWarehouse().getId())
-                    .getSingleResult();
-
-            if (alertCount == 0) {
-                InventoryAlert alert = new InventoryAlert();
-                alert.setItem(stock.getItem());
-                alert.setWarehouse(stock.getWarehouse());
-                
-                if (stock.getStockQty() == 0) {
-                    alert.setAlertType("OUT_OF_STOCK");
-                } else {
-                    alert.setAlertType("LOW_STOCK");
-                }
-                
-                alert.setResolved(false);
-                em.persist(alert);
-                
-                System.out.println(">>> Generated " + alert.getAlertType() + " alert for SKU: " + stock.getItem().getSku() + " at " + stock.getWarehouse().getWarehouseCode());
-            }
-        }
-
-        List<InventoryAlert> openAlerts = em.createQuery(
-                "SELECT a FROM InventoryAlert a WHERE a.resolved = false", 
-                InventoryAlert.class)
-                .getResultList();
-                
-        for (InventoryAlert alert : openAlerts) {
-            InventoryStock stock = em.createQuery(
-                    "SELECT s FROM InventoryStock s WHERE s.item.id = :itemId AND s.warehouse.id = :warehouseId", 
+        try {
+            // Find items where current stock <= reorder level
+            List<InventoryStock> allStocks = em.createQuery(
+                    "SELECT s FROM InventoryStock s LEFT JOIN FETCH s.item LEFT JOIN FETCH s.warehouse", 
                     InventoryStock.class)
-                    .setParameter("itemId", alert.getItem().getId())
-                    .setParameter("warehouseId", alert.getWarehouse().getId())
-                    .getSingleResult();
-                    
-            if (stock != null && stock.getStockQty() > stock.getItem().getReorderLevel()) {
-                alert.setResolved(true);
-                em.merge(alert);
-                System.out.println(">>> Auto-resolved alert for SKU: " + stock.getItem().getSku() + " as stock is replenished.");
+                    .getResultList();
+
+            int alertsCreated = 0;
+            int alertsResolved = 0;
+
+            for (InventoryStock stock : allStocks) {
+                if (stock.getItem() == null || stock.getWarehouse() == null) continue;
+
+                int reorderLevel = (stock.getItem().getReorderLevel() != null) ? stock.getItem().getReorderLevel() : 10;
+                int currentQty = (stock.getStockQty() != null) ? stock.getStockQty() : 0;
+
+                if (currentQty <= reorderLevel) {
+                    // Check if open alert already exists
+                    List<InventoryAlert> existingAlerts = em.createQuery(
+                            "SELECT a FROM InventoryAlert a WHERE a.item.id = :itemId AND a.warehouse.id = :whId AND a.resolved = false", 
+                            InventoryAlert.class)
+                            .setParameter("itemId", stock.getItem().getId())
+                            .setParameter("whId", stock.getWarehouse().getId())
+                            .getResultList();
+
+                    if (existingAlerts.isEmpty()) {
+                        InventoryAlert alert = new InventoryAlert();
+                        alert.setItem(stock.getItem());
+                        alert.setWarehouse(stock.getWarehouse());
+                        alert.setAlertType(currentQty == 0 ? "OUT_OF_STOCK" : "LOW_STOCK");
+                        alert.setResolved(false);
+                        em.persist(alert);
+                        alertsCreated++;
+                        LOGGER.info(">>> Created " + alert.getAlertType() + " alert for Product: " + stock.getItem().getName() + " at " + stock.getWarehouse().getName());
+                    }
+                } else {
+                    // Stock is healthy, auto-resolve any open alerts
+                    List<InventoryAlert> openAlerts = em.createQuery(
+                            "SELECT a FROM InventoryAlert a WHERE a.item.id = :itemId AND a.warehouse.id = :whId AND a.resolved = false", 
+                            InventoryAlert.class)
+                            .setParameter("itemId", stock.getItem().getId())
+                            .setParameter("whId", stock.getWarehouse().getId())
+                            .getResultList();
+
+                    for (InventoryAlert a : openAlerts) {
+                        a.setResolved(true);
+                        em.merge(a);
+                        alertsResolved++;
+                        LOGGER.info(">>> Auto-resolved alert for Product: " + stock.getItem().getName() + " (Stock replenished to " + currentQty + ")");
+                    }
+                }
             }
+
+            LOGGER.info("Stock Check Complete. New Alerts: " + alertsCreated + ", Resolved: " + alertsResolved);
+        } catch (Exception e) {
+            LOGGER.severe("Error during checkLowStockLevels: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

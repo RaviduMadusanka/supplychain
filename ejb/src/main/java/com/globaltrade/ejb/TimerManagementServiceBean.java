@@ -43,14 +43,11 @@ public class TimerManagementServiceBean implements TimerManagementService {
     @Override
     public List<TimerJobDTO> getAllTimerJobs() {
         try {
-            List<TimerJob> jobs = em.createQuery("SELECT j FROM TimerJob j ORDER BY j.id ASC", TimerJob.class).getResultList();
-            
-            if (jobs.isEmpty()) {
-                seedDefaultTimerJobsIfEmpty();
-                jobs = em.createQuery("SELECT j FROM TimerJob j ORDER BY j.id ASC", TimerJob.class).getResultList();
-            }
+            syncAllFourTimerJobs();
 
+            List<TimerJob> jobs = em.createQuery("SELECT j FROM TimerJob j ORDER BY j.id ASC", TimerJob.class).getResultList();
             List<TimerJobDTO> dtos = new ArrayList<>();
+            
             for (TimerJob j : jobs) {
                 dtos.add(new TimerJobDTO(
                     j.getId(),
@@ -68,7 +65,7 @@ public class TimerManagementServiceBean implements TimerManagementService {
             }
             return dtos;
         } catch (Exception e) {
-            LOGGER.warning("Database access for TimerJob failed, returning fallback: " + e.getMessage());
+            LOGGER.warning("Database sync for TimerJob failed, returning in-memory 4 timers: " + e.getMessage());
             return getFallbackRuntimeJobs();
         }
     }
@@ -153,50 +150,61 @@ public class TimerManagementServiceBean implements TimerManagementService {
         if (schedule.contains("30")) return from.plusMinutes(30);
         if (schedule.contains("hour") || schedule.contains("3600") || schedule.contains("86400") || schedule.contains("23")) return from.plusHours(24);
         if (schedule.contains("Sun") || schedule.contains("week")) return from.plusDays(7);
-        return from.plusMinutes(15);
+        return from.plusMinutes(1);
     }
 
-    private void seedDefaultTimerJobsIfEmpty() {
+    private void syncAllFourTimerJobs() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // 1. Inventory Level Check Timer
+        ensureJobExists("InventoryLevelCheckTimer", "INVENTORY_CHECK", "DECLARATIVE", "0 * * * * * (Every Minute)", 60, false, "SCHEDULED", now.minusMinutes(1), now.plusMinutes(1));
+
+        // 2. Shipment Status Update Timer
+        ensureJobExists("ShipmentStatusUpdateTimer", "SHIPMENT_TRACKING", "DECLARATIVE", "0 */30 * * * * (Every 30 Mins)", 1800, false, "SCHEDULED", now.minusMinutes(15), now.plusMinutes(15));
+
+        // 3. Vendor Performance Evaluation Timer
+        ensureJobExists("VendorPerformanceEvalTimer", "VENDOR_EVAL", "DECLARATIVE", "0 0 * * * * (Hourly Sync)", 3600, false, "SCHEDULED", now.minusHours(1), now.plusHours(1));
+
+        // 4. Inventory Alert Cleanup Timer
+        ensureJobExists("InventoryAlertCleanupTimer", "ALERT_CLEANUP", "DECLARATIVE", "0 0 0 * * Sun (Weekly Cleanup)", 604800, false, "SCHEDULED", now.minusDays(2), now.plusDays(5));
+
+        em.flush();
+    }
+
+    private void ensureJobExists(String name, String type, String creationType, String schedule, int interval, boolean persistent, String status, LocalDateTime lastRun, LocalDateTime nextRun) {
         try {
-            LocalDateTime now = LocalDateTime.now();
+            List<TimerJob> existing = em.createQuery(
+                "SELECT j FROM TimerJob j WHERE UPPER(j.jobType) = :type OR UPPER(j.jobName) = :name", TimerJob.class)
+                .setParameter("type", type.toUpperCase())
+                .setParameter("name", name.toUpperCase())
+                .getResultList();
 
-            TimerJob j1 = new TimerJob();
-            j1.setJobName("DailyLowStockCheck");
-            j1.setJobType("INVENTORY");
-            j1.setCreationType("DECLARATIVE");
-            j1.setScheduleExpression("0 0 23 * * *");
-            j1.setIntervalSeconds(86400);
-            j1.setIsPersistent(true);
-            j1.setStatus("SCHEDULED");
-            j1.setLastRunStatus("SUCCESS");
-            j1.setLastRunAt(now.minusHours(1));
-            j1.setNextRunAt(now.plusHours(23));
-            em.persist(j1);
-
-            TimerJob j2 = new TimerJob();
-            j2.setJobName("VendorRatingUpdate");
-            j2.setJobType("VENDOR");
-            j2.setCreationType("PROGRAMMATIC");
-            j2.setScheduleExpression("0 0 1 * * *");
-            j2.setIntervalSeconds(86400);
-            j2.setIsPersistent(false);
-            j2.setStatus("RUNNING");
-            j2.setLastRunStatus("SUCCESS");
-            j2.setLastRunAt(now.minusHours(2));
-            j2.setNextRunAt(now.plusHours(22));
-            em.persist(j2);
-
-            em.flush();
+            if (existing.isEmpty()) {
+                TimerJob j = new TimerJob();
+                j.setJobName(name);
+                j.setJobType(type);
+                j.setCreationType(creationType);
+                j.setScheduleExpression(schedule);
+                j.setIntervalSeconds(interval);
+                j.setIsPersistent(persistent);
+                j.setStatus(status);
+                j.setLastRunStatus("SUCCESS");
+                j.setLastRunAt(lastRun);
+                j.setNextRunAt(nextRun);
+                em.persist(j);
+            }
         } catch (Exception ex) {
-            LOGGER.warning("Could not auto-seed timer jobs: " + ex.getMessage());
+            LOGGER.warning("Could not ensure timer job " + name + ": " + ex.getMessage());
         }
     }
 
     private List<TimerJobDTO> getFallbackRuntimeJobs() {
         LocalDateTime now = LocalDateTime.now();
         List<TimerJobDTO> list = new ArrayList<>();
-        list.add(new TimerJobDTO(1L, "DailyLowStockCheck", "INVENTORY", "DECLARATIVE", "0 0 23 * * *", 86400, now.minusHours(1), now.plusHours(23), "SUCCESS", true, "SCHEDULED"));
-        list.add(new TimerJobDTO(2L, "VendorRatingUpdate", "VENDOR", "PROGRAMMATIC", "0 0 1 * * *", 86400, now.minusHours(2), now.plusHours(22), "SUCCESS", false, "RUNNING"));
+        list.add(new TimerJobDTO(1L, "InventoryLevelCheckTimer", "INVENTORY_CHECK", "DECLARATIVE", "0 * * * * * (Every Minute)", 60, now.minusMinutes(1), now.plusMinutes(1), "SUCCESS", false, "SCHEDULED"));
+        list.add(new TimerJobDTO(2L, "ShipmentStatusUpdateTimer", "SHIPMENT_TRACKING", "DECLARATIVE", "0 */30 * * * * (Every 30 Mins)", 1800, now.minusMinutes(15), now.plusMinutes(15), "SUCCESS", false, "SCHEDULED"));
+        list.add(new TimerJobDTO(3L, "VendorPerformanceEvalTimer", "VENDOR_EVAL", "DECLARATIVE", "0 0 * * * * (Hourly Sync)", 3600, now.minusHours(1), now.plusHours(1), "SUCCESS", false, "SCHEDULED"));
+        list.add(new TimerJobDTO(4L, "InventoryAlertCleanupTimer", "ALERT_CLEANUP", "DECLARATIVE", "0 0 0 * * Sun (Weekly Cleanup)", 604800, now.minusDays(2), now.plusDays(5), "SUCCESS", false, "SCHEDULED"));
         return list;
     }
 }

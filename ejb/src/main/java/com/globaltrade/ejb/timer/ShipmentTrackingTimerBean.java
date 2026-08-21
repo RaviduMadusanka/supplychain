@@ -25,32 +25,45 @@ public class ShipmentTrackingTimerBean {
         LOGGER.info("--- Executing Timer Service: trackActiveShipments ---");
 
         try {
-            List<Shipment> inTransitShipments = em.createQuery(
-                    "SELECT s FROM Shipment s WHERE s.shipmentStatus.name = 'IN_TRANSIT' OR s.shipmentStatus.name = 'DISPATCHED'", 
+            List<Shipment> activeShipments = em.createQuery(
+                    "SELECT s FROM Shipment s WHERE s.shipmentStatus.name != 'DELIVERED' AND s.shipmentStatus.name != 'CANCELLED'", 
                     Shipment.class)
                     .getResultList();
 
             LocalDateTime now = LocalDateTime.now();
+            int updatedCount = 0;
 
-            for (Shipment s : inTransitShipments) {
-                // If estimated delivery time has passed, auto-complete or check delay
-                if (s.getEstimatedDelivery() != null && s.getEstimatedDelivery().isBefore(now)) {
+            for (Shipment s : activeShipments) {
+                // If estimated delivery date is in the past, or if we trigger it, update delivery
+                if (s.getEstimatedDelivery() == null || s.getEstimatedDelivery().isBefore(now)) {
                     s.setActualDelivery(now);
-                    
-                    try {
-                        ShipmentStatus deliveredStatus = em.createQuery(
-                                "SELECT st FROM ShipmentStatus st WHERE st.name = 'DELIVERED'", ShipmentStatus.class)
-                                .getSingleResult();
-                        s.setShipmentStatus(deliveredStatus);
-                        em.merge(s);
-                        LOGGER.info(">>> Auto-updated Shipment " + s.getShipmentCode() + " to DELIVERED status.");
-                    } catch (Exception ex) {
-                        LOGGER.warning("Could not find DELIVERED status: " + ex.getMessage());
-                    }
+
+                    ShipmentStatus deliveredStatus = getOrCreateShipmentStatus("DELIVERED", "Shipment successfully received at destination");
+                    s.setShipmentStatus(deliveredStatus);
+                    em.merge(s);
+                    updatedCount++;
+                    LOGGER.info(">>> Auto-updated Shipment " + s.getShipmentCode() + " to DELIVERED status.");
                 }
             }
+
+            LOGGER.info("Shipment Tracking Complete. Processed: " + activeShipments.size() + ", Delivered: " + updatedCount);
         } catch (Exception e) {
             LOGGER.severe("Error during shipment tracking timer execution: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    private ShipmentStatus getOrCreateShipmentStatus(String name, String desc) {
+        List<ShipmentStatus> list = em.createQuery("SELECT st FROM ShipmentStatus st WHERE st.name = :name", ShipmentStatus.class)
+                .setParameter("name", name)
+                .getResultList();
+        if (!list.isEmpty()) {
+            return list.get(0);
+        }
+        ShipmentStatus status = new ShipmentStatus();
+        status.setName(name);
+        status.setDescription(desc);
+        em.persist(status);
+        return status;
     }
 }
