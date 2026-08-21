@@ -4,15 +4,8 @@
   String pageTitle = "Vendor Performance";
   String pageSubtitle = "Monitor supplier reliability, ratings, and operational status";
   String activePage = "vendorperf";
-  
-  // Try to get from session
   String userName = "Saman Kumara";
   String userRole = "Warehouse Manager";
-  com.globaltrade.core.dto.UserDTO sessionUser = (com.globaltrade.core.dto.UserDTO) session.getAttribute("user");
-  if (sessionUser != null) {
-      userName = sessionUser.getFullName();
-      userRole = sessionUser.getRole();
-  }
 %>
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>

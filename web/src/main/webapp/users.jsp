@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%
   String pageTitle = "User Management";
   String pageSubtitle = "Manage system users & access control";
@@ -12,198 +13,155 @@
 <div class="flex items-center justify-between mb-6">
   <div class="flex gap-1 border border-line rounded-lg p-1 bg-white">
     <button onclick="filterUsers('all', this)" class="user-filter-btn active px-3 py-1.5 text-xs font-semibold rounded-md bg-primary text-white transition">All Users</button>
-    <button onclick="filterUsers('admin', this)" class="user-filter-btn px-3 py-1.5 text-xs font-medium rounded-md text-ink/60 hover:bg-bg transition">Admins</button>
-    <button onclick="filterUsers('whmanager', this)" class="user-filter-btn px-3 py-1.5 text-xs font-medium rounded-md text-ink/60 hover:bg-bg transition">WH Managers</button>
-    <button onclick="filterUsers('vendor', this)" class="user-filter-btn px-3 py-1.5 text-xs font-medium rounded-md text-ink/60 hover:bg-bg transition">Vendors</button>
-    <button onclick="filterUsers('customer', this)" class="user-filter-btn px-3 py-1.5 text-xs font-medium rounded-md text-ink/60 hover:bg-bg transition">Customers</button>
+    <button onclick="filterUsers('ADMIN', this)" class="user-filter-btn px-3 py-1.5 text-xs font-medium rounded-md text-ink/60 hover:bg-bg transition">Admins</button>
+    <button onclick="filterUsers('WAREHOUSE_MANAGER', this)" class="user-filter-btn px-3 py-1.5 text-xs font-medium rounded-md text-ink/60 hover:bg-bg transition">WH Managers</button>
+    <button onclick="filterUsers('VENDOR', this)" class="user-filter-btn px-3 py-1.5 text-xs font-medium rounded-md text-ink/60 hover:bg-bg transition">Vendors</button>
   </div>
   <button onclick="toggleModal('addUserModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold shadow-sm hover:bg-primarydk transition">+ Add User</button>
 </div>
 
-<div class="card">
+<!-- Alerts -->
+<c:if test="${not empty param.success}">
+  <div class="mb-5 p-4 rounded-xl bg-teal/10 border border-teal/30 text-teal flex items-center justify-between text-sm font-medium">
+    <div class="flex items-center gap-2">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+      <span>${param.success}</span>
+    </div>
+    <button onclick="this.parentElement.remove()" class="text-teal/60 hover:text-teal">&times;</button>
+  </div>
+</c:if>
+<c:if test="${not empty param.error}">
+  <div class="mb-5 p-4 rounded-xl bg-amber/10 border border-amber/30 text-amber flex items-center justify-between text-sm font-medium">
+    <div class="flex items-center gap-2">
+      <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      <span>${param.error}</span>
+    </div>
+    <button onclick="this.parentElement.remove()" class="text-amber/60 hover:text-amber">&times;</button>
+  </div>
+</c:if>
+
+<div class="card overflow-hidden">
   <table class="w-full text-sm">
     <thead>
-      <tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line">
-        <th class="px-5 py-2.5 font-medium">User</th>
-        <th class="px-5 py-2.5 font-medium">Username</th>
-        <th class="px-5 py-2.5 font-medium">Email</th>
-        <th class="px-5 py-2.5 font-medium">Role</th>
-        <th class="px-5 py-2.5 font-medium">Status</th>
-        <th class="px-5 py-2.5 font-medium">Created</th>
-        <th class="px-5 py-2.5 font-medium text-right w-28">Actions</th>
+      <tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line bg-bg/50">
+        <th class="px-5 py-3 font-medium">User</th>
+        <th class="px-5 py-3 font-medium">Username</th>
+        <th class="px-5 py-3 font-medium">Email</th>
+        <th class="px-5 py-3 font-medium">Role</th>
+        <th class="px-5 py-3 font-medium">Status</th>
+        <th class="px-5 py-3 font-medium text-right w-28">Actions</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-line">
-      <tr class="group hover:bg-bg/50 transition" data-role="admin">
-        <td class="px-5 py-3">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-display text-xs font-semibold flex-shrink-0">N</div>
-            <span class="font-medium">Nadeesha Perera</span>
-          </div>
-        </td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/60">admin01</td>
-        <td class="px-5 py-3 text-xs text-ink/60">admin@globaltrade.com</td>
-        <td class="px-5 py-3"><span class="tag tag-blue"><span class="tag-dot"></span>Admin</span></td>
-        <td class="px-5 py-3"><span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-teal"></span><span class="text-xs">Active</span></span></td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/50">01 Jan 2026</td>
-        <td class="px-5 py-3 text-right">
-          <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
-            <button class="px-2.5 py-1 rounded border border-line text-[11px] font-semibold hover:bg-bg transition text-ink">Edit</button>
-          </div>
-        </td>
-      </tr>
-      <tr class="group hover:bg-bg/50 transition" data-role="admin">
-        <td class="px-5 py-3">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-display text-xs font-semibold flex-shrink-0">K</div>
-            <span class="font-medium">Kasun Fernando</span>
-          </div>
-        </td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/60">coord01</td>
-        <td class="px-5 py-3 text-xs text-ink/60">coordinator@globaltrade.com</td>
-        <td class="px-5 py-3"><span class="tag tag-blue"><span class="tag-dot"></span>Admin</span></td>
-        <td class="px-5 py-3"><span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-teal"></span><span class="text-xs">Active</span></span></td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/50">15 Mar 2026</td>
-        <td class="px-5 py-3 text-right">
-          <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
-            <button class="px-2.5 py-1 rounded border border-line text-[11px] font-semibold hover:bg-bg transition text-ink">Edit</button>
-          </div>
-        </td>
-      </tr>
-      <tr class="group hover:bg-bg/50 transition" data-role="whmanager">
-        <td class="px-5 py-3">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-teal/10 text-teal flex items-center justify-center font-display text-xs font-semibold flex-shrink-0">W</div>
-            <span class="font-medium">Warehouse Manager</span>
-          </div>
-        </td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/60">whmgr01</td>
-        <td class="px-5 py-3 text-xs text-ink/60">whmgr@nextrade.com</td>
-        <td class="px-5 py-3"><span class="tag tag-teal"><span class="tag-dot"></span>WH Manager</span></td>
-        <td class="px-5 py-3"><span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-teal"></span><span class="text-xs">Active</span></span></td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/50">10 Jun 2026</td>
-        <td class="px-5 py-3 text-right">
-          <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
-            <button class="px-2.5 py-1 rounded border border-line text-[11px] font-semibold hover:bg-bg transition text-ink">Edit</button>
-            <button class="px-2.5 py-1 rounded border border-amber/30 text-[11px] font-semibold hover:bg-ambersoft transition text-amber">Disable</button>
-          </div>
-        </td>
-      </tr>
-      <tr class="group hover:bg-bg/50 transition" data-role="vendor">
-        <td class="px-5 py-3">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-amber/10 text-amber flex items-center justify-center font-display text-xs font-semibold flex-shrink-0">S</div>
-            <span class="font-medium">Sanduni Wickrama</span>
-          </div>
-        </td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/60">vendor01</td>
-        <td class="px-5 py-3 text-xs text-ink/60">contact@apextech.lk</td>
-        <td class="px-5 py-3"><span class="tag tag-amber"><span class="tag-dot"></span>Vendor</span></td>
-        <td class="px-5 py-3"><span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-teal"></span><span class="text-xs">Active</span></span></td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/50">20 Jul 2026</td>
-        <td class="px-5 py-3 text-right">
-          <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
-            <button class="px-2.5 py-1 rounded border border-line text-[11px] font-semibold hover:bg-bg transition text-ink">Edit</button>
-            <button class="px-2.5 py-1 rounded border border-amber/30 text-[11px] font-semibold hover:bg-ambersoft transition text-amber">Disable</button>
-          </div>
-        </td>
-      </tr>
-      <tr class="group hover:bg-bg/50 transition" data-role="customer">
-        <td class="px-5 py-3">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-display text-xs font-semibold flex-shrink-0">C</div>
-            <span class="font-medium">Colombo Retail Hub</span>
-          </div>
-        </td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/60">cust01</td>
-        <td class="px-5 py-3 text-xs text-ink/60">customer@nextrade.com</td>
-        <td class="px-5 py-3"><span class="tag tag-slate"><span class="tag-dot"></span>Customer</span></td>
-        <td class="px-5 py-3"><span class="inline-flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-teal"></span><span class="text-xs">Active</span></span></td>
-        <td class="px-5 py-3 font-mono text-xs text-ink/50">01 Aug 2026</td>
-        <td class="px-5 py-3 text-right">
-          <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
-            <button class="px-2.5 py-1 rounded border border-line text-[11px] font-semibold hover:bg-bg transition text-ink">Edit</button>
-            <button class="px-2.5 py-1 rounded border border-amber/30 text-[11px] font-semibold hover:bg-ambersoft transition text-amber">Disable</button>
-          </div>
-        </td>
-      </tr>
+      <c:choose>
+        <c:when test="${not empty users}">
+          <c:forEach var="u" items="${users}">
+            <tr class="group hover:bg-bg/50 transition user-row" data-role="${u.role}">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-display text-xs font-semibold flex-shrink-0 uppercase">${u.fullName.substring(0,1)}</div>
+                  <span class="font-medium text-ink">${u.fullName}</span>
+                </div>
+              </td>
+              <td class="px-5 py-3 font-mono text-xs text-primary font-semibold">${u.username}</td>
+              <td class="px-5 py-3 text-xs text-ink/60">${u.email}</td>
+              <td class="px-5 py-3">
+                <c:choose>
+                  <c:when test="${u.role == 'ADMIN'}"><span class="tag tag-blue"><span class="tag-dot"></span>Admin</span></c:when>
+                  <c:when test="${u.role == 'WAREHOUSE_MANAGER'}"><span class="tag tag-slate"><span class="tag-dot"></span>WH Manager</span></c:when>
+                  <c:when test="${u.role == 'VENDOR'}"><span class="tag tag-amber"><span class="tag-dot"></span>Vendor</span></c:when>
+                  <c:otherwise><span class="tag tag-slate"><span class="tag-dot"></span>${u.role}</span></c:otherwise>
+                </c:choose>
+              </td>
+              <td class="px-5 py-3">
+                <span class="inline-flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full ${u.status == 'ACTIVE' ? 'bg-teal' : 'bg-amber'}"></span>
+                  <span class="text-xs ${u.status == 'ACTIVE' ? 'text-teal' : 'text-amber'} font-semibold">${u.status}</span>
+                </span>
+              </td>
+              <td class="px-5 py-3 text-right">
+                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
+                  <button class="text-ink/40 hover:text-primary transition" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+                  <button class="text-ink/40 hover:text-amber transition" title="Suspend"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg></button>
+                </div>
+              </td>
+            </tr>
+          </c:forEach>
+        </c:when>
+        <c:otherwise>
+          <tr><td colspan="6" class="p-10 text-center text-ink/50 text-sm">No users found. Add your first user to get started.</td></tr>
+        </c:otherwise>
+      </c:choose>
     </tbody>
   </table>
 </div>
 
-<script>
-function toggleModal(id) {
-  const modal = document.getElementById(id);
-  if (modal.classList.contains('hidden')) {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-  } else {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-  }
-}
-
-function filterUsers(role, btn) {
-  document.querySelectorAll('.user-filter-btn').forEach(b => {
-    b.classList.remove('active', 'bg-primary', 'text-white');
-    b.classList.add('text-ink/60');
-  });
-  btn.classList.add('active', 'bg-primary', 'text-white');
-  btn.classList.remove('text-ink/60');
-
-  document.querySelectorAll('tbody tr[data-role]').forEach(row => {
-    if (role === 'all' || row.dataset.role === role) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-    }
-  });
-}
-</script>
-
 <!-- Add User Modal -->
-<div id="addUserModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-sm">
-  <div class="bg-white rounded-xl shadow-xl border border-line w-full max-w-md p-6">
-    <div class="flex items-center justify-between mb-5">
-      <h3 class="font-display font-semibold text-lg">Add New User</h3>
-      <button onclick="toggleModal('addUserModal')" class="text-ink/50 hover:text-ink text-xl">&times;</button>
+<div id="addUserModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-ink/50 backdrop-blur-sm p-4">
+  <div class="w-full max-w-md bg-white rounded-2xl border border-line shadow-2xl overflow-hidden">
+    <div class="h-16 px-6 border-b border-line flex items-center justify-between bg-bg">
+      <div class="font-display font-semibold text-sm text-ink">Register New User</div>
+      <button onclick="toggleModal('addUserModal')" class="text-ink/40 hover:text-ink transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
     </div>
-    <form class="space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-medium text-ink/60 mb-1">Full Name</label>
-          <input type="text" class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary" placeholder="e.g. Ruwan Silva">
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-ink/60 mb-1">Username</label>
-          <input type="text" class="w-full px-3 py-2 border border-line rounded-lg text-sm font-mono focus:outline-none focus:border-primary" placeholder="e.g. ruwan01">
-        </div>
+    
+    <form action="${pageContext.request.contextPath}/users/action" method="POST" class="p-6 space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-ink/70 uppercase font-mono mb-1.5">Full Name <span class="text-amber">*</span></label>
+        <input type="text" name="fullName" required placeholder="e.g. Kasun Silva" class="w-full px-3.5 py-2.5 rounded-lg border border-line text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
       </div>
       <div>
-        <label class="block text-xs font-medium text-ink/60 mb-1">Email</label>
-        <input type="email" class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary" placeholder="user@company.com">
+        <label class="block text-xs font-semibold text-ink/70 uppercase font-mono mb-1.5">Email Address <span class="text-amber">*</span></label>
+        <input type="email" name="email" required placeholder="kasun@example.com" class="w-full px-3.5 py-2.5 rounded-lg border border-line text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
       </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-medium text-ink/60 mb-1">Password</label>
-          <input type="password" class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-ink/60 mb-1">Role</label>
-          <select class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary bg-white">
-            <option>Warehouse Manager</option>
-            <option>Vendor</option>
-            <option>Customer</option>
-            <option>Admin</option>
-          </select>
-        </div>
+      <div>
+        <label class="block text-xs font-semibold text-ink/70 uppercase font-mono mb-1.5">System Role <span class="text-amber">*</span></label>
+        <select name="roleName" required class="w-full px-3.5 py-2.5 rounded-lg border border-line text-sm bg-white focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+          <option value="">-- Select Role --</option>
+          <option value="ADMIN">Administrator (Full Access)</option>
+          <option value="WAREHOUSE_MANAGER">Warehouse Manager (Operations)</option>
+          <option value="VENDOR">Vendor / Supplier</option>
+          <option value="CUSTOMER">Customer / Buyer</option>
+        </select>
       </div>
-      <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-line">
-        <button type="button" onclick="toggleModal('addUserModal')" class="px-4 py-2 rounded-lg border border-line text-sm font-medium hover:bg-bg">Cancel</button>
-        <button type="button" onclick="toggleModal('addUserModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primarydk transition">Create User</button>
+      
+      <div class="p-3.5 rounded-xl bg-primary/5 border border-primary/20 text-xs text-primary/80 leading-relaxed mt-2">
+        <strong class="text-primary font-semibold">Automated Provisioning:</strong> 
+        A secure random password and username will be automatically generated. The credentials will be sent directly to the user's email address.
+      </div>
+      
+      <div class="pt-4 border-t border-line flex items-center justify-end gap-3">
+        <button type="button" onclick="toggleModal('addUserModal')" class="px-4 py-2.5 rounded-lg border border-line text-xs font-semibold text-ink/70 hover:bg-bg transition">Cancel</button>
+        <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primarydk shadow-sm transition">Provision User</button>
       </div>
     </form>
   </div>
 </div>
+
+<script>
+  function toggleModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('hidden');
+  }
+
+  function filterUsers(role, btn) {
+    // Update active button state
+    document.querySelectorAll('.user-filter-btn').forEach(b => {
+      b.classList.remove('active', 'bg-primary', 'text-white');
+      b.classList.add('text-ink/60', 'hover:bg-bg');
+    });
+    btn.classList.add('active', 'bg-primary', 'text-white');
+    btn.classList.remove('text-ink/60', 'hover:bg-bg');
+    
+    // Filter rows
+    const rows = document.querySelectorAll('.user-row');
+    rows.forEach(row => {
+      if (role === 'all' || row.dataset.role === role) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
 
 <%@ include file="includes/footer.jspf" %>
