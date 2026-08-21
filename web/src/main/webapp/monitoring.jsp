@@ -69,7 +69,7 @@
                   data-entity="${log.entityName.toLowerCase()}"
                   data-details="${log.details.toLowerCase()}">
                 <td class="px-5 py-3 text-xs font-mono text-ink/60 whitespace-nowrap">
-                  ${log.performedAt.toString().replace('T', ' ').substring(0, 19)}
+                  ${log.performedAt.toString().replace('T', ' ')}
                 </td>
                 <td class="px-5 py-3">
                   <div class="font-medium text-ink">${log.performedByFullName}</div>
