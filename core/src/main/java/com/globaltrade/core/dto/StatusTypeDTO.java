@@ -1,21 +1,20 @@
 package com.globaltrade.core.dto;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
-public class CategoryDTO implements Serializable {
+public class StatusTypeDTO implements Serializable {
     private Long id;
     private String name;
     private String description;
-    private Long productCount;
+    private String type; // SHIPMENT, ORDER, ACCOUNT, CUSTOMS
 
-    public CategoryDTO() {}
+    public StatusTypeDTO() {}
 
-    public CategoryDTO(Long id, String name, String description, Long productCount) {
+    public StatusTypeDTO(Long id, String name, String description, String type) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.productCount = productCount;
+        this.type = type;
     }
 
     public Long getId() { return id; }
@@ -24,6 +23,6 @@ public class CategoryDTO implements Serializable {
     public void setName(String name) { this.name = name; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-    public Long getProductCount() { return productCount; }
-    public void setProductCount(Long productCount) { this.productCount = productCount; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 }
