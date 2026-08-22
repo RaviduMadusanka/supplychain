@@ -13,9 +13,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @WebFilter("/*")
 public class AuthFilter implements Filter {
+
+    // Public Static & Auth Resources
+    private static final Set<String> PUBLIC_EXTENSIONS = new HashSet<>(Arrays.asList(
+            ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".woff", ".woff2", ".ttf"
+    ));
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -23,27 +31,107 @@ public class AuthFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession(false);
 
+        String contextPath = req.getContextPath();
         String uri = req.getRequestURI();
+        String path = uri.substring(contextPath.length());
 
-        if (uri.endsWith("login.jsp") || uri.endsWith("register.jsp") || uri.endsWith("error.jsp") || uri.endsWith("403.jsp") || uri.contains("/includes/") || uri.endsWith("/login") || uri.endsWith("/register") || uri.contains("/images/")) {
+        // 1. Allow Static Assets & Public Extensions
+        if (isPublicAsset(path)) {
             chain.doFilter(request, response);
             return;
         }
 
-        boolean isLoggedIn = (session != null && session.getAttribute("user") != null);
-
-        if (isLoggedIn) {
-            UserDTO user = (UserDTO) session.getAttribute("user");
-
-            UserContext.setUser(user);
-            
-            try {
-                chain.doFilter(request, response);
-            } finally {
-                UserContext.clear();
-            }
-        } else {
-            res.sendRedirect(req.getContextPath() + "/login.jsp");
+        // 2. Allow Public Endpoints
+        if (isPublicEndpoint(path)) {
+            chain.doFilter(request, response);
+            return;
         }
+
+        // 3. Authentication Check
+        boolean isLoggedIn = (session != null && session.getAttribute("user") != null);
+        if (!isLoggedIn) {
+            res.sendRedirect(contextPath + "/login.jsp");
+            return;
+        }
+
+        UserDTO user = (UserDTO) session.getAttribute("user");
+        String role = (user != null && user.getRole() != null) ? user.getRole().toUpperCase() : "";
+
+        // 4. Role-Based Access Control (RBAC) Authorization Check
+        if (!isAuthorized(path, role)) {
+            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            req.getRequestDispatcher("/403.jsp").forward(request, response);
+            return;
+        }
+
+        // 5. Populate ThreadLocal Context & Proceed
+        UserContext.setUser(user);
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            UserContext.clear();
+        }
+    }
+
+    private boolean isPublicAsset(String path) {
+        if (path.contains("/includes/") || path.contains("/images/")) return true;
+        for (String ext : PUBLIC_EXTENSIONS) {
+            if (path.endsWith(ext)) return true;
+        }
+        return false;
+    }
+
+    private boolean isPublicEndpoint(String path) {
+        return path.equals("/") ||
+               path.equals("/login.jsp") ||
+               path.equals("/login") ||
+               path.equals("/logout") ||
+               path.equals("/register.jsp") ||
+               path.equals("/register") ||
+               path.equals("/403.jsp") ||
+               path.equals("/error.jsp");
+    }
+
+    private boolean isAuthorized(String path, String role) {
+        // Superuser ADMIN has access to all modules
+        if ("ADMIN".equals(role)) {
+            return true;
+        }
+
+        // ADMIN-ONLY Restricted Modules
+        if (path.startsWith("/dashboard/admin") ||
+            path.startsWith("/dashboard-admin.jsp") ||
+            path.startsWith("/users") ||
+            path.startsWith("/timers") ||
+            path.startsWith("/system-config") ||
+            path.startsWith("/monitoring")) {
+            return false;
+        }
+
+        // WAREHOUSE MANAGER Modules
+        if (path.startsWith("/dashboard/warehouse") ||
+            path.startsWith("/dashboard-wh.jsp") ||
+            path.startsWith("/inventory") ||
+            path.startsWith("/warehouse")) {
+            return "WAREHOUSE_MANAGER".equals(role);
+        }
+
+        // VENDOR Modules
+        if (path.startsWith("/dashboard/vendor") ||
+            path.startsWith("/dashboard-vendor.jsp") ||
+            path.startsWith("/vendor/")) {
+            return "VENDOR".equals(role);
+        }
+
+        // CUSTOMER Modules
+        if (path.startsWith("/dashboard-customer.jsp") ||
+            path.startsWith("/browse-products.jsp") ||
+            path.startsWith("/place-order.jsp") ||
+            path.startsWith("/order")) {
+            return "CUSTOMER".equals(role);
+        }
+
+        // Shared Authenticated Modules (products catalog, PO tracking, shipment waybills)
+        return true;
     }
 }

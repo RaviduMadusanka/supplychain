@@ -7,7 +7,11 @@ import com.globaltrade.core.entity.User;
 import com.globaltrade.core.service.EmailService;
 import com.globaltrade.core.service.UserService;
 import com.globaltrade.core.util.PasswordUtil;
+import com.globaltrade.core.security.RequiresRole;
 import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
+import com.globaltrade.ejb.interceptor.AuthorizationInterceptor;
+import com.globaltrade.ejb.interceptor.ExceptionLoggingInterceptor;
+import com.globaltrade.ejb.interceptor.PerformanceMonitorInterceptor;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import jakarta.interceptor.Interceptors;
@@ -19,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
-@Interceptors(AuditLogInterceptor.class)
+@RequiresRole("ADMIN")
+@Interceptors({AuditLogInterceptor.class, AuthorizationInterceptor.class, PerformanceMonitorInterceptor.class, ExceptionLoggingInterceptor.class})
 public class UserServiceBean implements UserService {
 
     @PersistenceContext(unitName = "SupplyChainPU")
