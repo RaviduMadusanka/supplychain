@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet(urlPatterns = {"/monitoring"})
+@WebServlet(name = "AuditLogServlet", urlPatterns = {"/monitoring"})
 public class AuditLogServlet extends HttpServlet {
 
     @EJB
@@ -19,12 +19,12 @@ public class AuditLogServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            // Fetch top 300 logs (since user has 262 rows, 300 will show them all)
             req.setAttribute("auditLogs", auditLogService.getRecentAuditLogs(300));
+            req.setAttribute("exceptionLogs", auditLogService.getRecentExceptionLogs(100));
             req.getRequestDispatcher("/monitoring.jsp").forward(req, resp);
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to load audit logs");
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to load system monitoring & exception logs");
         }
     }
 }

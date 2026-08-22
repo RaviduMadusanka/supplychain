@@ -12,6 +12,9 @@ import com.globaltrade.core.entity.Status;
 import com.globaltrade.core.entity.Vendor;
 import com.globaltrade.core.entity.Warehouse;
 import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
+import com.globaltrade.ejb.interceptor.ExceptionLoggingInterceptor;
+import com.globaltrade.ejb.interceptor.PerformanceMonitorInterceptor;
+import com.globaltrade.ejb.interceptor.VendorDataValidationInterceptor;
 import com.globaltrade.core.service.PurchaseOrderService;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
@@ -30,7 +33,7 @@ import java.util.Map;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-@Interceptors(AuditLogInterceptor.class)
+@Interceptors({AuditLogInterceptor.class, PerformanceMonitorInterceptor.class, ExceptionLoggingInterceptor.class})
 public class PurchaseOrderServiceBean implements PurchaseOrderService {
 
     @PersistenceContext(unitName = "SupplyChainPU")
@@ -99,6 +102,7 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
     }
 
     @Override
+    @Interceptors(VendorDataValidationInterceptor.class)
     public void createPurchaseOrder(Long warehouseId, Long vendorId, Map<Long, Integer> productQuantities) {
         try {
             userTransaction.begin();

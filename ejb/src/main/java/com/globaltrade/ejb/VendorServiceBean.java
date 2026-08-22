@@ -16,6 +16,9 @@ import com.globaltrade.core.entity.VendorPerformance;
 import com.globaltrade.core.entity.Warehouse;
 import com.globaltrade.core.service.VendorService;
 import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
+import com.globaltrade.ejb.interceptor.ExceptionLoggingInterceptor;
+import com.globaltrade.ejb.interceptor.PerformanceMonitorInterceptor;
+import com.globaltrade.ejb.interceptor.VendorDataValidationInterceptor;
 import jakarta.ejb.Stateless;
 import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
@@ -27,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
-@Interceptors(AuditLogInterceptor.class)
+@Interceptors({AuditLogInterceptor.class, PerformanceMonitorInterceptor.class, ExceptionLoggingInterceptor.class})
 public class VendorServiceBean implements VendorService {
 
     @PersistenceContext(unitName = "SupplyChainPU")
@@ -137,6 +140,7 @@ public class VendorServiceBean implements VendorService {
     }
 
     @Override
+    @Interceptors(VendorDataValidationInterceptor.class)
     public void createVendorProduct(Long vendorId, String sku, String name, Long categoryId, BigDecimal weight, Integer reorderLevel, String imageUrl) throws Exception {
         if (sku == null || sku.trim().isEmpty() || name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("SKU and Product Name are required.");
@@ -207,6 +211,7 @@ public class VendorServiceBean implements VendorService {
     }
 
     @Override
+    @Interceptors(VendorDataValidationInterceptor.class)
     public Vendor createVendor(String companyName, String contactPerson, String email, String phone,
                                Long countryId, BigDecimal rating, Long userId) throws Exception {
         if (companyName == null || companyName.trim().isEmpty()) {
