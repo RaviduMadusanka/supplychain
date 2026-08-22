@@ -1,1 +1,0 @@
-import java.security.MessageDigest; import java.util.Base64; public class TestHash { public static void main(String[] args) throws Exception { MessageDigest digest = MessageDigest.getInstance("SHA-256"); byte[] hash = digest.digest("pass123".getBytes()); System.out.println(Base64.getEncoder().encodeToString(hash)); } }

@@ -1,98 +1,90 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%
-  String pageTitle = "My Products";
-  String pageSubtitle = "Products supplied by Apex Tech Components";
+  if (request.getAttribute("products") == null) {
+      response.sendRedirect(request.getContextPath() + "/vendor/products");
+      return;
+  }
+  String pageTitle = "Contracted Products Catalog";
+  String pageSubtitle = "Official technical specifications and items contracted for supply by your company";
   String activePage = "vendorproducts";
-  String userName = "Sanduni Wickrama";
+  String userName = "Supplier Partner";
   String userRole = "Vendor";
 %>
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>
 
-<div class="flex justify-end mb-6">
-  <button onclick="toggleModal('addProductModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold shadow-sm hover:bg-primarydk transition">+ Add Product</button>
+<!-- Top Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+  <div>
+    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-primary/10 text-primary text-[11px] font-mono font-semibold uppercase tracking-wider mb-1">
+      Contracted Portfolio
+    </div>
+    <h2 class="text-xl font-display font-bold text-ink">Products Contracted to ${vendor.companyName}</h2>
+    <p class="text-xs text-ink/50 mt-0.5"><%= pageSubtitle %></p>
+  </div>
+  
+  <div class="flex items-center gap-2">
+    <span class="text-xs font-mono font-bold px-3 py-1.5 rounded-lg bg-bg border border-line text-ink/70">
+      ${products != null ? products.size() : 0} Contracted SKUs
+    </span>
+  </div>
 </div>
 
-<div class="card">
+<!-- Info Banner -->
+<div class="mb-6 p-4 rounded-xl bg-slate-100 border border-line flex items-start gap-3 text-xs text-ink/70 leading-relaxed">
+  <svg class="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+  <div>
+    <strong class="text-ink font-semibold">Master Catalog Notice:</strong> 
+    Products and global SKUs are managed and authorized by Enterprise Administrators and Warehouse Logistics Coordinators. 
+    Below are the verified products your organization is contracted to supply upon receiving Purchase Orders.
+  </div>
+</div>
+
+<!-- Products Table Card -->
+<div class="card overflow-hidden shadow-sm">
   <table class="w-full text-sm">
     <thead>
-      <tr class="text-left text-ink/40 text-xs font-mono uppercase tracking-wide border-b border-line">
-        <th class="px-5 py-2.5 font-medium">SKU</th>
-        <th class="px-5 py-2.5 font-medium">Name</th>
-        <th class="px-5 py-2.5 font-medium">Category</th>
-        <th class="px-5 py-2.5 font-medium text-right">Weight</th>
-        <th class="px-5 py-2.5 font-medium text-right">Reorder Level</th>
-        <th class="px-5 py-2.5 font-medium text-right w-24">Actions</th>
+      <tr class="text-left text-white text-xs font-mono uppercase tracking-wider bg-gradient-to-r from-[#12172B] via-[#1B254B] to-[#1E2538] border-b border-slate-700">
+        <th class="px-5 py-3.5 font-semibold text-slate-300">SKU Code</th>
+        <th class="px-5 py-3.5 font-semibold text-white">Product Name</th>
+        <th class="px-5 py-3.5 font-semibold text-teal">Category</th>
+        <th class="px-5 py-3.5 font-semibold text-slate-200">Unit Weight</th>
+        <th class="px-5 py-3.5 font-semibold text-slate-200">Safety Buffer</th>
+        <th class="px-5 py-3.5 font-semibold text-right text-slate-300">Contract Status</th>
       </tr>
     </thead>
     <tbody class="divide-y divide-line">
-      <tr class="group hover:bg-bg/50 transition">
-        <td class="px-5 py-3 font-mono text-xs text-ink/70">SKU-1001</td>
-        <td class="px-5 py-3 font-medium">Industrial Circuit Board</td>
-        <td class="px-5 py-3 text-xs"><span class="px-2 py-1 rounded bg-bg text-ink/70 border border-line">Electronics</span></td>
-        <td class="px-5 py-3 text-right font-mono text-xs text-ink/70">0.75 kg</td>
-        <td class="px-5 py-3 text-right font-mono text-xs">50</td>
-        <td class="px-5 py-3 text-right">
-          <button class="px-3 py-1 rounded border border-line text-[11px] font-semibold hover:bg-bg transition text-ink">Edit</button>
-        </td>
-      </tr>
+      <c:choose>
+        <c:when test="${not empty products}">
+          <c:forEach var="p" items="${products}">
+            <tr class="hover:bg-bg/40 transition">
+              <td class="px-5 py-3.5 font-mono text-xs font-bold text-primary">${p.sku}</td>
+              <td class="px-5 py-3.5 font-medium text-ink flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-teal"></span>
+                ${p.name}
+              </td>
+              <td class="px-5 py-3.5">
+                <span class="tag tag-teal text-[10px]">${p.categoryName}</span>
+              </td>
+              <td class="px-5 py-3.5 font-mono text-xs text-ink/70">${p.weight} kg</td>
+              <td class="px-5 py-3.5 font-mono text-xs text-ink font-semibold">${p.reorderLevel} units</td>
+              <td class="px-5 py-3.5 text-right">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-teal/10 text-teal border border-teal/20">
+                  <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Active Supply
+                </span>
+              </td>
+            </tr>
+          </c:forEach>
+        </c:when>
+        <c:otherwise>
+          <tr>
+            <td colspan="6" class="px-5 py-8 text-center text-xs text-ink/40">No products currently contracted under your supplier account.</td>
+          </tr>
+        </c:otherwise>
+      </c:choose>
     </tbody>
   </table>
-</div>
-
-<script>
-function toggleModal(id) {
-  const modal = document.getElementById(id);
-  if (modal.classList.contains('hidden')) {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-  } else {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-  }
-}
-</script>
-
-<!-- Add Product Modal -->
-<div id="addProductModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-sm">
-  <div class="bg-white rounded-xl shadow-xl border border-line w-full max-w-sm p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="font-display font-semibold text-lg">Add New Product</h3>
-      <button onclick="toggleModal('addProductModal')" class="text-ink/50 hover:text-ink">&times;</button>
-    </div>
-    <form class="space-y-4">
-      <div>
-        <label class="block text-xs font-medium text-ink/60 mb-1">SKU</label>
-        <input type="text" class="w-full px-3 py-2 border border-line rounded-lg text-sm font-mono focus:outline-none focus:border-primary" placeholder="e.g. SKU-1004">
-      </div>
-      <div>
-        <label class="block text-xs font-medium text-ink/60 mb-1">Product Name</label>
-        <input type="text" class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary" placeholder="Enter name">
-      </div>
-      <div>
-        <label class="block text-xs font-medium text-ink/60 mb-1">Category</label>
-        <select class="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:border-primary bg-white">
-          <option>Electronics</option>
-          <option>Hardware</option>
-          <option>Packaging Materials</option>
-        </select>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-medium text-ink/60 mb-1">Weight (kg)</label>
-          <input type="number" step="0.01" class="w-full px-3 py-2 border border-line rounded-lg text-sm font-mono focus:outline-none focus:border-primary" placeholder="0.00">
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-ink/60 mb-1">Reorder Lvl</label>
-          <input type="number" class="w-full px-3 py-2 border border-line rounded-lg text-sm font-mono focus:outline-none focus:border-primary" placeholder="0">
-        </div>
-      </div>
-      <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-line">
-        <button type="button" onclick="toggleModal('addProductModal')" class="px-4 py-2 rounded-lg border border-line text-sm font-medium hover:bg-bg">Cancel</button>
-        <button type="button" onclick="toggleModal('addProductModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primarydk transition">Save Product</button>
-      </div>
-    </form>
-  </div>
 </div>
 
 <%@ include file="includes/footer.jspf" %>

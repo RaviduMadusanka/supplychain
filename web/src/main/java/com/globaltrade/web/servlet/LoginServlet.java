@@ -31,19 +31,19 @@ public class LoginServlet extends HttpServlet {
             String redirectUrl;
             switch (user.getRole().toLowerCase()) {
                 case "admin":
-                    redirectUrl = "dashboard-admin.jsp";
+                    redirectUrl = "dashboard/admin";
                     break;
                 case "warehouse_manager":
                     redirectUrl = "dashboard/warehouse";
                     break;
                 case "vendor":
-                    redirectUrl = "dashboard-vendor.jsp";
+                    redirectUrl = "dashboard/vendor";
                     break;
                 case "customer":
                     redirectUrl = "dashboard-customer.jsp";
                     break;
                 default:
-                    redirectUrl = "dashboard-admin.jsp";
+                    redirectUrl = "dashboard/admin";
             }
             resp.sendRedirect(req.getContextPath() + "/" + redirectUrl);
 

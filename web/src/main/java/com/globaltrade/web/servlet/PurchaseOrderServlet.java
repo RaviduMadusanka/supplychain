@@ -3,10 +3,12 @@ package com.globaltrade.web.servlet;
 import com.globaltrade.core.dto.ProductDTO;
 import com.globaltrade.core.dto.PurchaseOrderDTO;
 import com.globaltrade.core.dto.StockDTO;
+import com.globaltrade.core.dto.UserDTO;
 import com.globaltrade.core.dto.VendorDTO;
 import com.globaltrade.core.dto.WarehouseDTO;
 import com.globaltrade.core.service.InventoryService;
 import com.globaltrade.core.service.PurchaseOrderService;
+import com.globaltrade.core.service.VendorService;
 import com.globaltrade.core.service.WarehouseService;
 import jakarta.ejb.EJB;
 import jakarta.servlet.ServletException;
@@ -14,7 +16,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +38,24 @@ public class PurchaseOrderServlet extends HttpServlet {
     @EJB
     private InventoryService inventoryService;
 
+    @EJB
+    private VendorService vendorService;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            List<PurchaseOrderDTO> purchaseOrders = purchaseOrderService.getAllPurchaseOrders();
+            HttpSession session = request.getSession(false);
+            UserDTO user = (session != null) ? (UserDTO) session.getAttribute("user") : null;
+
+            List<PurchaseOrderDTO> purchaseOrders;
+            if (user != null && "VENDOR".equalsIgnoreCase(user.getRole())) {
+                VendorDTO v = vendorService.getVendorByUserId(user.getId());
+                Long vendorId = (v != null) ? v.getId() : 1L;
+                purchaseOrders = purchaseOrderService.getPurchaseOrdersForVendor(vendorId);
+            } else {
+                purchaseOrders = purchaseOrderService.getAllPurchaseOrders();
+            }
+
             List<WarehouseDTO> warehouses = warehouseService.getAllWarehouseDetails();
             List<VendorDTO> vendors = inventoryService.getAllVendors();
             List<ProductDTO> products = inventoryService.getAllProducts();
@@ -99,7 +119,7 @@ public class PurchaseOrderServlet extends HttpServlet {
                 }
 
                 purchaseOrderService.createPurchaseOrder(warehouseId, vendorId, productQuantities);
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=PO+Created+with+" + productQuantities.size() + "+Items+Successfully");
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("PO Created with " + productQuantities.size() + " items successfully.", StandardCharsets.UTF_8.name()));
                 return;
 
             } else if ("receive".equalsIgnoreCase(action)) {
@@ -109,7 +129,7 @@ public class PurchaseOrderServlet extends HttpServlet {
                 }
                 Long poId = Long.parseLong(poIdStr);
                 purchaseOrderService.receivePurchaseOrderGoods(poId);
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=Goods+Received+and+Inventory+Stock+Updated");
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("Goods Received and Inventory Stock Updated.", StandardCharsets.UTF_8.name()));
                 return;
 
             } else if ("accept".equalsIgnoreCase(action)) {
@@ -117,7 +137,15 @@ public class PurchaseOrderServlet extends HttpServlet {
                 if (poIdStr != null) {
                     purchaseOrderService.updatePurchaseOrderStatus(Long.parseLong(poIdStr), "PROCESSING");
                 }
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=Purchase+Order+Accepted");
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("Purchase Order Accepted.", StandardCharsets.UTF_8.name()));
+                return;
+
+            } else if ("reject".equalsIgnoreCase(action)) {
+                String poIdStr = request.getParameter("poId");
+                if (poIdStr != null) {
+                    purchaseOrderService.updatePurchaseOrderStatus(Long.parseLong(poIdStr), "CANCELLED");
+                }
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("Purchase Order Rejected.", StandardCharsets.UTF_8.name()));
                 return;
 
             } else if ("dispatch".equalsIgnoreCase(action)) {
@@ -125,14 +153,14 @@ public class PurchaseOrderServlet extends HttpServlet {
                 if (poIdStr != null) {
                     purchaseOrderService.updatePurchaseOrderStatus(Long.parseLong(poIdStr), "PROCESSING");
                 }
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=Purchase+Order+Dispatched");
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("Purchase Order Dispatched.", StandardCharsets.UTF_8.name()));
                 return;
             }
 
             response.sendRedirect(request.getContextPath() + "/purchase-orders");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/purchase-orders?error=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
+            response.sendRedirect(request.getContextPath() + "/purchase-orders?error=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8.name()));
         }
     }
 }

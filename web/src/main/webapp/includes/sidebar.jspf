@@ -114,13 +114,13 @@
     <% } else if ("VENDOR".equalsIgnoreCase(userRole)) { %>
 
     <div class="navsection">Overview</div>
-    <a href="dashboard-vendor.jsp" class="navlink <%= "dashboard".equals(activePage) ? "active" : "" %> mx-2">
+    <a href="<%= request.getContextPath() %>/dashboard/vendor" class="navlink <%= "dashboard".equals(activePage) ? "active" : "" %> mx-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13h4v8H3zM10 3h4v18h-4zM17 8h4v13h-4z"/></svg>
       Dashboard
     </a>
 
     <div class="navsection">My Business</div>
-    <a href="vendor-products.jsp" class="navlink <%= "vendorproducts".equals(activePage) ? "active" : "" %> mx-2">
+    <a href="<%= request.getContextPath() %>/vendor/products" class="navlink <%= "vendorproducts".equals(activePage) ? "active" : "" %> mx-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
       My Products
     </a>

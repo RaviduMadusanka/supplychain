@@ -72,8 +72,14 @@ public class PurchaseOrderDTO implements Serializable {
     public void setVendorCode(String vendorCode) { this.vendorCode = vendorCode; }
     public String getVendorCountry() { return vendorCountry; }
     public void setVendorCountry(String vendorCountry) { this.vendorCountry = vendorCountry; }
+    
     public String getStatusName() { return statusName; }
     public void setStatusName(String statusName) { this.statusName = statusName; }
+    
+    // Alias for getStatusName to support both conventions
+    public String getStatus() { return statusName; }
+    public void setStatus(String status) { this.statusName = status; }
+
     public BigDecimal getSubtotal() { return subtotal; }
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
     public BigDecimal getTaxAmount() { return taxAmount; }
