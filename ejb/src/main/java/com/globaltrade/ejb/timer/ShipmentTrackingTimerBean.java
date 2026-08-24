@@ -35,7 +35,6 @@ public class ShipmentTrackingTimerBean {
         LOGGER.info("--- [TIMER-SERVICE] Executing Automated Shipment Tracking & Milestone Evaluator ---");
 
         try {
-            // Enterprise Resilience: Execute with automatic retry & fallback recovery
             int updatedCount = RetryExecutor.executeWithRetry(
                     this::processActiveShipments,
                     MAX_RETRIES,
@@ -43,7 +42,7 @@ public class ShipmentTrackingTimerBean {
                     "Automated Shipment Milestone Evaluation",
                     () -> {
                         LOGGER.log(Level.WARNING, "[FALLBACK-RECOVERY] Executing graceful fallback for ShipmentTrackingTimer.");
-                        return 0; // Return safe default without crashing timer thread
+                        return 0;
                     }
             );
 

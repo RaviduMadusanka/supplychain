@@ -156,16 +156,12 @@ public class TimerManagementServiceBean implements TimerManagementService {
     private void syncAllFourTimerJobs() {
         LocalDateTime now = LocalDateTime.now();
 
-        // 1. Inventory Level Check Timer
         ensureJobExists("InventoryLevelCheckTimer", "INVENTORY_CHECK", "DECLARATIVE", "0 * * * * * (Every Minute)", 60, false, "SCHEDULED", now.minusMinutes(1), now.plusMinutes(1));
 
-        // 2. Shipment Status Update Timer
         ensureJobExists("ShipmentStatusUpdateTimer", "SHIPMENT_TRACKING", "DECLARATIVE", "0 */30 * * * * (Every 30 Mins)", 1800, false, "SCHEDULED", now.minusMinutes(15), now.plusMinutes(15));
 
-        // 3. Vendor Performance Evaluation Timer
         ensureJobExists("VendorPerformanceEvalTimer", "VENDOR_EVAL", "DECLARATIVE", "0 0 * * * * (Hourly Sync)", 3600, false, "SCHEDULED", now.minusHours(1), now.plusHours(1));
 
-        // 4. Inventory Alert Cleanup Timer
         ensureJobExists("InventoryAlertCleanupTimer", "ALERT_CLEANUP", "DECLARATIVE", "0 0 0 * * Sun (Weekly Cleanup)", 604800, false, "SCHEDULED", now.minusDays(2), now.plusDays(5));
 
         em.flush();

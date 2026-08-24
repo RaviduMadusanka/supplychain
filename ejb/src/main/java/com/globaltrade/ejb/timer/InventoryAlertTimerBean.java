@@ -24,7 +24,6 @@ public class InventoryAlertTimerBean {
         LOGGER.info("--- Executing Timer Service: checkLowStockLevels ---");
 
         try {
-            // Find items where current stock <= reorder level
             List<InventoryStock> allStocks = em.createQuery(
                     "SELECT s FROM InventoryStock s LEFT JOIN FETCH s.item LEFT JOIN FETCH s.warehouse", 
                     InventoryStock.class)
@@ -40,7 +39,6 @@ public class InventoryAlertTimerBean {
                 int currentQty = (stock.getStockQty() != null) ? stock.getStockQty() : 0;
 
                 if (currentQty <= reorderLevel) {
-                    // Check if open alert already exists
                     List<InventoryAlert> existingAlerts = em.createQuery(
                             "SELECT a FROM InventoryAlert a WHERE a.item.id = :itemId AND a.warehouse.id = :whId AND a.resolved = false", 
                             InventoryAlert.class)
@@ -59,7 +57,6 @@ public class InventoryAlertTimerBean {
                         LOGGER.info(">>> Created " + alert.getAlertType() + " alert for Product: " + stock.getItem().getName() + " at " + stock.getWarehouse().getName());
                     }
                 } else {
-                    // Stock is healthy, auto-resolve any open alerts
                     List<InventoryAlert> openAlerts = em.createQuery(
                             "SELECT a FROM InventoryAlert a WHERE a.item.id = :itemId AND a.warehouse.id = :whId AND a.resolved = false", 
                             InventoryAlert.class)

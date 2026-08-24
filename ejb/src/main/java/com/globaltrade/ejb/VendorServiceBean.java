@@ -160,7 +160,6 @@ public class VendorServiceBean implements VendorService {
         em.persist(item);
         em.flush();
 
-        // Seed stock record in main warehouse
         try {
             Warehouse wh = em.find(Warehouse.class, 1L);
             if (wh != null) {
@@ -206,7 +205,6 @@ public class VendorServiceBean implements VendorService {
             e.printStackTrace();
         }
 
-        // Fallback default ratings
         return new VendorPerformanceDTO(1L, vendorId, "Vendor", null, new BigDecimal("98.50"), new BigDecimal("92.00"), new BigDecimal("4.50"), new BigDecimal("4.60"));
     }
 
