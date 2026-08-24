@@ -5,10 +5,6 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Enterprise Resilience Pattern: Generic Retry & Recovery Executor
- * Automatically retries transient tasks up to maxRetries with backoff delay.
- */
 public class RetryExecutor {
 
     private static final Logger LOGGER = Logger.getLogger(RetryExecutor.class.getName());
@@ -28,7 +24,7 @@ public class RetryExecutor {
 
                 if (attempts < maxRetries) {
                     try {
-                        Thread.sleep(delayMs * attempts); // Linear/Exponential backoff
+                        Thread.sleep(delayMs * attempts);
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
                         throw new SystemIntegrationException("Execution interrupted during retry backoff for " + operationName, ie);

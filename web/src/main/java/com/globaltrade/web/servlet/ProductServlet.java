@@ -28,8 +28,8 @@ import java.util.UUID;
 @WebServlet(urlPatterns = {"/products", "/product/add"})
 @MultipartConfig(
     fileSizeThreshold = 1024 * 1024 * 1,
-    maxFileSize = 1024 * 1024 * 5,      // 5 MB
-    maxRequestSize = 1024 * 1024 * 10   // 10 MB
+    maxFileSize = 1024 * 1024 * 5,
+    maxRequestSize = 1024 * 1024 * 10
 )
 public class ProductServlet extends HttpServlet {
 

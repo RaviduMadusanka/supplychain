@@ -20,7 +20,6 @@ import java.util.Set;
 @WebFilter("/*")
 public class AuthFilter implements Filter {
 
-    // Public Static & Auth Resources
     private static final Set<String> PUBLIC_EXTENSIONS = new HashSet<>(Arrays.asList(
             ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".woff", ".woff2", ".ttf"
     ));
@@ -35,19 +34,16 @@ public class AuthFilter implements Filter {
         String uri = req.getRequestURI();
         String path = uri.substring(contextPath.length());
 
-        // 1. Allow Static Assets & Public Extensions
         if (isPublicAsset(path)) {
             chain.doFilter(request, response);
             return;
         }
 
-        // 2. Allow Public Endpoints
         if (isPublicEndpoint(path)) {
             chain.doFilter(request, response);
             return;
         }
 
-        // 3. Authentication Check
         boolean isLoggedIn = (session != null && session.getAttribute("user") != null);
         if (!isLoggedIn) {
             res.sendRedirect(contextPath + "/login.jsp");
@@ -57,14 +53,12 @@ public class AuthFilter implements Filter {
         UserDTO user = (UserDTO) session.getAttribute("user");
         String role = (user != null && user.getRole() != null) ? user.getRole().toUpperCase() : "";
 
-        // 4. Role-Based Access Control (RBAC) Authorization Check
         if (!isAuthorized(path, role)) {
             res.setStatus(HttpServletResponse.SC_FORBIDDEN);
             req.getRequestDispatcher("/403.jsp").forward(request, response);
             return;
         }
 
-        // 5. Populate ThreadLocal Context & Proceed
         UserContext.setUser(user);
         try {
             chain.doFilter(request, response);
@@ -93,12 +87,11 @@ public class AuthFilter implements Filter {
     }
 
     private boolean isAuthorized(String path, String role) {
-        // Superuser ADMIN has access to all modules
+
         if ("ADMIN".equals(role)) {
             return true;
         }
 
-        // ADMIN-ONLY Restricted Modules
         if (path.startsWith("/dashboard/admin") ||
             path.startsWith("/dashboard-admin.jsp") ||
             path.startsWith("/users") ||
@@ -108,7 +101,6 @@ public class AuthFilter implements Filter {
             return false;
         }
 
-        // WAREHOUSE MANAGER Modules
         if (path.startsWith("/dashboard/warehouse") ||
             path.startsWith("/dashboard-wh.jsp") ||
             path.startsWith("/inventory") ||
@@ -116,14 +108,12 @@ public class AuthFilter implements Filter {
             return "WAREHOUSE_MANAGER".equals(role);
         }
 
-        // VENDOR Modules
         if (path.startsWith("/dashboard/vendor") ||
             path.startsWith("/dashboard-vendor.jsp") ||
             path.startsWith("/vendor/")) {
             return "VENDOR".equals(role);
         }
 
-        // CUSTOMER Modules
         if (path.startsWith("/dashboard-customer.jsp") ||
             path.startsWith("/browse-products.jsp") ||
             path.startsWith("/place-order.jsp") ||
@@ -131,7 +121,6 @@ public class AuthFilter implements Filter {
             return "CUSTOMER".equals(role);
         }
 
-        // Shared Authenticated Modules (products catalog, PO tracking, shipment waybills)
         return true;
     }
 }

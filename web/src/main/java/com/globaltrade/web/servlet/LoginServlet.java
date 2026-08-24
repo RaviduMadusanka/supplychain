@@ -25,8 +25,7 @@ public class LoginServlet extends HttpServlet {
 
         try {
             UserDTO user = authService.authenticate(username, password);
-            
-            // Session Fixation Attack Mitigation: Invalidate previous session and generate fresh ID
+
             HttpSession oldSession = req.getSession(false);
             if (oldSession != null) {
                 oldSession.invalidate();
