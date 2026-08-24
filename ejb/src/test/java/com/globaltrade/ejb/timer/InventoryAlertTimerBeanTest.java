@@ -69,7 +69,7 @@ public class InventoryAlertTimerBeanTest {
         when(alertQuery.getResultList()).thenReturn(Collections.emptyList()); // No previous unresolved alert
 
         // Execute scheduled timer logic
-        timerBean.checkInventoryLevels();
+        timerBean.checkLowStockLevels();
 
         // Verify that an InventoryAlert was created and persisted
         verify(em, atLeastOnce()).persist(any(InventoryAlert.class));

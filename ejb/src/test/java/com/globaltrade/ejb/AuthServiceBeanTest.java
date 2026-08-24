@@ -38,7 +38,6 @@ public class AuthServiceBeanTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // Inject EntityManager using reflection if needed
         Field emField = AuthServiceBean.class.getDeclaredField("em");
         emField.setAccessible(true);
         emField.set(authService, em);

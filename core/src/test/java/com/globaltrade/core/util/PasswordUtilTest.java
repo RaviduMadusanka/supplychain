@@ -7,13 +7,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PasswordUtilTest {
 
     @Test
-    @DisplayName("Should hash password to 64-character SHA-256 hex string")
+    @DisplayName("Should hash password to Base64-encoded SHA-256 string")
     void testHashPassword() {
         String plainPassword = "AdminSecurePassword123!";
         String hash1 = PasswordUtil.hashPassword(plainPassword);
 
         assertNotNull(hash1, "Hash should not be null");
-        assertEquals(64, hash1.length(), "SHA-256 hex hash must be exactly 64 characters long");
+        assertEquals(44, hash1.length(), "SHA-256 Base64 hash must be exactly 44 characters long");
 
         // Deterministic hashing verification
         String hash2 = PasswordUtil.hashPassword(plainPassword);
@@ -28,6 +28,9 @@ public class PasswordUtilTest {
 
         boolean isValid = PasswordUtil.verifyPassword(password, hashed);
         assertTrue(isValid, "Verification must succeed for correct password");
+
+        boolean checkValid = PasswordUtil.checkPassword(password, hashed);
+        assertTrue(checkValid, "checkPassword must also succeed");
     }
 
     @Test
