@@ -10,7 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 
-@Stateless
+@Stateless(name = "AuthServiceBean")
 @Local(AuthService.class)
 public class AuthServiceBean implements AuthService {
 

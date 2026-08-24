@@ -101,23 +101,30 @@ public class AuthFilter implements Filter {
             return false;
         }
 
+        // WAREHOUSE MANAGER Modules (Warehouse Dashboard, Stock, Warehouses, Customer Order Processing)
         if (path.startsWith("/dashboard/warehouse") ||
             path.startsWith("/dashboard-wh.jsp") ||
             path.startsWith("/inventory") ||
-            path.startsWith("/warehouse")) {
+            path.startsWith("/warehouses") ||
+            path.startsWith("/warehouse") ||
+            path.startsWith("/orders") ||
+            path.startsWith("/product/add")) {
             return "WAREHOUSE_MANAGER".equals(role);
         }
 
+        // VENDOR Modules
         if (path.startsWith("/dashboard/vendor") ||
             path.startsWith("/dashboard-vendor.jsp") ||
             path.startsWith("/vendor/")) {
             return "VENDOR".equals(role);
         }
 
+        // CUSTOMER Modules
         if (path.startsWith("/dashboard-customer.jsp") ||
             path.startsWith("/browse-products.jsp") ||
             path.startsWith("/place-order.jsp") ||
-            path.startsWith("/order")) {
+            path.startsWith("/place-order") ||
+            path.startsWith("/customer/")) {
             return "CUSTOMER".equals(role);
         }
 

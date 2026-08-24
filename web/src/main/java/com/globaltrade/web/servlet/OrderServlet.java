@@ -14,10 +14,10 @@ import java.io.IOException;
 @WebServlet(urlPatterns = {"/orders", "/orders/action"})
 public class OrderServlet extends HttpServlet {
 
-    @EJB
+    @EJB(beanName = "OrderServiceBean")
     private OrderService orderService;
 
-    @EJB
+    @EJB(beanName = "WarehouseServiceBean")
     private WarehouseService warehouseService;
 
     @Override

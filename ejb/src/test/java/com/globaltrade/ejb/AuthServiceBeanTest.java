@@ -6,6 +6,7 @@ import com.globaltrade.core.entity.Role;
 import com.globaltrade.core.entity.User;
 import com.globaltrade.core.util.PasswordUtil;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,17 +15,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class AuthServiceBeanTest {
 
     @Mock
@@ -41,6 +43,9 @@ public class AuthServiceBeanTest {
         Field emField = AuthServiceBean.class.getDeclaredField("em");
         emField.setAccessible(true);
         emField.set(authService, em);
+
+        when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQuery);
+        when(typedQuery.setParameter(eq("username"), anyString())).thenReturn(typedQuery);
     }
 
     @Test
@@ -56,6 +61,7 @@ public class AuthServiceBeanTest {
         mockUser.setPasswordHash(hashed);
         mockUser.setFullName("System Administrator");
         mockUser.setEmail("admin@globaltrade.com");
+        mockUser.setCreatedAt(LocalDateTime.now());
 
         Role role = new Role();
         role.setId(1L);
@@ -66,9 +72,7 @@ public class AuthServiceBeanTest {
         status.setName("ACTIVE");
         mockUser.setStatus(status);
 
-        when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(mockUser));
+        when(typedQuery.getSingleResult()).thenReturn(mockUser);
 
         UserDTO result = authService.authenticate(username, password);
 
@@ -96,9 +100,7 @@ public class AuthServiceBeanTest {
         status.setName("ACTIVE");
         mockUser.setStatus(status);
 
-        when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter("username", username)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.singletonList(mockUser));
+        when(typedQuery.getSingleResult()).thenReturn(mockUser);
 
         Exception exception = assertThrows(Exception.class, () -> {
             authService.authenticate(username, wrongPassword);
@@ -112,14 +114,13 @@ public class AuthServiceBeanTest {
     void testAuthenticateUserNotFound() {
         String nonExistentUser = "ghost_user";
 
-        when(em.createQuery(anyString(), eq(User.class))).thenReturn(typedQuery);
-        when(typedQuery.setParameter("username", nonExistentUser)).thenReturn(typedQuery);
-        when(typedQuery.getResultList()).thenReturn(Collections.emptyList());
+        when(typedQuery.getSingleResult()).thenThrow(new NoResultException("User not found"));
 
         Exception exception = assertThrows(Exception.class, () -> {
             authService.authenticate(nonExistentUser, "anyPassword");
         });
 
         assertNotNull(exception);
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid") || exception.getMessage().toLowerCase().contains("password"));
     }
 }

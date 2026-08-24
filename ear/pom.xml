@@ -17,6 +17,10 @@
     <dependencies>
         <dependency>
             <groupId>com.globaltrade</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.globaltrade</groupId>
             <artifactId>ejb</artifactId>
             <type>ejb</type>
         </dependency>
@@ -32,10 +36,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ear-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <version>8</version>
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <skinnyWars>true</skinnyWars>
                     <modules>
+                        <jarModule>
+                            <groupId>com.globaltrade</groupId>
+                            <artifactId>core</artifactId>
+                            <bundleDir>lib</bundleDir>
+                        </jarModule>
                         <ejbModule>
                             <groupId>com.globaltrade</groupId>
                             <artifactId>ejb</artifactId>

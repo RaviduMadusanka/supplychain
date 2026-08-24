@@ -15,7 +15,7 @@ import java.io.IOException;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    @EJB
+    @EJB(beanName = "AuthServiceBean")
     private AuthService authService;
 
     @Override
