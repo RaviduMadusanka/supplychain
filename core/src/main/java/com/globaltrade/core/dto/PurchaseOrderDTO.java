@@ -75,8 +75,7 @@ public class PurchaseOrderDTO implements Serializable {
     
     public String getStatusName() { return statusName; }
     public void setStatusName(String statusName) { this.statusName = statusName; }
-    
-    // Alias for getStatusName to support both conventions
+
     public String getStatus() { return statusName; }
     public void setStatus(String status) { this.statusName = status; }
 

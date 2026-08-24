@@ -6,7 +6,7 @@ public class StatusTypeDTO implements Serializable {
     private Long id;
     private String name;
     private String description;
-    private String type; // SHIPMENT, ORDER, ACCOUNT, CUSTOMS
+    private String type;
 
     public StatusTypeDTO() {}
 

@@ -19,7 +19,7 @@ public class TimerJob implements Serializable {
     private String jobType;
 
     @Column(name = "creation_type", length = 20)
-    private String creationType; // PROGRAMMATIC or DECLARATIVE
+    private String creationType;
 
     @Column(name = "schedule_expression", length = 150)
     private String scheduleExpression;
@@ -50,7 +50,6 @@ public class TimerJob implements Serializable {
         createdAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getJobName() { return jobName; }

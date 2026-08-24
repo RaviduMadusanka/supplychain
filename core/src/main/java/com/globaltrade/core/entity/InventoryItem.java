@@ -35,7 +35,6 @@ public class InventoryItem implements Serializable {
     @JoinColumn(name = "vendor_id")
     private Vendor vendor;
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getSku() { return sku; }

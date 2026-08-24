@@ -34,7 +34,6 @@ public class RouteOptimizationLog implements Serializable {
         calculatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Shipment getShipment() { return shipment; }

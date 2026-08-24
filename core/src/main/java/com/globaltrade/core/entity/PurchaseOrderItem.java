@@ -26,7 +26,6 @@ public class PurchaseOrderItem implements Serializable {
     @Column(name = "unit_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPrice;
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public PurchaseOrder getPurchaseOrder() { return purchaseOrder; }

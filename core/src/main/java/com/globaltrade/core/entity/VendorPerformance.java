@@ -32,7 +32,6 @@ public class VendorPerformance implements Serializable {
     @Column(name = "overall_rating", precision = 3, scale = 2)
     private BigDecimal overallRating;
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Vendor getVendor() { return vendor; }

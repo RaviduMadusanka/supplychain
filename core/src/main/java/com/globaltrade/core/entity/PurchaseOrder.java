@@ -50,7 +50,6 @@ public class PurchaseOrder implements Serializable {
         }
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getPoCode() { return poCode; }

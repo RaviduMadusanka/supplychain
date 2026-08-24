@@ -49,7 +49,6 @@ public class Shipment implements Serializable {
         }
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getShipmentCode() { return shipmentCode; }
