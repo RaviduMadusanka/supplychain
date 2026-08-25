@@ -58,7 +58,6 @@ public class AuditLogInterceptor {
             String details = "";
             Long entityId = 0L;
 
-            // 1. Purchase Order Goods Receiving & Stock Restock
             if (lowerMethodName.contains("receivepurchaseordergoods") && params != null && params.length >= 1) {
                 entityName = "PurchaseOrder";
                 action = "GOODS_RECEIVED";
@@ -92,7 +91,6 @@ public class AuditLogInterceptor {
                 entityId = (poId != null) ? poId : 0L;
                 details = "Vendor rejected Purchase Order #" + poId;
 
-            // 2. Direct Stock Updates
             } else if (lowerMethodName.equals("addorupdatestock") && params != null && params.length >= 3) {
                 entityName = "Inventory";
                 action = "STOCK_UPDATE";
@@ -163,7 +161,6 @@ public class AuditLogInterceptor {
                 }
                 details = String.format("Added %d units to stock for '%s'", qtyToAdd, prodName);
 
-            // 3. Vendor Operations
             } else if (lowerMethodName.contains("createvendor")) {
                 entityName = "Vendor";
                 action = "CREATE";
@@ -179,7 +176,6 @@ public class AuditLogInterceptor {
                 entityId = vId;
                 details = String.format("Changed Vendor #%d status to %s", vId, status);
 
-            // 4. User Operations
             } else if (lowerMethodName.contains("createuser")) {
                 entityName = "User";
                 action = "CREATE";
@@ -188,7 +184,6 @@ public class AuditLogInterceptor {
                 String role = (params != null && params.length > 2 && params[2] != null) ? params[2].toString() : "";
                 details = String.format("Provisioned user '%s' (%s) with role %s", name, email, role);
 
-            // 5. Default fallback
             } else {
                 details = String.format("Executed %s with parameters: %s", rawMethodName, Arrays.toString(params));
             }

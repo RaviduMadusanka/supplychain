@@ -53,7 +53,6 @@ public class ExceptionLoggingInterceptor {
                 LOGGER.log(Level.WARNING, "[EXCEPTION-INTERCEPTOR] Could not persist ExceptionLog to DB: {0}", dbEx.getMessage());
             }
 
-            // Always rethrow original exception to maintain transactional integrity and client visibility
             throw ex;
         }
     }

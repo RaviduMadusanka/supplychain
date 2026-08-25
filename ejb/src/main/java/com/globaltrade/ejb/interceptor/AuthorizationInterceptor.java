@@ -19,7 +19,6 @@ public class AuthorizationInterceptor {
         Method method = ic.getMethod();
         Class<?> targetClass = ic.getTarget().getClass();
 
-        // 1. Check Method-level Annotation first, then Class-level
         RequiresRole annotation = method.getAnnotation(RequiresRole.class);
         if (annotation == null) {
             annotation = targetClass.getAnnotation(RequiresRole.class);
