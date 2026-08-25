@@ -111,10 +111,13 @@ public class InventoryServiceBean implements InventoryService {
 
     @Override
     public List<StockDTO> getAllStock() {
-        List<InventoryStock> stocks = em.createQuery("SELECT s FROM InventoryStock s JOIN FETCH s.item JOIN FETCH s.warehouse JOIN FETCH s.status", InventoryStock.class).getResultList();
+        List<InventoryStock> stocks = em.createQuery("SELECT s FROM InventoryStock s JOIN FETCH s.item i LEFT JOIN FETCH i.category JOIN FETCH s.warehouse JOIN FETCH s.status", InventoryStock.class).getResultList();
         return stocks.stream().map(s -> new StockDTO(
                 s.getId(),
+                s.getItem() != null ? s.getItem().getId() : s.getId(),
+                s.getItem() != null ? s.getItem().getSku() : "SKU-" + s.getId(),
                 s.getItem() != null ? s.getItem().getName() : "Unknown",
+                (s.getItem() != null && s.getItem().getCategory() != null) ? s.getItem().getCategory().getName() : "General",
                 s.getWarehouse() != null ? s.getWarehouse().getName() : "Unknown",
                 s.getStockQty(),
                 s.getUnitPrice(),

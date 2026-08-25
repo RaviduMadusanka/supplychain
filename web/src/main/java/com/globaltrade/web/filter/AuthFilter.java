@@ -120,12 +120,15 @@ public class AuthFilter implements Filter {
         }
 
         // CUSTOMER Modules
-        if (path.startsWith("/dashboard-customer.jsp") ||
+        if (path.startsWith("/dashboard/customer") ||
+            path.startsWith("/dashboard-customer.jsp") ||
             path.startsWith("/browse-products.jsp") ||
+            path.startsWith("/checkout.jsp") ||
             path.startsWith("/place-order.jsp") ||
             path.startsWith("/place-order") ||
-            path.startsWith("/customer/")) {
-            return "CUSTOMER".equals(role);
+            path.startsWith("/customer/") ||
+            path.startsWith("/customer")) {
+            return "CUSTOMER".equals(role) || "ADMIN".equals(role);
         }
 
         return true;

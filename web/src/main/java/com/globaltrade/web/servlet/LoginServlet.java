@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
                     redirectUrl = "dashboard/vendor";
                     break;
                 case "customer":
-                    redirectUrl = "dashboard-customer.jsp";
+                    redirectUrl = "dashboard/customer";
                     break;
                 default:
                     redirectUrl = "dashboard/admin";

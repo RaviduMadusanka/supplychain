@@ -28,6 +28,9 @@ public class OrderDTO implements Serializable {
     private String shipmentCode;
     private String carrierName;
     private String shipmentStatus;
+    private String originWarehouseName;
+    private String destination;
+    private LocalDateTime estimatedDelivery;
 
     public OrderDTO() {}
 
@@ -92,4 +95,10 @@ public class OrderDTO implements Serializable {
     public void setCarrierName(String carrierName) { this.carrierName = carrierName; }
     public String getShipmentStatus() { return shipmentStatus; }
     public void setShipmentStatus(String shipmentStatus) { this.shipmentStatus = shipmentStatus; }
+    public String getOriginWarehouseName() { return originWarehouseName != null ? originWarehouseName : "Global Central Hub"; }
+    public void setOriginWarehouseName(String originWarehouseName) { this.originWarehouseName = originWarehouseName; }
+    public String getDestination() { return destination != null ? destination : customerAddress; }
+    public void setDestination(String destination) { this.destination = destination; }
+    public LocalDateTime getEstimatedDelivery() { return estimatedDelivery; }
+    public void setEstimatedDelivery(LocalDateTime estimatedDelivery) { this.estimatedDelivery = estimatedDelivery; }
 }
