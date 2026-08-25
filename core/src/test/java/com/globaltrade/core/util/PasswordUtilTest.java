@@ -15,7 +15,6 @@ public class PasswordUtilTest {
         assertNotNull(hash1, "Hash should not be null");
         assertEquals(44, hash1.length(), "SHA-256 Base64 hash must be exactly 44 characters long");
 
-        // Deterministic hashing verification
         String hash2 = PasswordUtil.hashPassword(plainPassword);
         assertEquals(hash1, hash2, "Identical plain text passwords must generate matching hashes");
     }

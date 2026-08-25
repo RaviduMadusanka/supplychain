@@ -3,8 +3,12 @@ package com.globaltrade.ejb.timer;
 import com.globaltrade.core.entity.Shipment;
 import com.globaltrade.core.entity.Vendor;
 import com.globaltrade.core.entity.VendorPerformance;
+import com.globaltrade.ejb.interceptor.ExceptionLoggingInterceptor;
+import com.globaltrade.ejb.interceptor.PerformanceMonitorInterceptor;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
+import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -14,6 +18,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Singleton
+@Startup
+@Interceptors({PerformanceMonitorInterceptor.class, ExceptionLoggingInterceptor.class})
 public class VendorPerformanceTimerBean {
 
     @PersistenceContext(unitName = "SupplyChainPU")

@@ -2,9 +2,12 @@ package com.globaltrade.ejb.timer;
 
 import com.globaltrade.core.entity.InventoryAlert;
 import com.globaltrade.core.entity.InventoryStock;
+import com.globaltrade.ejb.interceptor.ExceptionLoggingInterceptor;
+import com.globaltrade.ejb.interceptor.PerformanceMonitorInterceptor;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
+import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
@@ -12,6 +15,7 @@ import java.util.logging.Logger;
 
 @Singleton
 @Startup
+@Interceptors({PerformanceMonitorInterceptor.class, ExceptionLoggingInterceptor.class})
 public class InventoryAlertTimerBean {
 
     private static final Logger LOGGER = Logger.getLogger(InventoryAlertTimerBean.class.getName());
