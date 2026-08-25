@@ -168,9 +168,15 @@
 
 <!-- TAB 3: CROSS-BORDER TARIFFS & TAXES -->
 <div id="tab-tariffs" class="tab-pane hidden space-y-4">
-  <div>
-    <h3 class="font-display font-bold text-sm text-ink">International Trade &amp; Customs Tariffs</h3>
-    <p class="text-xs text-ink/40">Configured Value Added Tax (VAT) and import duty percentages applied to cross-border orders</p>
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h3 class="font-display font-bold text-sm text-ink">International Trade &amp; Customs Tariffs</h3>
+      <p class="text-xs text-ink/40">Configured Value Added Tax (VAT) and import duty percentages applied to cross-border orders</p>
+    </div>
+    <button type="button" onclick="toggleModal('addCountryModal')" class="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primarydk shadow-sm flex items-center gap-1.5 transition self-start sm:self-auto">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      + Add Country &amp; Tariffs
+    </button>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -214,7 +220,7 @@
       </div>
       <div>
         <label class="block text-xs font-mono uppercase text-ink/60 mb-1">Description</label>
-        <textarea name="description" rows="3" placeholder="Brief description of products in this category..." class="w-full px-3.5 py-2 rounded-xl border border-line text-sm focus:outline-none focus:border-primary"></textarea>
+        <textarea name="description" rows="3" placeholder="Brief description of products in this category..." class="w-full px-3.5 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:border-primary"></textarea>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button type="button" onclick="toggleModal('addCategoryModal')" class="px-4 py-2 rounded-xl border border-line text-xs font-semibold text-ink/70 hover:bg-bg">Cancel</button>
@@ -268,6 +274,47 @@
       <div class="flex justify-end gap-2 pt-2">
         <button type="button" onclick="toggleModal('editTaxModal')" class="px-4 py-2 rounded-xl border border-line text-xs font-semibold text-ink/70 hover:bg-bg">Cancel</button>
         <button type="submit" class="px-5 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primarydk">Update Rates</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL 4: ADD COUNTRY & TARIFFS -->
+<div id="addCountryModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-xs p-4">
+  <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-line">
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-primsoft text-primary flex items-center justify-center">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <h3 class="font-display font-bold text-base text-ink">Add Trade Origin Country</h3>
+          <p class="text-xs text-ink/40 font-mono">Register new nation &amp; customs rate</p>
+        </div>
+      </div>
+      <button onclick="toggleModal('addCountryModal')" class="text-ink/40 hover:text-ink text-lg">&times;</button>
+    </div>
+    <form action="${pageContext.request.contextPath}/system-config/country/add" method="POST" class="space-y-4">
+      <div>
+        <label class="block text-xs font-mono uppercase text-ink/60 mb-1">Country Name *</label>
+        <input type="text" name="name" required placeholder="e.g. China, United States, Japan, Germany" class="w-full px-3.5 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:border-primary" />
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-mono uppercase text-ink/60 mb-1">VAT Percentage (%) *</label>
+          <input type="number" step="0.01" min="0" max="100" name="vat" value="15.00" required class="w-full px-3.5 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:border-primary" />
+        </div>
+        <div>
+          <label class="block text-xs font-mono uppercase text-ink/60 mb-1">Import Duty / Tariff (%) *</label>
+          <input type="number" step="0.01" min="0" max="100" name="importTax" value="12.00" required class="w-full px-3.5 py-2.5 rounded-xl border border-line text-sm focus:outline-none focus:border-primary" />
+        </div>
+      </div>
+      <div class="p-3 rounded-xl bg-bg border border-line text-xs text-ink/60">
+        This country will immediately become selectable for Vendor company registration and Cross-border tariffs calculation.
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="toggleModal('addCountryModal')" class="px-4 py-2 rounded-xl border border-line text-xs font-semibold text-ink/70 hover:bg-bg">Cancel</button>
+        <button type="submit" class="px-5 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primarydk">Register Country</button>
       </div>
     </form>
   </div>

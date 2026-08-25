@@ -8,6 +8,9 @@ import com.globaltrade.core.entity.Country;
 import com.globaltrade.core.entity.ShipmentStatus;
 import com.globaltrade.core.service.SystemConfigService;
 import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
+import com.globaltrade.ejb.interceptor.ExceptionLoggingInterceptor;
+import com.globaltrade.ejb.interceptor.PerformanceMonitorInterceptor;
+import jakarta.ejb.Local;
 import jakarta.ejb.Stateless;
 import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
@@ -17,8 +20,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Stateless
-@Interceptors(AuditLogInterceptor.class)
+@Stateless(name = "SystemConfigServiceBean")
+@Local(SystemConfigService.class)
+@Interceptors({AuditLogInterceptor.class, PerformanceMonitorInterceptor.class, ExceptionLoggingInterceptor.class})
 public class SystemConfigServiceBean implements SystemConfigService {
 
     @PersistenceContext(unitName = "SupplyChainPU")
@@ -103,11 +107,33 @@ public class SystemConfigServiceBean implements SystemConfigService {
     }
 
     @Override
+    public void createCountry(String name, BigDecimal vat, BigDecimal importTax) throws Exception {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Country name is required.");
+        }
+
+        String countryName = name.trim();
+        List<Country> existing = em.createQuery("SELECT c FROM Country c WHERE LOWER(c.name) = LOWER(:name)", Country.class)
+                .setParameter("name", countryName)
+                .getResultList();
+
+        if (!existing.isEmpty()) {
+            throw new IllegalArgumentException("Country '" + countryName + "' is already registered in the system.");
+        }
+
+        Country country = new Country();
+        country.setName(countryName);
+        country.setVatPercentage(vat != null ? vat : BigDecimal.ZERO);
+        country.setImportTaxPercentage(importTax != null ? importTax : BigDecimal.ZERO);
+        em.persist(country);
+    }
+
+    @Override
     public void updateCountryTax(Long countryId, BigDecimal vat, BigDecimal importTax) throws Exception {
         Country country = em.find(Country.class, countryId);
         if (country != null) {
-            country.setVatPercentage(vat);
-            country.setImportTaxPercentage(importTax);
+            country.setVatPercentage(vat != null ? vat : BigDecimal.ZERO);
+            country.setImportTaxPercentage(importTax != null ? importTax : BigDecimal.ZERO);
             em.merge(country);
         }
     }

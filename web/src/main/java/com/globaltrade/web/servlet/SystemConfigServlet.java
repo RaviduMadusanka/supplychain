@@ -19,11 +19,12 @@ import java.nio.charset.StandardCharsets;
         "/system-config/category/delete",
         "/system-config/status/add",
         "/system-config/status/delete",
+        "/system-config/country/add",
         "/system-config/tax/update"
 })
 public class SystemConfigServlet extends HttpServlet {
 
-    @EJB
+    @EJB(beanName = "SystemConfigServiceBean")
     private SystemConfigService configService;
 
     @Override
@@ -66,6 +67,13 @@ public class SystemConfigServlet extends HttpServlet {
                 configService.deleteShipmentStatus(id);
                 resp.sendRedirect(req.getContextPath() + "/system-config?tab=statuses&success=" + URLEncoder.encode("Status deleted successfully.", StandardCharsets.UTF_8.name()));
                 return;
+            } else if ("/system-config/country/add".equals(path)) {
+                String name = req.getParameter("name");
+                BigDecimal vat = new BigDecimal(req.getParameter("vat"));
+                BigDecimal importTax = new BigDecimal(req.getParameter("importTax"));
+                configService.createCountry(name, vat, importTax);
+                resp.sendRedirect(req.getContextPath() + "/system-config?tab=tariffs&success=" + URLEncoder.encode("Country '" + name + "' and customs tariffs registered successfully.", StandardCharsets.UTF_8.name()));
+                return;
             } else if ("/system-config/tax/update".equals(path)) {
                 Long countryId = Long.parseLong(req.getParameter("countryId"));
                 BigDecimal vat = new BigDecimal(req.getParameter("vat"));
@@ -76,7 +84,7 @@ public class SystemConfigServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendRedirect(req.getContextPath() + "/system-config?error=" + URLEncoder.encode("Operation failed: " + e.getMessage(), StandardCharsets.UTF_8.name()));
+            resp.sendRedirect(req.getContextPath() + "/system-config?tab=tariffs&error=" + URLEncoder.encode("Operation failed: " + e.getMessage(), StandardCharsets.UTF_8.name()));
             return;
         }
 

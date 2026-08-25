@@ -18,5 +18,6 @@ public interface SystemConfigService {
     void deleteShipmentStatus(Long id) throws Exception;
 
     List<CountryTaxDTO> getAllCountries();
+    void createCountry(String name, BigDecimal vat, BigDecimal importTax) throws Exception;
     void updateCountryTax(Long countryId, BigDecimal vat, BigDecimal importTax) throws Exception;
 }
