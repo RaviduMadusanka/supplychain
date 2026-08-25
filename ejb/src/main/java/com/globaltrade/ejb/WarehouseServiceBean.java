@@ -8,6 +8,7 @@ import com.globaltrade.core.entity.Warehouse;
 import com.globaltrade.core.service.WarehouseService;
 import com.globaltrade.ejb.interceptor.AuditLogInterceptor;
 
+import jakarta.ejb.Local;
 import jakarta.ejb.Stateless;
 import jakarta.ejb.TransactionAttribute;
 import jakarta.ejb.TransactionAttributeType;
@@ -20,7 +21,8 @@ import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Stateless
+@Stateless(name = "WarehouseServiceBean")
+@Local(WarehouseService.class)
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Interceptors(AuditLogInterceptor.class)
 public class WarehouseServiceBean implements WarehouseService {

@@ -17,10 +17,10 @@ import java.nio.charset.StandardCharsets;
 @WebServlet(urlPatterns = {"/vendors", "/vendors/action"})
 public class VendorServlet extends HttpServlet {
 
-    @EJB
+    @EJB(beanName = "VendorServiceBean")
     private VendorService vendorService;
 
-    @EJB
+    @EJB(beanName = "WarehouseServiceBean")
     private WarehouseService warehouseService;
 
     @Override

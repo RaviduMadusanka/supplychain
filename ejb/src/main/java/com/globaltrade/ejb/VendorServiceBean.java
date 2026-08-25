@@ -22,6 +22,7 @@ import com.globaltrade.ejb.interceptor.VendorDataValidationInterceptor;
 import jakarta.ejb.Stateless;
 import jakarta.interceptor.Interceptors;
 import jakarta.persistence.EntityManager;
+import jakarta.ejb.Local;
 import jakarta.persistence.PersistenceContext;
 
 import java.math.BigDecimal;
@@ -29,7 +30,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Stateless
+@Stateless(name = "VendorServiceBean")
+@Local(VendorService.class)
 @Interceptors({AuditLogInterceptor.class, PerformanceMonitorInterceptor.class, ExceptionLoggingInterceptor.class})
 public class VendorServiceBean implements VendorService {
 
