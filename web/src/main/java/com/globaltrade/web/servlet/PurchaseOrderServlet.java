@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@WebServlet(name = "PurchaseOrderServlet", urlPatterns = {"/purchase-orders", "/purchase-orders/action", "/purchase-orders/create"})
+@WebServlet(name = "PurchaseOrderServlet",
+        urlPatterns = {"/purchase-orders", "/purchase-orders/action", "/purchase-orders/create"})
 public class PurchaseOrderServlet extends HttpServlet {
 
     @EJB
@@ -62,7 +63,9 @@ public class PurchaseOrderServlet extends HttpServlet {
             List<StockDTO> allStocks = inventoryService.getAllStock();
 
             List<StockDTO> lowStocks = allStocks.stream()
-                    .filter(s -> "LOW_STOCK".equalsIgnoreCase(s.getStatusName()) || "OUT_OF_STOCK".equalsIgnoreCase(s.getStatusName()) || (s.getStockQty() != null && s.getStockQty() <= 10))
+                    .filter(s -> "LOW_STOCK".equalsIgnoreCase(s.getStatusName())
+                            || "OUT_OF_STOCK".equalsIgnoreCase(s.getStatusName())
+                            || (s.getStockQty() != null && s.getStockQty() <= 10))
                     .collect(Collectors.toList());
 
             request.setAttribute("purchaseOrders", purchaseOrders);
@@ -119,7 +122,9 @@ public class PurchaseOrderServlet extends HttpServlet {
                 }
 
                 purchaseOrderService.createPurchaseOrder(warehouseId, vendorId, productQuantities);
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("PO Created with " + productQuantities.size() + " items successfully.", StandardCharsets.UTF_8.name()));
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success="
+                        + URLEncoder.encode("PO Created with " + productQuantities.size()
+                        + " items successfully.", StandardCharsets.UTF_8.name()));
                 return;
 
             } else if ("receive".equalsIgnoreCase(action)) {
@@ -129,7 +134,8 @@ public class PurchaseOrderServlet extends HttpServlet {
                 }
                 Long poId = Long.parseLong(poIdStr);
                 purchaseOrderService.receivePurchaseOrderGoods(poId);
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("Goods Received and Inventory Stock Updated.", StandardCharsets.UTF_8.name()));
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success="
+                        + URLEncoder.encode("Goods Received and Inventory Stock Updated.", StandardCharsets.UTF_8.name()));
                 return;
 
             } else if ("accept".equalsIgnoreCase(action)) {
@@ -137,7 +143,8 @@ public class PurchaseOrderServlet extends HttpServlet {
                 if (poIdStr != null) {
                     purchaseOrderService.updatePurchaseOrderStatus(Long.parseLong(poIdStr), "PROCESSING");
                 }
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("Purchase Order Accepted.", StandardCharsets.UTF_8.name()));
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success="
+                        + URLEncoder.encode("Purchase Order Accepted.", StandardCharsets.UTF_8.name()));
                 return;
 
             } else if ("reject".equalsIgnoreCase(action)) {
@@ -145,7 +152,8 @@ public class PurchaseOrderServlet extends HttpServlet {
                 if (poIdStr != null) {
                     purchaseOrderService.updatePurchaseOrderStatus(Long.parseLong(poIdStr), "CANCELLED");
                 }
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("Purchase Order Rejected.", StandardCharsets.UTF_8.name()));
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success="
+                        + URLEncoder.encode("Purchase Order Rejected.", StandardCharsets.UTF_8.name()));
                 return;
 
             } else if ("dispatch".equalsIgnoreCase(action)) {
@@ -153,14 +161,16 @@ public class PurchaseOrderServlet extends HttpServlet {
                 if (poIdStr != null) {
                     purchaseOrderService.updatePurchaseOrderStatus(Long.parseLong(poIdStr), "PROCESSING");
                 }
-                response.sendRedirect(request.getContextPath() + "/purchase-orders?success=" + URLEncoder.encode("Purchase Order Dispatched.", StandardCharsets.UTF_8.name()));
+                response.sendRedirect(request.getContextPath() + "/purchase-orders?success="
+                        + URLEncoder.encode("Purchase Order Dispatched.", StandardCharsets.UTF_8.name()));
                 return;
             }
 
             response.sendRedirect(request.getContextPath() + "/purchase-orders");
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/purchase-orders?error=" + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8.name()));
+            response.sendRedirect(request.getContextPath() + "/purchase-orders?error="
+                    + URLEncoder.encode(e.getMessage(), StandardCharsets.UTF_8.name()));
         }
     }
 }

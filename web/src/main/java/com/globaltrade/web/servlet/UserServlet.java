@@ -38,10 +38,12 @@ public class UserServlet extends HttpServlet {
 
             userService.createUser(fullName, email, roleName);
             
-            resp.sendRedirect(req.getContextPath() + "/users?success=" + URLEncoder.encode("User registered successfully. Credentials sent via email.", StandardCharsets.UTF_8.name()));
+            resp.sendRedirect(req.getContextPath() + "/users?success="
+                    + URLEncoder.encode("User registered successfully. Credentials sent via email.", StandardCharsets.UTF_8.name()));
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendRedirect(req.getContextPath() + "/users?error=" + URLEncoder.encode(e.getMessage() != null ? e.getMessage() : "Failed to register user", StandardCharsets.UTF_8.name()));
+            resp.sendRedirect(req.getContextPath() + "/users?error="
+                    + URLEncoder.encode(e.getMessage() != null ? e.getMessage() : "Failed to register user", StandardCharsets.UTF_8.name()));
         }
     }
 }

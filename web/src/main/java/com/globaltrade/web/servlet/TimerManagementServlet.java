@@ -37,17 +37,20 @@ public class TimerManagementServlet extends HttpServlet {
             if ("/timers/trigger".equals(path)) {
                 String jobType = req.getParameter("jobType");
                 timerService.triggerJobNow(jobType);
-                resp.sendRedirect(req.getContextPath() + "/timers?success=" + URLEncoder.encode("Timer job '" + jobType + "' triggered and executed successfully.", StandardCharsets.UTF_8.name()));
+                resp.sendRedirect(req.getContextPath() + "/timers?success="
+                        + URLEncoder.encode("Timer job '" + jobType + "' triggered and executed successfully.", StandardCharsets.UTF_8.name()));
                 return;
             } else if ("/timers/toggle".equals(path)) {
                 Long jobId = Long.parseLong(req.getParameter("jobId"));
                 timerService.toggleJobStatus(jobId);
-                resp.sendRedirect(req.getContextPath() + "/timers?success=" + URLEncoder.encode("Timer job status updated successfully.", StandardCharsets.UTF_8.name()));
+                resp.sendRedirect(req.getContextPath() + "/timers?success="
+                        + URLEncoder.encode("Timer job status updated successfully.", StandardCharsets.UTF_8.name()));
                 return;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendRedirect(req.getContextPath() + "/timers?error=" + URLEncoder.encode("Operation failed: " + e.getMessage(), StandardCharsets.UTF_8.name()));
+            resp.sendRedirect(req.getContextPath() + "/timers?error="
+                    + URLEncoder.encode("Operation failed: " + e.getMessage(), StandardCharsets.UTF_8.name()));
             return;
         }
 

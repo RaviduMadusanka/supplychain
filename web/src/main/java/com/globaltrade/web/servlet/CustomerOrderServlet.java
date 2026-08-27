@@ -70,12 +70,14 @@ public class CustomerOrderServlet extends HttpServlet {
 
             OrderDTO createdOrder = orderService.createCustomerOrder(user.getId(), productQuantities, address, countryId);
 
-            String successMsg = "Order " + createdOrder.getOrderCode() + " placed successfully! Tracking ref: " + (createdOrder.getShipmentCode() != null ? createdOrder.getShipmentCode() : "Assigned");
+            String successMsg = "Order " + createdOrder.getOrderCode() + " placed successfully! Tracking ref: "
+                    + (createdOrder.getShipmentCode() != null ? createdOrder.getShipmentCode() : "Assigned");
             resp.sendRedirect(req.getContextPath() + "/dashboard/customer?success=" + URLEncoder.encode(successMsg, StandardCharsets.UTF_8.name()));
 
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendRedirect(req.getContextPath() + "/customer/browse?error=" + URLEncoder.encode("Failed to place order: " + e.getMessage(), StandardCharsets.UTF_8.name()));
+            resp.sendRedirect(req.getContextPath() + "/customer/browse?error=" +
+                    URLEncoder.encode("Failed to place order: " + e.getMessage(), StandardCharsets.UTF_8.name()));
         } finally {
             UserContext.clear();
         }

@@ -101,7 +101,6 @@ public class AuthFilter implements Filter {
             return false;
         }
 
-        // WAREHOUSE MANAGER Modules (Warehouse Dashboard, Stock, Warehouses, Customer Order Processing)
         if (path.startsWith("/dashboard/warehouse") ||
             path.startsWith("/dashboard-wh.jsp") ||
             path.startsWith("/inventory") ||
@@ -112,14 +111,12 @@ public class AuthFilter implements Filter {
             return "WAREHOUSE_MANAGER".equals(role);
         }
 
-        // VENDOR Modules
         if (path.startsWith("/dashboard/vendor") ||
             path.startsWith("/dashboard-vendor.jsp") ||
             path.startsWith("/vendor/")) {
             return "VENDOR".equals(role);
         }
 
-        // CUSTOMER Modules
         if (path.startsWith("/dashboard/customer") ||
             path.startsWith("/dashboard-customer.jsp") ||
             path.startsWith("/browse-products.jsp") ||

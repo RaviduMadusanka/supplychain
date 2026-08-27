@@ -48,7 +48,8 @@ public class VendorDashboardServlet extends HttpServlet {
         VendorPerformanceDTO performance = vendorService.getLatestPerformanceByVendorId(vendorId);
 
         long openOrderCount = vendorPOs.stream()
-                .filter(po -> po.getStatusName() != null && ("PENDING".equalsIgnoreCase(po.getStatusName()) || "PROCESSING".equalsIgnoreCase(po.getStatusName())))
+                .filter(po -> po.getStatusName() != null && ("PENDING".equalsIgnoreCase(po.getStatusName())
+                        || "PROCESSING".equalsIgnoreCase(po.getStatusName())))
                 .count();
 
         req.setAttribute("vendor", vendor);

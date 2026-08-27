@@ -58,11 +58,13 @@ public class VendorServlet extends HttpServlet {
             }
 
             vendorService.createVendor(companyName, contactPerson, email, phone, countryId, rating, sessionUserId);
-            resp.sendRedirect(req.getContextPath() + "/vendors?success=" + URLEncoder.encode("Vendor registered successfully!", StandardCharsets.UTF_8.name()));
+            resp.sendRedirect(req.getContextPath() + "/vendors?success="
+                    + URLEncoder.encode("Vendor registered successfully!", StandardCharsets.UTF_8.name()));
 
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendRedirect(req.getContextPath() + "/vendors?error=" + URLEncoder.encode(e.getMessage() != null ? e.getMessage() : "Failed to register vendor", StandardCharsets.UTF_8.name()));
+            resp.sendRedirect(req.getContextPath() + "/vendors?error="
+                    + URLEncoder.encode(e.getMessage() != null ? e.getMessage() : "Failed to register vendor", StandardCharsets.UTF_8.name()));
         }
     }
 }
