@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://jboss.org/schema/arquillian
+                http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <!--
+        GlassFish 7 Remote Container Configuration
+        ============================================
+        Activate integration tests with: mvn clean test -Parq-glassfish-remote
+
+        Prerequisites:
+          1. GlassFish 7.0.21 running on localhost
+          2. Admin console accessible at http://localhost:4848
+          3. jdbc/SupplyChainDS JNDI resource configured
+          4. ear-1.0-SNAPSHOT.ear deployed (or datasource accessible standalone)
+
+        To add the GlassFish 7 remote container adapter, see ejb/pom.xml
+        profile "arq-glassfish-remote" for the dependency coordinates.
+    -->
+    <container qualifier="glassfish-remote" default="true">
+        <configuration>
+            <property name="adminHost">localhost</property>
+            <property name="adminPort">4848</property>
+            <property name="adminUser">admin</property>
+            <property name="adminPassword"></property>
+        </configuration>
+    </container>
+
+</arquillian>

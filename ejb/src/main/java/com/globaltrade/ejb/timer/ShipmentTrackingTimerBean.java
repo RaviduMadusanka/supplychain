@@ -30,7 +30,31 @@ public class ShipmentTrackingTimerBean {
     @PersistenceContext(unitName = "SupplyChainPU")
     private EntityManager em;
 
-    @Schedule(minute = "*/30", hour = "*", persistent = false)
+    /**
+     * Persistent Timer — Shipment Tracking &amp; Milestone Evaluator (fires every 30 minutes).
+     *
+     * <p>This timer uses {@code persistent = true} — unlike the other utility timers in this
+     * system which use {@code persistent = false} — because shipment milestone state transitions
+     * are business-critical operations in a globally distributed logistics environment:
+     *
+     * <ul>
+     *   <li><strong>Server Restart Recovery:</strong> If GlassFish restarts mid-cycle, the EJB
+     *       Timer Service recreates this timer from the persistent store ({@code ejb__timer__tbl})
+     *       and fires any missed executions on restart, guaranteeing no in-transit shipments are
+     *       left in a stale PENDING status.</li>
+     *   <li><strong>Cluster-Awareness:</strong> In a clustered deployment (Colombo + Singapore +
+     *       Dubai nodes), a persistent timer fires exactly once across all cluster members,
+     *       preventing duplicate milestone updates.</li>
+     *   <li><strong>Auditability:</strong> Timer metadata (last fire, next fire, owner node) is
+     *       visible in the GlassFish Admin Console and auditable via the EJB timer table.</li>
+     * </ul>
+     *
+     * <p>The other timers ({@code InventoryAlertTimerBean}, {@code VendorPerformanceTimerBean},
+     * {@code InventoryAlertCleanupTimer}) use {@code persistent = false} because they perform
+     * idempotent, read-heavy scans that are safe to miss on server restart.
+     */
+    @Schedule(minute = "*/30", hour = "*", persistent = true,
+              info = "NexTrade-ShipmentMilestoneTracker-PersistentTimer")
     public void trackActiveShipments() {
         LOGGER.info("--- [TIMER-SERVICE] Executing Automated Shipment Tracking & Milestone Evaluator ---");
 
