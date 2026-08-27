@@ -26,11 +26,9 @@
         <class>com.globaltrade.core.entity.Vendor</class>
         <class>com.globaltrade.core.entity.VendorPerformance</class>
         <class>com.globaltrade.core.entity.Warehouse</class>
-        
         <class>com.globaltrade.core.entity.Country</class>
         <class>com.globaltrade.core.entity.Category</class>
         <class>com.globaltrade.core.entity.OrderStatus</class>
-        
         <class>com.globaltrade.core.entity.AccountStatus</class>
         <class>com.globaltrade.core.entity.Role</class>
         <class>com.globaltrade.core.entity.Company</class>

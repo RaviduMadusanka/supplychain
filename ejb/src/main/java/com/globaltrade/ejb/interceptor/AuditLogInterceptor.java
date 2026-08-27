@@ -33,7 +33,6 @@ public class AuditLogInterceptor {
             String rawMethodName = ic.getMethod().getName();
             String lowerMethodName = rawMethodName.toLowerCase();
 
-            // Skip read-only/fetching methods to avoid log spam
             if (lowerMethodName.startsWith("get") ||
                 lowerMethodName.startsWith("find") ||
                 lowerMethodName.startsWith("load") ||

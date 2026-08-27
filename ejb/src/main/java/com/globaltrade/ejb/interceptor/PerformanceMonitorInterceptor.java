@@ -7,25 +7,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * PerformanceMonitorInterceptor -- EJB Method-Level Latency and Throughput Monitor.
- *
- * Intercepts every EJB method invocation and records:
- *   - Wall-clock execution time (ms)
- *   - Cumulative call count per method
- *   - Running min / avg / max duration per method
- *
- * Metrics are stored in a JVM-scoped ConcurrentHashMap and dumped hourly by
- * PerformanceMetricsReportTimerBean and via the /monitoring/performance admin endpoint.
- */
 public class PerformanceMonitorInterceptor {
 
     private static final Logger LOGGER = Logger.getLogger(PerformanceMonitorInterceptor.class.getName());
     private static final long LATENCY_THRESHOLD_MS = 500L;
-
-    // ------------------------------------------------------------------
-    // Per-method metrics record
-    // ------------------------------------------------------------------
 
     public static final class MethodMetrics {
         public final String methodKey;
@@ -58,13 +43,8 @@ public class PerformanceMonitorInterceptor {
         }
     }
 
-    /** Global metrics registry -- shared across all EJB instances in this JVM. */
     public static final ConcurrentHashMap<String, MethodMetrics> METRICS_REGISTRY =
             new ConcurrentHashMap<>();
-
-    // ------------------------------------------------------------------
-    // Interceptor
-    // ------------------------------------------------------------------
 
     @AroundInvoke
     public Object monitorPerformance(InvocationContext ic) throws Exception {
@@ -92,10 +72,6 @@ public class PerformanceMonitorInterceptor {
         }
     }
 
-    // ------------------------------------------------------------------
-    // Report generator (called by timer + admin endpoint)
-    // ------------------------------------------------------------------
-
     public static String dumpMetricsReport() {
         if (METRICS_REGISTRY.isEmpty()) {
             String msg = "[PERFORMANCE-REPORT] No EJB metrics recorded yet.";
@@ -105,21 +81,21 @@ public class PerformanceMonitorInterceptor {
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
-        sb.append("==========================================================================================================================================\n");
+        sb.append("=====================================================================================================\n");
         sb.append(" NexTrade SCM -- EJB Performance Metrics Report\n");
-        sb.append("==========================================================================================================================================\n");
+        sb.append("=====================================================================================================\n");
         sb.append(String.format(" Generated at    : %s%n", java.time.LocalDateTime.now()));
         sb.append(String.format(" Tracked methods : %d%n", METRICS_REGISTRY.size()));
-        sb.append("------------------------------------------------------------------------------------------------------------------------------------------\n");
+        sb.append("-----------------------------------------------------------------------------------------------------\n");
         sb.append(String.format(" %-55s | %-8s | %-8s | %-8s | %-9s | %-10s%n",
                 "EJB Method", "Calls", "Min(ms)", "Avg(ms)", "Max(ms)", "Total(ms)"));
-        sb.append("------------------------------------------------------------------------------------------------------------------------------------------\n");
+        sb.append("-----------------------------------------------------------------------------------------------------\n");
 
         METRICS_REGISTRY.values().stream()
                 .sorted((a, b) -> Long.compare(b.totalMs.get(), a.totalMs.get()))
                 .forEach(m -> sb.append(" ").append(m).append("\n"));
 
-        sb.append("==========================================================================================================================================");
+        sb.append("=====================================================================================================");
 
         String report = sb.toString();
         LOGGER.info(report);
