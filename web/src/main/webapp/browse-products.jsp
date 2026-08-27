@@ -48,7 +48,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="h-16 bg-white border-b border-line flex items-center justify-between px-6 md:px-10 sticky top-0 z-40 shadow-xs">
   <div class="flex items-center gap-8">
     <a href="${pageContext.request.contextPath}/customer/browse" class="flex items-center gap-2.5">
@@ -74,7 +73,6 @@
   </div>
 </header>
 
-<!-- MAIN CONTENT -->
 <main class="max-w-6xl mx-auto px-6 py-8">
   <c:if test="${not empty param.error}">
     <div class="mb-6 p-4 rounded-xl bg-amber/10 border border-amber/30 text-amber flex items-center justify-between text-sm font-medium">
@@ -105,7 +103,6 @@
     </div>
   </div>
 
-  <!-- PRODUCT GRID -->
   <div id="catalogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <c:choose>
       <c:when test="${not empty stocks}">
@@ -174,7 +171,6 @@
   </div>
 </main>
 
-<!-- FLOATING CART STRIP -->
 <div id="cartBar" class="hidden fixed bottom-0 left-0 right-0 z-50 bg-ink text-white border-t border-ink/20 shadow-2xl px-6 py-4">
   <div class="max-w-6xl mx-auto flex items-center justify-between">
     <div class="flex items-center gap-4">
@@ -195,7 +191,6 @@
   </div>
 </div>
 
-<!-- CHECKOUT / ORDER MODAL -->
 <div id="checkoutModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-ink/60 backdrop-blur-xs p-4">
   <div class="bg-white rounded-2xl p-6 w-full max-w-xl shadow-2xl border border-line flex flex-col max-h-[90vh] overflow-hidden">
     <div class="flex justify-between items-center pb-4 border-b border-line">
@@ -208,7 +203,6 @@
 
     <form action="${pageContext.request.contextPath}/customer/order/create" method="POST" id="checkoutOrderForm" onsubmit="return validateOrderForm()" class="space-y-4 pt-4 overflow-y-auto pr-1">
       <div id="cartItemsContainer" class="space-y-2">
-        <!-- Injected dynamically by JS -->
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
@@ -226,7 +220,6 @@
         </div>
       </div>
 
-      <!-- PRICE BREAKDOWN BOX -->
       <div class="p-4 rounded-xl bg-bg border border-line space-y-2 text-xs">
         <div class="flex justify-between text-ink/70">
           <span>Items Subtotal:</span>
@@ -255,7 +248,7 @@
 </div>
 
 <script>
-  let cart = {}; // { itemId: { id, sku, name, price, qty, maxStock } }
+  let cart = {};
 
   function filterCatalog() {
     const q = (document.getElementById('catalogSearch').value || '').toLowerCase();
@@ -338,7 +331,6 @@
       const item = cart[id];
       const div = document.createElement('div');
       div.className = 'flex items-center justify-between p-3 rounded-xl bg-bg border border-line text-xs';
-      // Build HTML using string concat to avoid JSP EL intercepting JS template literals
       var priceStr = parseFloat(item.price).toFixed(2);
       var lineTotalStr = (parseFloat(item.price) * item.qty).toFixed(2);
       div.innerHTML =

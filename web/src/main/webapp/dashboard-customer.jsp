@@ -47,7 +47,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="h-16 bg-white border-b border-line flex items-center justify-between px-6 md:px-10 sticky top-0 z-40 shadow-xs">
   <div class="flex items-center gap-8">
     <a href="${pageContext.request.contextPath}/customer/browse" class="flex items-center gap-2.5">
@@ -73,7 +72,6 @@
   </div>
 </header>
 
-<!-- MAIN CONTENT -->
 <main class="max-w-6xl mx-auto px-6 py-8">
   <c:if test="${not empty param.success}">
     <div class="mb-6 p-4 rounded-xl bg-teal/10 border border-teal/30 text-teal flex items-center justify-between text-sm font-medium">
@@ -94,7 +92,6 @@
     </div>
   </c:if>
 
-  <!-- TITLE & CTA -->
   <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
     <div>
       <div class="flex items-center gap-2 mb-1">
@@ -109,7 +106,6 @@
     </a>
   </div>
 
-  <!-- KPI ROW -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
     <div class="card p-5">
       <div class="text-xs font-mono uppercase text-ink/50 mb-1">Total Orders Placed</div>
@@ -133,7 +129,6 @@
     </div>
   </div>
 
-  <!-- ORDERS TABLE -->
   <div class="card overflow-hidden shadow-xs">
     <div class="px-6 py-4 border-b border-line bg-bg/60 flex items-center justify-between">
       <div class="flex items-center gap-2">

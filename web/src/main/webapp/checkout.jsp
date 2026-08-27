@@ -30,7 +30,6 @@
 
 <main class="max-w-2xl mx-auto p-8">
 
-  <!-- STEP 1: order form -->
   <div id="orderForm">
     <a href="catalog.jsp" class="text-xs text-primary font-medium hover:underline">&larr; Back to catalog</a>
     <h1 class="font-display text-2xl font-semibold mt-3 mb-6">Confirm your order</h1>
@@ -79,7 +78,6 @@
     </button>
   </div>
 
-  <!-- STEP 2: processing animation -->
   <div id="processingView" class="hidden text-center py-16">
     <svg class="spinner w-10 h-10 text-primary mx-auto mb-6" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
     <div id="processingLabel" class="font-display text-lg font-semibold mb-6">Reserving stock&hellip;</div>
@@ -91,7 +89,6 @@
     <p class="text-xs text-ink/40 mt-4 font-mono">Bean-Managed Transaction in progress &mdash; do not close this tab</p>
   </div>
 
-  <!-- STEP 3: confirmation -->
   <div id="successView" class="hidden text-center py-12">
     <div class="w-16 h-16 rounded-full bg-tealsoft bg-[#E3F7F6] text-teal flex items-center justify-center mx-auto mb-6">
       <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>

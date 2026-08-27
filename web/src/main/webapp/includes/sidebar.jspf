@@ -1,10 +1,3 @@
-<%-- ==========================================================
-     Sidebar nav + topbar open. Page must set before including:
-       String activePage  (e.g. "dashboard","vendors","products", ...)
-       User role and name are read from session (UserDTO) if present, 
-       otherwise falls back to local variables.
-     Roles: "Admin", "Warehouse Manager", "Vendor"
-     ========================================================== --%>
 <%
   com.globaltrade.core.dto.UserDTO sessionUser = (com.globaltrade.core.dto.UserDTO) session.getAttribute("user");
   if (sessionUser != null) {
@@ -31,7 +24,6 @@
 
   <nav class="flex-1 overflow-y-auto scrollnice py-2">
 
-    <%-- ===================== ADMIN NAVIGATION ===================== --%>
     <% if ("ADMIN".equalsIgnoreCase(userRole)) { %>
 
     <div class="navsection">Overview</div>
@@ -64,7 +56,6 @@
       Timer Services
     </a>
 
-    <%-- ===================== WAREHOUSE MANAGER NAVIGATION ===================== --%>
     <% } else if ("WAREHOUSE_MANAGER".equalsIgnoreCase(userRole)) { %>
 
     <div class="navsection">Overview</div>
@@ -110,7 +101,6 @@
       Vendor Performance
     </a>
 
-    <%-- ===================== VENDOR NAVIGATION ===================== --%>
     <% } else if ("VENDOR".equalsIgnoreCase(userRole)) { %>
 
     <div class="navsection">Overview</div>

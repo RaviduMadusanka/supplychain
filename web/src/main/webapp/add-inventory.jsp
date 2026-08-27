@@ -4,16 +4,12 @@
   String pageTitle = "Inventory";
   String pageSubtitle = "Add Stock";
   String activePage = "products";
-  
-  // Try to read user info from session
-  // (Variables are handled by sidebar.jspf if session exists, but must be declared here)
   String userName = "Saman Kumara";
   String userRole = "WAREHOUSE_MANAGER";
 %>
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>
 
-  <!-- Top Navigation actions (similar to screenshot) -->
   <div class="flex items-center justify-between mb-8">
     <div>
       <h2 class="text-2xl font-display font-semibold text-ink">Add Inventory</h2>
@@ -36,14 +32,12 @@
   <% } %>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <!-- LEFT: Form -->
+
     <div class="lg:col-span-2">
       <div class="card p-6">
         <h3 class="text-sm font-semibold mb-6">Stock Entry</h3>
         
         <form id="addInventoryForm" action="<%= request.getContextPath() %>/inventory/add" method="post" class="space-y-5">
-          <!-- Product -->
           <div>
             <label class="block text-xs font-medium text-ink/70 mb-1.5">Product</label>
             <select id="productId" name="productId" class="w-full px-3 py-2.5 bg-white border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition" required>
@@ -55,7 +49,6 @@
             <p class="text-[10px] text-ink/40 mt-1.5">Don't see the product? <a href="#" class="text-primary hover:underline">Create it first.</a></p>
           </div>
 
-          <!-- Warehouse & Stock Qty -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label class="block text-xs font-medium text-ink/70 mb-1.5">Warehouse</label>
@@ -72,7 +65,6 @@
             </div>
           </div>
 
-          <!-- Unit Price & Low-Stock Threshold -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label class="block text-xs font-medium text-ink/70 mb-1.5">Unit Price (USD)</label>
@@ -86,7 +78,6 @@
             </div>
           </div>
 
-          <!-- Status -->
           <div class="w-1/2 pr-2.5">
             <label class="block text-xs font-medium text-ink/70 mb-1.5">Status</label>
             <select id="statusId" name="statusId" class="w-full px-3 py-2.5 bg-white border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition">
@@ -95,13 +86,11 @@
             </select>
           </div>
 
-          <!-- Notes -->
           <div>
             <label class="block text-xs font-medium text-ink/70 mb-1.5">Notes (optional)</label>
             <textarea id="notes" name="notes" rows="3" placeholder="Batch number, supplier reference, storage conditions, etc." class="w-full px-3 py-2.5 bg-white border border-line rounded-lg text-sm focus:outline-none focus:border-primary transition resize-none"></textarea>
           </div>
 
-          <!-- Actions -->
           <div class="pt-6 mt-6 border-t border-line flex justify-end gap-3">
             <a href="<%= request.getContextPath() %>/inventory" class="px-5 py-2.5 rounded-lg border border-line text-sm font-medium hover:bg-bg transition bg-white">Cancel</a>
             <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primarydk transition flex items-center gap-2">
@@ -113,7 +102,6 @@
       </div>
     </div>
 
-    <!-- RIGHT: Preview Card -->
     <div class="lg:col-span-1">
       <div class="card p-6 sticky top-6">
         <h3 class="text-sm font-semibold mb-6">Preview</h3>
@@ -168,10 +156,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const pStatus = document.getElementById("previewStatus");
 
     function updatePreview() {
-        // Product & Category
         if (productId.selectedIndex > 0) {
             const opt = productId.options[productId.selectedIndex];
-            // Name part without SKU (assuming format "Name (SKU)")
             let text = opt.text;
             let name = text.substring(0, text.lastIndexOf("(")).trim();
             pProduct.textContent = name || text;
@@ -181,7 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
             pCategory.innerHTML = "&mdash;";
         }
 
-        // Qty & Price
         const q = parseInt(stockQuantity.value) || 0;
         const p = parseFloat(unitPrice.value) || 0;
         pQty.textContent = q;
@@ -189,7 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
         pPrice.textContent = "$" + p.toFixed(2);
         pTotal.textContent = "$" + (q * p).toFixed(2);
 
-        // Status
         if (statusId.value === "1") {
             pStatus.className = "tag tag-teal text-xs";
             pStatus.innerHTML = '<span class="tag-dot"></span>Will be Active';

@@ -15,8 +15,7 @@
     <h2 class="text-xl font-display font-bold text-ink">System Monitoring &amp; Security Logs</h2>
     <p class="text-sm text-ink/50 mt-0.5"><%= pageSubtitle %></p>
   </div>
-  
-  <!-- Tabs Switcher -->
+
   <div class="flex bg-white p-1 rounded-xl border border-line shadow-xs">
     <button type="button" id="tabAuditBtn" onclick="switchMonitorTab('audit')" class="px-4 py-2 text-xs font-bold rounded-lg bg-primary text-white transition flex items-center gap-2">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -29,11 +28,8 @@
   </div>
 </div>
 
-<!-- ==================== TAB 1: AUDIT LOGS ==================== -->
 <div id="tabAuditView" class="space-y-4">
-  <!-- Filter Controls Bar -->
   <div class="card p-4 bg-white flex flex-col lg:flex-row items-center justify-between gap-4 shadow-sm">
-    <!-- Quick Date Buttons -->
     <div class="flex items-center gap-1.5 w-full lg:w-auto">
       <button type="button" id="btnToday" onclick="setFilterMode('today')" class="date-btn px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-primary text-white transition shadow-sm">Today</button>
       <button type="button" id="btnYesterday" onclick="setFilterMode('yesterday')" class="date-btn px-3.5 py-1.5 text-xs font-medium rounded-lg text-ink/70 hover:bg-bg border border-line transition">Yesterday</button>
@@ -41,13 +37,11 @@
     </div>
 
     <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto flex-1 justify-end">
-      <!-- Date Picker for custom date selection -->
       <div class="flex items-center gap-2 w-full sm:w-auto">
         <span class="text-xs text-ink/50 font-mono whitespace-nowrap">Pick Date:</span>
         <input type="date" id="customDatePicker" onchange="setCustomDate(this.value)" class="px-3 py-1.5 rounded-lg border border-line bg-bg/50 text-xs font-mono text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 w-full sm:w-auto" />
       </div>
 
-      <!-- Keyword Search -->
       <div class="relative w-full sm:w-72">
         <input type="text" id="logSearch" onkeyup="applyFilters()" placeholder="Search action, entity, user..." class="w-full pl-8 pr-3.5 py-1.5 rounded-lg border border-line bg-bg/50 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20" />
         <svg class="w-3.5 h-3.5 text-ink/40 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -116,7 +110,6 @@
   </div>
 </div>
 
-<!-- ==================== TAB 2: EXCEPTION LOGS ==================== -->
 <div id="tabExceptionView" class="hidden space-y-4">
   <div class="p-4 rounded-xl bg-amber/5 border border-amber/20 flex items-center justify-between text-xs text-amber leading-relaxed">
     <div class="flex items-center gap-2">
@@ -163,7 +156,6 @@
                   </td>
                 </tr>
 
-                <!-- Collapsible Stack Trace Row -->
                 <tr id="trace-${ex.id}" style="display:none;" class="bg-slate-900 text-slate-100">
                   <td colspan="5" class="p-4 font-mono text-[11px] leading-relaxed overflow-x-auto whitespace-pre-wrap">
                     <div class="text-amber font-bold mb-1">${ex.exceptionType}: ${ex.message}</div>
@@ -216,7 +208,6 @@
     row.style.display = (row.style.display === 'none' || row.style.display === '') ? 'table-row' : 'none';
   }
 
-  // Audit Date Filter Logic
   let currentFilter = 'today';
   let customDateValue = '';
 
@@ -275,7 +266,6 @@
       const entity = row.dataset.entity;
       const details = row.dataset.details;
 
-      // Date match
       let dateMatch = false;
       if (currentFilter === 'all') {
         dateMatch = true;
@@ -287,7 +277,6 @@
         dateMatch = (rowDate === customDateValue);
       }
 
-      // Keyword match
       let searchMatch = true;
       if (query) {
         searchMatch = user.includes(query) || action.includes(query) || entity.includes(query) || details.includes(query) || rowDate.includes(query);
@@ -305,7 +294,6 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    // If today has 0 records, fallback to all so admin sees full history
     const todayStr = new Date().toISOString().split('T')[0];
     const todayRows = Array.from(document.querySelectorAll('.log-row')).filter(r => r.dataset.date === todayStr);
     if (todayRows.length === 0) {

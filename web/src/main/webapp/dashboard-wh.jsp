@@ -135,7 +135,6 @@ function toggleModal(id) {
 }
 </script>
 
-<!-- Startup Alert Modal for Low Stock -->
 <c:if test="${lowStockCount > 0}">
   <div id="startupAlertModal" class="flex fixed inset-0 z-[100] items-center justify-center bg-ink/50 backdrop-blur-sm">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-all translate-y-0 scale-100">

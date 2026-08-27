@@ -11,7 +11,8 @@
 <%@ include file="includes/sidebar.jspf" %>
 
   <div class="flex items-center justify-end mb-6">
-    <a href="${pageContext.request.contextPath}/inventory" class="px-4 py-2 border border-slate-300 bg-white rounded-lg text-sm font-medium hover:bg-slate-50 transition flex items-center gap-2 shadow-sm">
+    <a href="${pageContext.request.contextPath}/inventory" class="px-4 py-2 border border-slate-300 bg-white rounded-lg text-sm
+    font-medium hover:bg-slate-50 transition flex items-center gap-2 shadow-sm">
       &larr; Back to Inventory
     </a>
   </div>
@@ -24,8 +25,7 @@
 
   <form action="${pageContext.request.contextPath}/product/add" method="post" enctype="multipart/form-data">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- Left Column: Product Details -->
+
       <div class="lg:col-span-2 space-y-6">
         <div class="card shadow-sm border-0 overflow-hidden rounded-xl">
           <!-- Dark Header -->
@@ -79,10 +79,8 @@
         </div>
       </div>
 
-      <!-- Right Column -->
       <div class="space-y-6">
-        
-        <!-- Product Image -->
+
         <div class="card shadow-sm border-0 overflow-hidden rounded-xl">
           <div class="bg-ink text-white px-6 py-4 border-b border-ink">
             <h3 class="font-display font-semibold text-lg m-0">Product Image</h3>
@@ -102,7 +100,6 @@
           </div>
         </div>
 
-        <!-- Status -->
         <div class="card shadow-sm border-0 overflow-hidden rounded-xl">
           <div class="bg-ink text-white px-6 py-4 border-b border-ink">
             <h3 class="font-display font-semibold text-lg m-0">Status</h3>
@@ -120,7 +117,6 @@
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="flex items-center justify-end gap-4 mt-8 border-t border-line pt-6">
       <a href="${pageContext.request.contextPath}/inventory" class="px-6 py-2.5 rounded-lg border border-slate-300 text-sm font-semibold hover:bg-slate-50 transition shadow-sm bg-white">Cancel</a>
       <button type="submit" class="px-6 py-2.5 rounded-lg bg-gradient-to-r from-primary to-primarydk text-white text-sm font-semibold hover:opacity-90 transition shadow-md flex items-center gap-2 border border-primarydk">

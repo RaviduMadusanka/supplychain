@@ -27,7 +27,6 @@
 <body class="bg-bg text-ink">
 <div class="min-h-screen flex">
 
-  <!-- LEFT :: brand / signature panel -->
   <div class="hidden lg:flex w-[46%] bg-sidebar relative flex-col justify-between p-12 overflow-hidden">
     <div class="absolute inset-0 opacity-[0.07]" style="background-image:radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size:24px 24px;"></div>
 
@@ -40,7 +39,6 @@
       <div class="font-mono text-[11px] text-teal tracking-[0.2em] uppercase mb-4">Live Network Snapshot</div>
       <h2 class="font-display text-3xl text-white leading-tight mb-8">50+ countries.<br>One control tower.</h2>
 
-      <!-- signature: waybill route visual -->
       <div class="bg-white/5 border border-white/10 rounded-xl p-6">
         <div class="flex items-center justify-between font-mono text-[10px] text-white/40 uppercase mb-3">
           <span>SHP-20260702-001</span><span>Colombo &rarr; Dubai</span>
@@ -69,7 +67,6 @@
     <div class="relative font-mono text-[10px] text-white/30">&copy; 2026 GlobalTrade Logistics Corporation</div>
   </div>
 
-  <!-- RIGHT :: login form -->
   <div class="flex-1 flex items-center justify-center p-8">
     <div class="w-full max-w-sm">
       <div class="lg:hidden flex items-center gap-2 mb-8">

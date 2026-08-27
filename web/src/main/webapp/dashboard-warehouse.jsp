@@ -9,7 +9,6 @@
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>
 
-  <!-- KPI row -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
     <div class="card p-5">
       <div class="text-xs text-ink/50 mb-1">SKUs in this warehouse</div>
@@ -29,7 +28,6 @@
     </div>
   </div>
 
-  <!-- tabs -->
   <div class="flex items-center gap-1 mb-5 border-b border-line">
     <button onclick="wmTab(event,'wm-overview')" class="wmtabbtn px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary">Overview</button>
     <button onclick="wmTab(event,'wm-stock')" class="wmtabbtn px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-ink/50">Update Stock</button>
@@ -37,7 +35,6 @@
     <button onclick="wmTab(event,'wm-alerts')" class="wmtabbtn px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-ink/50">Low-Stock Alerts <span class="ml-1 px-1.5 py-0.5 rounded-full bg-ambersoft text-amber text-[10px] font-mono">2</span></button>
   </div>
 
-  <!-- ============ OVERVIEW ============ -->
   <div id="wm-overview">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
       <div class="card">
@@ -74,7 +71,6 @@
     </div>
   </div>
 
-  <!-- ============ UPDATE STOCK ============ -->
   <div id="wm-stock" class="hidden">
     <div class="flex justify-end mb-4">
       <button onclick="toggleModal('addStockModal')" class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primarydk transition">+ Add Stock Receipt</button>
@@ -117,9 +113,7 @@
     </div>
   </div>
 
-  <!-- ============ SHIPMENT STATUS ============ -->
   <div id="wm-shipments" class="hidden space-y-4">
-    <!-- shipment 1 -->
     <div class="card p-5">
       <div class="flex items-center justify-between mb-4">
         <div>
@@ -143,7 +137,6 @@
       </div>
     </div>
 
-    <!-- shipment 2 -->
     <div class="card p-5">
       <div class="flex items-center justify-between mb-4">
         <div>
@@ -168,7 +161,6 @@
     </div>
   </div>
 
-  <!-- ============ LOW-STOCK ALERTS ============ -->
   <div id="wm-alerts" class="hidden space-y-3">
     <div class="card p-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -221,7 +213,6 @@ function toggleModal(id) {
   else { modal.classList.add('hidden'); modal.classList.remove('flex'); }
 }
 
-// ---- Update stock qty ----
 function openStockEdit(rowId, name, sku, currentQty){
   document.getElementById('stockEditProduct').textContent = name + ' (' + sku + ')';
   document.getElementById('stockEditRowId').value = rowId;
@@ -236,7 +227,6 @@ function saveStockEdit(){
   toggleModal('editStockModal');
 }
 
-// ---- Shipment status ----
 function updateShipmentStatus(id){
   const sel = document.getElementById('statussel-' + id);
   const pill = document.getElementById('statuspill-' + id);
@@ -253,7 +243,6 @@ function updateShipmentStatus(id){
   pill.innerHTML = '<span class="tag-dot"></span>' + cfg[1];
 }
 
-// ---- Restock order ----
 function openRestockModal(name, sku, vendor, suggestedQty){
   document.getElementById('restockProduct').textContent = name + ' (' + sku + ')';
   document.getElementById('restockVendor').value = vendor;
@@ -262,7 +251,6 @@ function openRestockModal(name, sku, vendor, suggestedQty){
 }
 </script>
 
-<!-- Update Stock Qty Modal -->
 <div id="editStockModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-sm">
   <div class="bg-white rounded-xl shadow-xl border border-line w-full max-w-md p-6">
     <div class="flex items-center justify-between mb-4">
@@ -287,7 +275,6 @@ function openRestockModal(name, sku, vendor, suggestedQty){
   </div>
 </div>
 
-<!-- Restock Order Modal -->
 <div id="restockModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-sm">
   <div class="bg-white rounded-xl shadow-xl border border-line w-full max-w-md p-6">
     <div class="flex items-center justify-between mb-4">

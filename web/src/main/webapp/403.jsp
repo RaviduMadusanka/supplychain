@@ -22,8 +22,7 @@
     </style>
 </head>
 <body class="bg-bg text-ink min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
-    
-    <!-- Background pattern -->
+
     <div class="absolute inset-0 opacity-[0.03]" style="background-image:radial-gradient(circle at 1px 1px, #12172B 1px, transparent 0); background-size:24px 24px;"></div>
 
     <div class="relative max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 sm:p-10 text-center border border-line">

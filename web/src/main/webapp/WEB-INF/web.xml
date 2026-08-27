@@ -10,7 +10,6 @@
         <welcome-file>login.jsp</welcome-file>
     </welcome-file-list>
 
-    <!-- Session Security & Hardening Configuration -->
     <session-config>
         <session-timeout>30</session-timeout>
         <cookie-config>
@@ -20,7 +19,6 @@
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 
-    <!-- HTTP Error Code Mappings -->
     <error-page>
         <error-code>403</error-code>
         <location>/403.jsp</location>

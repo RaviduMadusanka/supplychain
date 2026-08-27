@@ -21,8 +21,7 @@
     </style>
 </head>
 <body class="bg-bg text-ink min-h-screen flex flex-col p-6 relative overflow-hidden">
-    
-    <!-- Background pattern -->
+
     <div class="absolute inset-0 opacity-[0.03]" style="background-image:radial-gradient(circle at 1px 1px, #12172B 1px, transparent 0); background-size:24px 24px;"></div>
 
     <div class="relative flex-1 flex flex-col items-center justify-center">

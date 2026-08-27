@@ -14,7 +14,6 @@
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>
 
-<!-- Top Hero Banner -->
 <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#12172B] via-[#1B254B] to-[#2547D0] text-white p-6 sm:p-8 mb-8 shadow-xl border border-white/10">
   <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
     <div>
@@ -30,7 +29,6 @@
       </p>
     </div>
 
-    <!-- Actions -->
     <div class="flex items-center gap-3">
       <a href="${pageContext.request.contextPath}/vendor/products" class="px-4 py-2.5 rounded-xl bg-white text-ink hover:bg-slate-100 text-xs font-bold transition shadow-lg flex items-center gap-2">
         <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
@@ -44,7 +42,6 @@
   </div>
 </div>
 
-<!-- Alerts -->
 <c:if test="${not empty param.success}">
   <div class="mb-5 p-4 rounded-xl bg-teal/10 border border-teal/30 text-teal flex items-center justify-between text-sm font-medium shadow-xs">
     <div class="flex items-center gap-2">
@@ -55,9 +52,7 @@
   </div>
 </c:if>
 
-<!-- KPI Cards Strip -->
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-  <!-- Rating -->
   <div class="card p-5 relative overflow-hidden border-t-4 border-t-teal hover:shadow-md transition">
     <div class="text-[11px] text-ink/50 uppercase font-mono tracking-wider font-semibold mb-1">Overall Rating</div>
     <div class="flex items-baseline gap-2">
@@ -67,21 +62,18 @@
     <div class="text-[11px] text-ink/40 font-mono mt-1">EJB Evaluated Standing</div>
   </div>
 
-  <!-- On-time Delivery -->
   <div class="card p-5 relative overflow-hidden border-t-4 border-t-primary hover:shadow-md transition">
     <div class="text-[11px] text-ink/50 uppercase font-mono tracking-wider font-semibold mb-1">On-time Delivery</div>
     <div class="font-display text-3xl font-extrabold text-ink">${performance != null && performance.onTimeDeliveryRate != null ? performance.onTimeDeliveryRate : '98.5'}%</div>
     <div class="text-[11px] text-ink/40 font-mono mt-1">Reliability index</div>
   </div>
 
-  <!-- Open Orders -->
   <div class="card p-5 relative overflow-hidden border-t-4 border-t-amber hover:shadow-md transition">
     <div class="text-[11px] text-ink/50 uppercase font-mono tracking-wider font-semibold mb-1">Pending Action</div>
     <div class="font-display text-3xl font-extrabold ${openOrderCount > 0 ? 'text-amber' : 'text-ink'}">${openOrderCount}</div>
     <div class="text-[11px] text-ink/40 font-mono mt-1">${openOrderCount > 0 ? 'Orders awaiting acceptance' : 'All orders processed'}</div>
   </div>
 
-  <!-- Products Listed -->
   <div class="card p-5 relative overflow-hidden border-t-4 border-t-purple-500 hover:shadow-md transition">
     <div class="text-[11px] text-ink/50 uppercase font-mono tracking-wider font-semibold mb-1">Cataloged SKUs</div>
     <div class="font-display text-3xl font-extrabold text-ink">${vendorProducts != null ? vendorProducts.size() : 0}</div>
@@ -89,9 +81,7 @@
   </div>
 </div>
 
-<!-- Main Content Grid -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <!-- Left (2/3): Recent Purchase Orders for THIS Vendor -->
   <div class="lg:col-span-2 space-y-6">
     <div class="card overflow-hidden shadow-sm">
       <div class="px-5 py-4 border-b border-line flex items-center justify-between bg-white">
@@ -166,7 +156,6 @@
     </div>
   </div>
 
-  <!-- Right (1/3): Performance Summary -->
   <div class="space-y-6">
     <div class="card p-5 shadow-sm">
       <div class="border-b border-line pb-3 mb-4">

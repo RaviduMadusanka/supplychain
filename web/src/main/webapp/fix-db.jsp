@@ -9,12 +9,10 @@
         DataSource ds = (DataSource) ctx.lookup("jdbc/SupplyChainDB");
         Connection conn = ds.getConnection();
         Statement stmt = conn.createStatement();
-        
-        // Update passwords
+
         int updated = stmt.executeUpdate("UPDATE users SET password_hash = 'm4dppKdClZotApjDb7cGI/LfrNqENiN98I2N/Vs3N0w='");
         out.println("<p style='color: green;'>Successfully reset passwords to <b>pass123</b> for " + updated + " users.</p>");
-        
-        // Show current users and roles
+
         out.println("<h3>Current Users:</h3><table border='1' cellpadding='5' style='border-collapse: collapse;'>");
         out.println("<tr><th>Username</th><th>Role</th><th>Status</th></tr>");
         ResultSet rs = stmt.executeQuery("SELECT username, role, status FROM users");

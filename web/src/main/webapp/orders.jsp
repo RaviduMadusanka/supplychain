@@ -10,7 +10,6 @@
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>
 
-  <!-- Notifications -->
   <c:if test="${param.success == 'OrderProcessing'}">
     <div class="mb-6 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-primary flex items-center justify-between text-sm font-medium">
       <div class="flex items-center gap-2">
@@ -48,7 +47,6 @@
     </div>
   </c:if>
 
-  <!-- Counts calculation -->
   <c:set var="pendingCount" value="0" />
   <c:set var="processingCount" value="0" />
   <c:set var="completedCount" value="0" />
@@ -58,7 +56,6 @@
     <c:if test="${o.statusName == 'COMPLETED'}"><c:set var="completedCount" value="${completedCount + 1}" /></c:if>
   </c:forEach>
 
-  <!-- Stats Strip -->
   <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
     <div class="card p-4">
       <div class="text-xs text-ink/50 font-medium">Total Orders</div>
@@ -87,7 +84,6 @@
     </div>
   </div>
 
-  <!-- Filter tabs -->
   <div class="flex items-center justify-between mb-5">
     <div class="flex items-center gap-1 p-1 bg-line/50 rounded-lg text-xs font-mono uppercase">
       <button onclick="filterOrders('All', this)" class="order-tab px-3 py-1.5 rounded-md bg-white shadow-sm font-semibold text-ink">All (${orders.size()})</button>
@@ -97,7 +93,6 @@
     </div>
   </div>
 
-  <!-- Orders Table -->
   <div class="card overflow-hidden">
     <table class="w-full text-sm">
       <thead>
@@ -116,28 +111,20 @@
           <c:when test="${not empty orders}">
             <c:forEach var="o" items="${orders}">
               <tr class="order-row hover:bg-bg/50 transition" data-status="${o.statusName}">
-                
-                <!-- Order Code -->
                 <td class="px-5 py-4 font-mono font-semibold text-xs text-primary">
                   ${o.orderCode}
                 </td>
-
-                <!-- Customer Details -->
                 <td class="px-5 py-4">
                   <div class="font-medium text-ink">${o.customerName}</div>
                   <c:if test="${not empty o.customerAddress}">
                     <div class="text-xs text-ink/50 truncate max-w-xs mt-0.5" title="${o.customerAddress}">${o.customerAddress}</div>
                   </c:if>
                 </td>
-
-                <!-- Items Count & Toggle -->
                 <td class="px-5 py-4">
                   <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-bg border border-line text-xs font-mono">
                     <strong>${o.itemCount}</strong> units (${o.items.size()} SKU)
                   </span>
                 </td>
-
-                <!-- Total Amount & Breakdown -->
                 <td class="px-5 py-4">
                   <div class="font-mono font-bold text-ink text-sm">$${o.totalAmount}</div>
                   <div class="text-[11px] font-mono text-ink/50 mt-0.5">
@@ -151,12 +138,10 @@
                   </div>
                 </td>
 
-                <!-- Placed Date -->
                 <td class="px-5 py-4 text-xs font-mono text-ink/60">
                   ${o.createdAt}
                 </td>
 
-                <!-- Status Badge -->
                 <td class="px-5 py-4">
                   <c:choose>
                     <c:when test="${o.statusName == 'PENDING' || o.statusName == 'CREATED'}">
@@ -178,19 +163,15 @@
                   </c:if>
                 </td>
 
-                <!-- Actions based on Lifecycle -->
                 <td class="px-5 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
-                    
-                    <!-- Toggle items details modal/drawer -->
+
                     <button onclick="toggleDetails('details-${o.id}')" class="px-2.5 py-1.5 rounded-lg border border-line text-xs font-medium hover:bg-bg transition text-ink/70" title="View Items">
                       View Items
                     </button>
 
-                    <!-- Active Actions for PENDING & PROCESSING -->
                     <c:if test="${o.statusName != 'COMPLETED'}">
-                      
-                      <!-- Start Packing (if PENDING) -->
+
                       <c:if test="${(o.statusName == 'PENDING' || o.statusName == 'CREATED') && empty o.shipmentCode}">
                         <form action="${pageContext.request.contextPath}/orders/action" method="POST" class="inline">
                           <input type="hidden" name="action" value="process">
@@ -202,7 +183,6 @@
                         </form>
                       </c:if>
 
-                      <!-- Create Shipment button (ONLY shown when no shipment created yet) -->
                       <c:if test="${empty o.shipmentCode}">
                         <button type="button"
                                 data-order-id="${o.id}" 
@@ -216,7 +196,6 @@
                         </button>
                       </c:if>
 
-                      <!-- Dispatch & Complete (Shown when shipment is created or order is processing) -->
                       <c:if test="${not empty o.shipmentCode || o.statusName == 'PROCESSING'}">
                         <form action="${pageContext.request.contextPath}/orders/action" method="POST" class="inline">
                           <input type="hidden" name="action" value="complete">
@@ -229,7 +208,6 @@
                       </c:if>
                     </c:if>
 
-                    <!-- COMPLETED State -->
                     <c:if test="${o.statusName == 'COMPLETED'}">
                       <span class="text-xs text-teal font-semibold font-mono inline-flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -242,7 +220,6 @@
 
               </tr>
 
-              <!-- Expandable Order Line Items Row -->
               <tr id="details-${o.id}" class="hidden bg-bg/80 border-b border-line">
                 <td colspan="7" class="p-4">
                   <div class="bg-white p-4 rounded-xl border border-line shadow-inner max-w-4xl mx-auto">
@@ -335,7 +312,6 @@
     </table>
   </div>
 
-  <!-- Create Shipment Modal -->
   <div id="createShipmentModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/60 backdrop-blur-sm p-4" style="display: none;">
     <div class="bg-white rounded-2xl border border-line shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
       

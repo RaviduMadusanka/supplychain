@@ -68,7 +68,6 @@ function toggleModal(id) {
 }
 </script>
 
-<!-- Submit Document Modal -->
 <div id="submitDocModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-sm">
   <div class="bg-white rounded-xl shadow-xl border border-line w-full max-w-md p-6">
     <div class="flex items-center justify-between mb-4">

@@ -14,10 +14,8 @@
 <%@ include file="includes/header.jspf" %>
 <%@ include file="includes/sidebar.jspf" %>
 
-<!-- Include Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- 1. EXECUTIVE HERO BANNER (Rich Gradient & Glassmorphism) -->
 <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#12172B] via-[#1B254B] to-[#2547D0] text-white p-6 sm:p-8 mb-8 shadow-xl border border-white/10">
   <!-- Ambient background glow spheres -->
   <div class="absolute -right-12 -top-12 w-64 h-64 bg-primary/30 rounded-full blur-3xl pointer-events-none"></div>
@@ -37,7 +35,6 @@
       </p>
     </div>
 
-    <!-- Quick Actions in Frosted Glass -->
     <div class="flex flex-wrap items-center gap-3">
       <a href="${pageContext.request.contextPath}/users" class="px-4 py-2.5 rounded-xl bg-white text-ink hover:bg-slate-100 text-xs font-bold transition shadow-lg flex items-center gap-2 hover:scale-[1.02]">
         <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -55,9 +52,7 @@
   </div>
 </div>
 
-<!-- 2. HIGH-IMPACT KPI METRIC CARDS -->
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-  <!-- Card 1: Total Users -->
   <div class="relative overflow-hidden rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm hover:shadow-md hover:border-primary/40 transition group">
     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-blue-400"></div>
     <div class="flex items-center justify-between mb-3">
@@ -74,7 +69,6 @@
     </div>
   </div>
 
-  <!-- Card 2: Products / SKUs -->
   <div class="relative overflow-hidden rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm hover:shadow-md hover:border-teal/40 transition group">
     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal to-emerald-400"></div>
     <div class="flex items-center justify-between mb-3">
@@ -91,7 +85,6 @@
     </div>
   </div>
 
-  <!-- Card 3: Stock Health -->
   <div class="relative overflow-hidden rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm hover:shadow-md hover:border-amber/40 transition group">
     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber to-orange-400"></div>
     <div class="flex items-center justify-between mb-3">
@@ -110,7 +103,6 @@
     </div>
   </div>
 
-  <!-- Card 4: EJB Timers -->
   <div class="relative overflow-hidden rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm hover:shadow-md hover:border-purple-400 transition group">
     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-indigo-500"></div>
     <div class="flex items-center justify-between mb-3">
@@ -128,9 +120,7 @@
   </div>
 </div>
 
-<!-- 3. CHARTS SECTION 1 (Vibrant Analytics Grid) -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-  <!-- Area Trend Chart (2/3) -->
   <div class="lg:col-span-2 rounded-2xl bg-white border border-slate-200/80 p-6 shadow-sm flex flex-col justify-between">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
       <div>
@@ -148,7 +138,6 @@
     </div>
   </div>
 
-  <!-- Role Breakdown Donut Chart (1/3) -->
   <div class="rounded-2xl bg-white border border-slate-200/80 p-6 shadow-sm flex flex-col justify-between">
     <div class="mb-2 pb-3 border-b border-slate-100">
       <h3 class="font-display font-bold text-base text-ink">User Access Distribution</h3>
@@ -164,9 +153,7 @@
   </div>
 </div>
 
-<!-- 4. CHARTS SECTION 2: Warehouse Stock & Live EJB Audit Stream -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-  <!-- Bar Chart: Warehouse Stock -->
   <div class="rounded-2xl bg-white border border-slate-200/80 p-6 shadow-sm flex flex-col justify-between">
     <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
       <div>
@@ -180,7 +167,6 @@
     </div>
   </div>
 
-  <!-- Live Audit Activity Stream -->
   <div class="rounded-2xl bg-white border border-slate-200/80 p-6 shadow-sm flex flex-col justify-between">
     <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
       <div>
@@ -230,7 +216,6 @@
   </div>
 </div>
 
-<!-- 5. ENTERPRISE SYSTEM HEALTH COMMAND STRIP -->
 <div class="rounded-2xl bg-[#12172B] text-white p-5 shadow-lg border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
   <div class="flex items-center gap-3.5">
     <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-bold text-teal border border-white/10">
@@ -249,12 +234,9 @@
   </div>
 </div>
 
-<!-- Vibrant Chart.js Configurations -->
 <script>
-  // 1. Revenue & Orders Area Line Chart
   const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
-  
-  // Create gradient fill for primary revenue line
+
   const revGradient = ctxRevenue.createLinearGradient(0, 0, 0, 260);
   revGradient.addColorStop(0, 'rgba(37, 71, 208, 0.25)');
   revGradient.addColorStop(1, 'rgba(37, 71, 208, 0.00)');
@@ -317,7 +299,6 @@
     }
   });
 
-  // 2. Roles Breakdown Donut Chart
   const ctxRoles = document.getElementById('rolesChart').getContext('2d');
   const adminVal = ${adminCount != null && adminCount > 0 ? adminCount : 2};
   const whVal = ${whCount != null && whCount > 0 ? whCount : 1};
@@ -349,7 +330,6 @@
     }
   });
 
-  // 3. Warehouse Inventory Bar Chart
   const ctxWh = document.getElementById('warehouseChart').getContext('2d');
   new Chart(ctxWh, {
     type: 'bar',
