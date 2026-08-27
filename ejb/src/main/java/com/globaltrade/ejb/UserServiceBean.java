@@ -35,7 +35,8 @@ public class UserServiceBean implements UserService {
 
     @Override
     public List<UserDTO> getAllUsers() {
-        List<User> users = em.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.role LEFT JOIN FETCH u.status ORDER BY u.createdAt DESC", User.class).getResultList();
+        List<User> users = em.createQuery("SELECT u FROM User u LEFT JOIN FETCH u.role LEFT JOIN FETCH u.status ORDER BY u.createdAt DESC",
+                User.class).getResultList();
         List<UserDTO> dtos = new ArrayList<>();
         for (User u : users) {
             String roleName = (u.getRole() != null) ? u.getRole().getName() : "UNKNOWN";

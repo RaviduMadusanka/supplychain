@@ -306,13 +306,16 @@ public class PurchaseOrderServiceBean implements PurchaseOrderService {
 
         String statusName = po.getOrderStatus() != null ? po.getOrderStatus().getName() : "PENDING";
 
-        BigDecimal subtotal = (po.getSubtotal() != null && po.getSubtotal().compareTo(BigDecimal.ZERO) > 0) ? po.getSubtotal() : (po.getTotalAmount() != null ? po.getTotalAmount() : BigDecimal.ZERO);
+        BigDecimal subtotal = (po.getSubtotal() != null && po.getSubtotal().compareTo(BigDecimal.ZERO) > 0) ?
+                po.getSubtotal() : (po.getTotalAmount() != null ? po.getTotalAmount() : BigDecimal.ZERO);
         BigDecimal taxAmount = (po.getTaxAmount() != null && po.getTaxAmount().compareTo(BigDecimal.ZERO) > 0) ? po.getTaxAmount() : BigDecimal.ZERO;
 
-        BigDecimal vatRate = (po.getWarehouse() != null && po.getWarehouse().getCountry() != null && po.getWarehouse().getCountry().getVatPercentage() != null) ? po.getWarehouse().getCountry().getVatPercentage() : BigDecimal.ZERO;
+        BigDecimal vatRate = (po.getWarehouse() != null && po.getWarehouse().getCountry() != null &&
+                po.getWarehouse().getCountry().getVatPercentage() != null) ? po.getWarehouse().getCountry().getVatPercentage() : BigDecimal.ZERO;
         BigDecimal importRate = BigDecimal.ZERO;
 
-        boolean crossBorder = (po.getWarehouse() != null && po.getWarehouse().getCountry() != null && vCountryObj != null && !po.getWarehouse().getCountry().getId().equals(vCountryObj.getId()));
+        boolean crossBorder = (po.getWarehouse() != null && po.getWarehouse().getCountry() != null && vCountryObj != null &&
+                !po.getWarehouse().getCountry().getId().equals(vCountryObj.getId()));
 
         if (crossBorder && po.getWarehouse().getCountry().getImportTaxPercentage() != null) {
             importRate = po.getWarehouse().getCountry().getImportTaxPercentage();

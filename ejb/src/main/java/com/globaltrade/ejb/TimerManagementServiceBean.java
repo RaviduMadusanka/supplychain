@@ -156,18 +156,23 @@ public class TimerManagementServiceBean implements TimerManagementService {
     private void syncAllFourTimerJobs() {
         LocalDateTime now = LocalDateTime.now();
 
-        ensureJobExists("InventoryLevelCheckTimer", "INVENTORY_CHECK", "DECLARATIVE", "0 * * * * * (Every Minute)", 60, false, "SCHEDULED", now.minusMinutes(1), now.plusMinutes(1));
+        ensureJobExists("InventoryLevelCheckTimer", "INVENTORY_CHECK", "DECLARATIVE", "0 * * * * * (Every Minute)",
+                60, false, "SCHEDULED", now.minusMinutes(1), now.plusMinutes(1));
 
-        ensureJobExists("ShipmentStatusUpdateTimer", "SHIPMENT_TRACKING", "DECLARATIVE", "0 */30 * * * * (Every 30 Mins)", 1800, false, "SCHEDULED", now.minusMinutes(15), now.plusMinutes(15));
+        ensureJobExists("ShipmentStatusUpdateTimer", "SHIPMENT_TRACKING", "DECLARATIVE", "0 */30 * * * * (Every 30 Mins)",
+                1800, false, "SCHEDULED", now.minusMinutes(15), now.plusMinutes(15));
 
-        ensureJobExists("VendorPerformanceEvalTimer", "VENDOR_EVAL", "DECLARATIVE", "0 0 * * * * (Hourly Sync)", 3600, false, "SCHEDULED", now.minusHours(1), now.plusHours(1));
+        ensureJobExists("VendorPerformanceEvalTimer", "VENDOR_EVAL", "DECLARATIVE", "0 0 * * * * (Hourly Sync)", 3600,
+                false, "SCHEDULED", now.minusHours(1), now.plusHours(1));
 
-        ensureJobExists("InventoryAlertCleanupTimer", "ALERT_CLEANUP", "DECLARATIVE", "0 0 0 * * Sun (Weekly Cleanup)", 604800, false, "SCHEDULED", now.minusDays(2), now.plusDays(5));
+        ensureJobExists("InventoryAlertCleanupTimer", "ALERT_CLEANUP", "DECLARATIVE", "0 0 0 * * Sun (Weekly Cleanup)",
+                604800, false, "SCHEDULED", now.minusDays(2), now.plusDays(5));
 
         em.flush();
     }
 
-    private void ensureJobExists(String name, String type, String creationType, String schedule, int interval, boolean persistent, String status, LocalDateTime lastRun, LocalDateTime nextRun) {
+    private void ensureJobExists(String name, String type, String creationType, String schedule, int interval,
+                                 boolean persistent, String status, LocalDateTime lastRun, LocalDateTime nextRun) {
         try {
             List<TimerJob> existing = em.createQuery(
                 "SELECT j FROM TimerJob j WHERE UPPER(j.jobType) = :type OR UPPER(j.jobName) = :name", TimerJob.class)
@@ -197,10 +202,18 @@ public class TimerManagementServiceBean implements TimerManagementService {
     private List<TimerJobDTO> getFallbackRuntimeJobs() {
         LocalDateTime now = LocalDateTime.now();
         List<TimerJobDTO> list = new ArrayList<>();
-        list.add(new TimerJobDTO(1L, "InventoryLevelCheckTimer", "INVENTORY_CHECK", "DECLARATIVE", "0 * * * * * (Every Minute)", 60, now.minusMinutes(1), now.plusMinutes(1), "SUCCESS", false, "SCHEDULED"));
-        list.add(new TimerJobDTO(2L, "ShipmentStatusUpdateTimer", "SHIPMENT_TRACKING", "DECLARATIVE", "0 */30 * * * * (Every 30 Mins)", 1800, now.minusMinutes(15), now.plusMinutes(15), "SUCCESS", false, "SCHEDULED"));
-        list.add(new TimerJobDTO(3L, "VendorPerformanceEvalTimer", "VENDOR_EVAL", "DECLARATIVE", "0 0 * * * * (Hourly Sync)", 3600, now.minusHours(1), now.plusHours(1), "SUCCESS", false, "SCHEDULED"));
-        list.add(new TimerJobDTO(4L, "InventoryAlertCleanupTimer", "ALERT_CLEANUP", "DECLARATIVE", "0 0 0 * * Sun (Weekly Cleanup)", 604800, now.minusDays(2), now.plusDays(5), "SUCCESS", false, "SCHEDULED"));
+        list.add(new TimerJobDTO(1L, "InventoryLevelCheckTimer", "INVENTORY_CHECK", "DECLARATIVE",
+                "0 * * * * * (Every Minute)", 60, now.minusMinutes(1), now.plusMinutes(1), "SUCCESS",
+                false, "SCHEDULED"));
+        list.add(new TimerJobDTO(2L, "ShipmentStatusUpdateTimer", "SHIPMENT_TRACKING", "DECLARATIVE",
+                "0 */30 * * * * (Every 30 Mins)", 1800, now.minusMinutes(15), now.plusMinutes(15), "SUCCESS",
+                false, "SCHEDULED"));
+        list.add(new TimerJobDTO(3L, "VendorPerformanceEvalTimer", "VENDOR_EVAL", "DECLARATIVE",
+                "0 0 * * * * (Hourly Sync)", 3600, now.minusHours(1), now.plusHours(1), "SUCCESS", false,
+                "SCHEDULED"));
+        list.add(new TimerJobDTO(4L, "InventoryAlertCleanupTimer", "ALERT_CLEANUP", "DECLARATIVE",
+                "0 0 0 * * Sun (Weekly Cleanup)", 604800, now.minusDays(2), now.plusDays(5), "SUCCESS", false,
+                "SCHEDULED"));
         return list;
     }
 }

@@ -93,8 +93,8 @@ public class VendorServiceBean implements VendorService {
                     .getResultList();
 
             if (list.isEmpty()) {
-                // Fallback to first vendor if not specifically linked
-                List<Vendor> all = em.createQuery("SELECT v FROM Vendor v LEFT JOIN FETCH v.company c LEFT JOIN FETCH c.country LEFT JOIN FETCH v.status ORDER BY v.id ASC", Vendor.class)
+                List<Vendor> all = em.createQuery("SELECT v FROM Vendor v LEFT JOIN FETCH v.company c LEFT JOIN FETCH c.country " +
+                                "LEFT JOIN FETCH v.status ORDER BY v.id ASC", Vendor.class)
                         .setMaxResults(1)
                         .getResultList();
                 if (all.isEmpty()) return null;
@@ -114,7 +114,8 @@ public class VendorServiceBean implements VendorService {
     public List<ProductDTO> getProductsByVendorId(Long vendorId) {
         if (vendorId == null) return new ArrayList<>();
         List<InventoryItem> items = em.createQuery(
-                "SELECT p FROM InventoryItem p LEFT JOIN FETCH p.category c LEFT JOIN FETCH p.vendor v LEFT JOIN FETCH v.company comp WHERE p.vendor.id = :vid ORDER BY p.id DESC",
+                "SELECT p FROM InventoryItem p LEFT JOIN FETCH p.category c LEFT JOIN FETCH p.vendor v LEFT JOIN FETCH v.company comp " +
+                        "WHERE p.vendor.id = :vid ORDER BY p.id DESC",
                 InventoryItem.class)
                 .setParameter("vid", vendorId)
                 .getResultList();
@@ -207,7 +208,8 @@ public class VendorServiceBean implements VendorService {
             e.printStackTrace();
         }
 
-        return new VendorPerformanceDTO(1L, vendorId, "Vendor", null, new BigDecimal("98.50"), new BigDecimal("92.00"), new BigDecimal("4.50"), new BigDecimal("4.60"));
+        return new VendorPerformanceDTO(1L, vendorId, "Vendor", null, new BigDecimal("98.50"), new BigDecimal("92.00"),
+                new BigDecimal("4.50"), new BigDecimal("4.60"));
     }
 
     @Override

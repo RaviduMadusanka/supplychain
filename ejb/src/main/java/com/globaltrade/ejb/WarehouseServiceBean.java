@@ -32,12 +32,14 @@ public class WarehouseServiceBean implements WarehouseService {
 
     @Override
     public List<CountryDTO> getAllCountries() {
-        return em.createQuery("SELECT new com.globaltrade.core.dto.CountryDTO(c.id, c.name, c.vatPercentage, c.importTaxPercentage) FROM Country c ORDER BY c.name", CountryDTO.class).getResultList();
+        return em.createQuery("SELECT new com.globaltrade.core.dto.CountryDTO(c.id, c.name, c.vatPercentage, c.importTaxPercentage) " +
+                "FROM Country c ORDER BY c.name", CountryDTO.class).getResultList();
     }
 
     @Override
     public List<WarehouseDTO> getAllWarehouseDetails() {
-        List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w LEFT JOIN FETCH w.country LEFT JOIN FETCH w.user ORDER BY w.id ASC", Warehouse.class).getResultList();
+        List<Warehouse> warehouses = em.createQuery("SELECT w FROM Warehouse w LEFT JOIN FETCH w.country LEFT JOIN FETCH w.user ORDER BY w.id ASC",
+                Warehouse.class).getResultList();
         return warehouses.stream().map(w -> new WarehouseDTO(
                 w.getId(),
                 w.getWarehouseCode(),
