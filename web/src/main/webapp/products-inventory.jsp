@@ -19,7 +19,6 @@
     </c:forEach>
   </c:if>
 
-  <!-- tabs -->
   <div class="flex items-center gap-1 mb-5 border-b border-line">
     <button onclick="scmTab(event,'t-products')" class="scmtabbtn px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary">Products</button>
     <button onclick="scmTab(event,'t-stock')" class="scmtabbtn px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-ink/50">Stock by Warehouse</button>
@@ -176,7 +175,6 @@ function toggleModal(id) {
 }
 </script>
 
-<!-- Add Product Modal -->
 <div id="addProductModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-sm">
   <div class="bg-white rounded-xl shadow-xl border border-line w-full max-w-md p-6">
     <div class="flex items-center justify-between mb-4">
@@ -210,7 +208,6 @@ function toggleModal(id) {
   </div>
 </div>
 
-<!-- Quick Update Stock Modal -->
 <div id="updateStockModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-ink/50 backdrop-blur-sm">
   <div class="bg-white rounded-xl shadow-xl border border-line w-full max-w-sm p-6">
     <div class="flex items-center justify-between mb-4">

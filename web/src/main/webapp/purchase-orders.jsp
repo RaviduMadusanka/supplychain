@@ -108,7 +108,6 @@
 
 <div class="space-y-6">
 
-  <!-- Feedback Alerts -->
   <c:if test="${not empty param.success}">
     <div class="p-4 rounded-xl bg-teal/10 border border-teal/20 text-teal flex items-center justify-between text-sm shadow-2xs">
       <div class="flex items-center gap-2">
@@ -129,7 +128,6 @@
     </div>
   </c:if>
 
-  <!-- WAREHOUSE MANAGER ONLY: Low Stock Alert Banner Strip -->
   <c:if test="${sessionScope.user == null || sessionScope.user.role != 'VENDOR'}">
     <c:if test="${not empty lowStocks}">
       <div class="p-5 rounded-2xl bg-gradient-to-r from-amber/10 via-amber/5 to-transparent border border-amber/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -150,10 +148,8 @@
     </c:if>
   </c:if>
 
-  <!-- Header Controls & Top Stats Strip -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-    
-    <!-- Filter Tabs -->
+
     <div class="flex items-center gap-1 p-1 bg-ink/5 rounded-xl border border-line w-fit">
       <button type="button" onclick="filterPOs('All', this)" class="po-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-ink shadow-sm transition">
         All Orders (${purchaseOrders.size()})
@@ -169,7 +165,6 @@
       </button>
     </div>
 
-    <!-- WAREHOUSE MANAGER ONLY: Create PO Button -->
     <c:if test="${sessionScope.user == null || sessionScope.user.role != 'VENDOR'}">
       <button type="button" onclick="openCreatePOModal()" class="btn-create-po px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primarydk transition shadow-sm inline-flex items-center gap-2 self-start sm:self-auto">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -178,7 +173,6 @@
     </c:if>
   </div>
 
-  <!-- Purchase Orders Main Table -->
   <div class="bg-white rounded-2xl border border-line shadow-sm overflow-hidden">
     <table class="w-full text-sm">
       <thead>
@@ -198,32 +192,27 @@
           <c:when test="${not empty purchaseOrders}">
             <c:forEach var="po" items="${purchaseOrders}">
               <tr class="po-row hover:bg-bg/40 transition" data-status="${po.statusName}">
-                
-                <!-- PO Code -->
+
                 <td class="px-5 py-4">
                   <span class="font-mono font-bold text-xs text-primary">${po.poCode}</span>
                 </td>
 
-                <!-- Destination Warehouse -->
                 <td class="px-5 py-4">
                   <div class="font-medium text-ink">${po.warehouseName}</div>
                   <div class="text-xs text-ink/40 font-mono">${po.warehouseCode} &middot; ${po.warehouseCountry}</div>
                 </td>
 
-                <!-- Vendor -->
                 <td class="px-5 py-4">
                   <div class="font-medium text-ink">${po.vendorName}</div>
                   <div class="text-xs text-ink/40 font-mono">${po.vendorCode} <c:if test="${not empty po.vendorCountry}">(${po.vendorCountry})</c:if></div>
                 </td>
 
-                <!-- Items count -->
                 <td class="px-5 py-4">
                   <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-bg border border-line text-xs font-mono">
                     <strong>${po.itemCount}</strong> units (${po.items.size()} SKU)
                   </span>
                 </td>
 
-                <!-- Total Cost -->
                 <td class="px-5 py-4">
                   <div class="font-mono font-bold text-sm text-ink">
                     $${String.format("%,.2f", po.totalAmount)}
@@ -235,7 +224,6 @@
                   </c:if>
                 </td>
 
-                <!-- Order Date -->
                 <td class="px-5 py-4 text-xs font-mono text-ink/60">
                   <c:choose>
                     <c:when test="${not empty po.createdAt}">
@@ -245,7 +233,6 @@
                   </c:choose>
                 </td>
 
-                <!-- Status Badge -->
                 <td class="px-5 py-4">
                   <c:choose>
                     <c:when test="${po.statusName == 'PENDING'}">
@@ -266,22 +253,17 @@
                   </c:choose>
                 </td>
 
-                <!-- Actions -->
                 <td class="px-5 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
-                    
-                    <!-- Toggle items drawer -->
+
                     <button type="button" onclick="toggleDetails('po-details-${po.id}')" class="px-2.5 py-1.5 rounded-lg border border-line text-xs font-medium hover:bg-bg transition text-ink/70">
                       View Items
                     </button>
 
-                    <!-- Actions based on PO status & Role -->
                     <c:choose>
-                      
-                      <%-- PENDING --%>
+
                       <c:when test="${po.statusName == 'PENDING'}">
                         <c:choose>
-                          <%-- Vendor Actions: Accept or Reject --%>
                           <c:when test="${sessionScope.user != null && sessionScope.user.role == 'VENDOR'}">
                             <form action="${pageContext.request.contextPath}/purchase-orders/action" method="POST" class="inline">
                               <input type="hidden" name="action" value="accept">
@@ -299,7 +281,6 @@
                               </button>
                             </form>
                           </c:when>
-                          <%-- Warehouse Manager View --%>
                           <c:otherwise>
                             <span class="text-xs text-amber font-mono inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber/10 border border-amber/20">
                               <span class="w-1.5 h-1.5 rounded-full bg-amber animate-pulse"></span>
@@ -309,10 +290,8 @@
                         </c:choose>
                       </c:when>
 
-                      <%-- PROCESSING / IN_TRANSIT --%>
                       <c:when test="${po.statusName == 'PROCESSING' || po.statusName == 'IN_TRANSIT'}">
                         <c:choose>
-                          <%-- Warehouse Manager: Receive Stock --%>
                           <c:when test="${sessionScope.user == null || sessionScope.user.role != 'VENDOR'}">
                             <form action="${pageContext.request.contextPath}/purchase-orders/action" method="POST" class="inline">
                               <input type="hidden" name="action" value="receive">
@@ -323,7 +302,6 @@
                               </button>
                             </form>
                           </c:when>
-                          <%-- Vendor: Dispatched --%>
                           <c:otherwise>
                             <span class="text-xs text-blue-600 font-mono inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 font-semibold">
                               <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
@@ -333,7 +311,6 @@
                         </c:choose>
                       </c:when>
 
-                      <%-- COMPLETED --%>
                       <c:when test="${po.statusName == 'COMPLETED' || po.statusName == 'DELIVERED'}">
                         <span class="text-xs text-teal font-semibold font-mono inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-teal/10 border border-teal/20">
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -351,7 +328,6 @@
                 </td>
               </tr>
 
-              <!-- Items Breakdown Expandable Row -->
               <tr id="po-details-${po.id}" style="display:none;" class="bg-bg/60 border-b border-line">
                 <td colspan="8" class="px-6 py-4">
                   <div class="bg-white rounded-xl border border-line p-4 shadow-xs">
@@ -405,12 +381,10 @@
 
 </div>
 
-<!-- WAREHOUSE MANAGER ONLY: CREATE PURCHASE ORDER MODAL -->
 <c:if test="${sessionScope.user == null || sessionScope.user.role != 'VENDOR'}">
   <div id="createPOModal" style="display:none;" class="fixed inset-0 z-50 items-center justify-center bg-ink/60 backdrop-blur-xs p-4">
     <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl border border-line overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in duration-150">
-      
-      <!-- Modal Header -->
+
       <div class="px-6 py-4 border-b border-line flex items-center justify-between bg-bg/50">
         <div>
           <h3 class="font-display font-bold text-base text-ink">Create Inbound Purchase Order</h3>
@@ -419,13 +393,11 @@
         <button type="button" onclick="closeCreatePOModal()" class="text-ink/40 hover:text-ink transition text-xl font-bold">&times;</button>
       </div>
 
-      <!-- Modal Form Body -->
       <form action="${pageContext.request.contextPath}/purchase-orders" method="POST" class="flex flex-col flex-1 overflow-y-auto">
         <input type="hidden" name="action" value="create" />
         
         <div class="p-6 space-y-5 flex-1">
-          
-          <!-- Warehouse & Vendor Select Grid -->
+
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-mono uppercase text-ink/60 mb-1.5">Destination Warehouse *</label>
@@ -448,7 +420,6 @@
             </div>
           </div>
 
-          <!-- Product Line Items Section -->
           <div>
             <div class="flex items-center justify-between mb-2">
               <label class="block text-xs font-mono uppercase text-ink/60">Procured Product Items *</label>
@@ -483,7 +454,6 @@
           </div>
         </div>
 
-        <!-- Modal Footer -->
         <div class="px-6 py-4 border-t border-line bg-bg/50 flex items-center justify-end gap-3">
           <button type="button" onclick="closeCreatePOModal()" class="px-4 py-2 rounded-xl border border-line text-xs font-semibold text-ink/70 hover:bg-bg">Cancel</button>
           <button type="submit" class="px-5 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primarydk shadow-xs">Issue Purchase Order</button>

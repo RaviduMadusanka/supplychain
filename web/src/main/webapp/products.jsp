@@ -24,7 +24,6 @@
   </c:if>
 </div>
 
-<!-- KPI Summary Strip -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
   <div class="card p-4 flex items-center justify-between hover:shadow-md transition">
     <div>
@@ -60,16 +59,13 @@
   </div>
 </div>
 
-<!-- Advanced Filter Bar -->
 <div class="card p-4 mb-6 bg-white shadow-sm space-y-3">
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-    <!-- Keyword Search -->
     <div class="relative">
       <input type="text" id="prodSearch" onkeyup="filterCatalog()" placeholder="Search Name, SKU, or Details..." class="w-full pl-8 pr-3.5 py-2 rounded-lg border border-line bg-bg/50 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20" />
       <svg class="w-3.5 h-3.5 text-ink/40 absolute left-2.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
     </div>
 
-    <!-- Category Dropdown Filter -->
     <div>
       <select id="categoryFilter" onchange="filterCatalog()" class="w-full px-3 py-2 rounded-lg border border-line bg-bg/50 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20">
         <option value="">All Categories</option>
@@ -79,7 +75,6 @@
       </select>
     </div>
 
-    <!-- Vendor Dropdown Filter -->
     <div>
       <select id="vendorFilter" onchange="filterCatalog()" class="w-full px-3 py-2 rounded-lg border border-line bg-bg/50 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20">
         <option value="">All Vendors</option>
@@ -89,7 +84,6 @@
       </select>
     </div>
 
-    <!-- View Mode Switcher -->
     <div class="flex items-center justify-between sm:justify-end gap-2 border-t sm:border-t-0 pt-2 sm:pt-0 border-line">
       <div class="flex bg-bg p-1 rounded-lg border border-line">
         <button type="button" id="viewGridBtn" onclick="switchView('grid')" class="px-2.5 py-1 text-xs rounded-md bg-white shadow-xs text-primary font-semibold transition" title="Grid View">
@@ -106,7 +100,6 @@
   </div>
 </div>
 
-<!-- VIEW 1: PRODUCT GRID CARDS (8 PER PAGE) -->
 <div id="productGridView" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
   <c:choose>
     <c:when test="${not empty products}">
@@ -116,8 +109,7 @@
              data-name="${p.name.toLowerCase()}"
              data-category="${p.categoryName != null ? p.categoryName.toLowerCase() : ''}"
              data-vendor="${p.vendorCompanyName != null ? p.vendorCompanyName.toLowerCase() : ''}">
-          
-          <!-- Image Box -->
+
           <div class="h-44 bg-bg border-b border-line overflow-hidden relative flex items-center justify-center">
             <c:choose>
               <c:when test="${not empty p.imageUrl}">
@@ -135,7 +127,6 @@
             </div>
           </div>
 
-          <!-- Product Details -->
           <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
             <div>
               <div class="flex items-center gap-1.5 mb-1.5">
@@ -146,7 +137,6 @@
               </h3>
             </div>
 
-            <!-- Specs Matrix -->
             <div class="pt-3 border-t border-line grid grid-cols-2 gap-2 text-[11px]">
               <div>
                 <span class="text-ink/40 font-mono uppercase block text-[9px]">Unit Weight</span>
@@ -158,7 +148,6 @@
               </div>
             </div>
 
-            <!-- Vendor Footer -->
             <div class="pt-2 border-t border-dashed border-line flex items-center justify-between text-[11px] text-ink/60">
               <span class="truncate flex items-center gap-1" title="Vendor: ${p.vendorCompanyName}">
                 <svg class="w-3.5 h-3.5 text-ink/40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
@@ -177,7 +166,6 @@
   </c:choose>
 </div>
 
-<!-- VIEW 2: PRODUCT TABLE -->
 <div id="productTableView" class="card overflow-hidden hidden">
   <table class="w-full text-sm">
     <thead>
@@ -217,20 +205,17 @@
   </table>
 </div>
 
-<!-- Empty Filter Result Placeholder -->
 <div id="noMatchMessage" class="card p-12 text-center hidden mt-4">
   <div class="text-ink/40 text-sm font-medium">No products match your filter or search criteria.</div>
   <button type="button" onclick="resetFilters()" class="mt-2 text-xs text-primary font-semibold hover:underline">Clear all filters</button>
 </div>
 
-<!-- PAGINATION BAR (8 ITEMS PER PAGE) -->
 <div id="paginationBar" class="card p-4 mt-6 bg-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
   <div class="text-xs text-ink/60 font-medium">
     Showing <span id="pageRangeStart" class="font-bold text-ink">1</span> to <span id="pageRangeEnd" class="font-bold text-ink">8</span> of <span id="pageTotalItems" class="font-bold text-primary">${products != null ? products.size() : 0}</span> products
   </div>
   
   <div class="flex items-center gap-1.5" id="paginationButtons">
-    <!-- Rendered dynamically by JavaScript -->
   </div>
 </div>
 
@@ -298,20 +283,17 @@
     if (currentPage > totalPages) currentPage = totalPages;
     if (currentPage < 1) currentPage = 1;
 
-    // Hide all items first
     document.querySelectorAll('.product-item').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.product-table-row').forEach(el => el.style.display = 'none');
 
     var startIndex = (currentPage - 1) * PAGE_SIZE;
     var endIndex = Math.min(startIndex + PAGE_SIZE, totalItems);
 
-    // Show only the 8 items for the current page
     for (var i = startIndex; i < endIndex; i++) {
       if (currentMatchingGridItems[i]) currentMatchingGridItems[i].style.display = '';
       if (currentMatchingTableRows[i]) currentMatchingTableRows[i].style.display = '';
     }
 
-    // Update counters
     document.getElementById('filteredCountBadge').textContent = totalItems + ' items';
     document.getElementById('pageTotalItems').textContent = totalItems;
     document.getElementById('pageRangeStart').textContent = totalItems === 0 ? 0 : (startIndex + 1);
@@ -328,11 +310,9 @@
       paginationBar.classList.remove('hidden');
     }
 
-    // Build page buttons
     var btnContainer = document.getElementById('paginationButtons');
     btnContainer.innerHTML = '';
 
-    // Prev Button
     var prevBtn = document.createElement('button');
     prevBtn.type = 'button';
     prevBtn.innerHTML = '&larr; Prev';
@@ -342,10 +322,8 @@
     prevBtn.onclick = function() { if (currentPage > 1) { currentPage--; renderPagination(); window.scrollTo({top: 0, behavior: 'smooth'}); } };
     btnContainer.appendChild(prevBtn);
 
-    // Numeric Buttons
     for (let p = 1; p <= totalPages; p++) {
       if (totalPages > 7) {
-        // Simple ellipsis handling for large page sets
         if (p !== 1 && p !== totalPages && Math.abs(p - currentPage) > 1) {
           if (p === 2 || p === totalPages - 1) {
             var dotSpan = document.createElement('span');
@@ -372,7 +350,6 @@
       btnContainer.appendChild(pageBtn);
     }
 
-    // Next Button
     var nextBtn = document.createElement('button');
     nextBtn.type = 'button';
     nextBtn.innerHTML = 'Next &rarr;';
@@ -390,7 +367,6 @@
     filterCatalog();
   }
 
-  // Initial load
   document.addEventListener('DOMContentLoaded', function() {
     filterCatalog();
   });

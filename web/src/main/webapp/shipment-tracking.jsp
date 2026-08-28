@@ -52,7 +52,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="h-16 bg-white border-b border-line flex items-center justify-between px-6 md:px-10 sticky top-0 z-40 shadow-xs">
   <div class="flex items-center gap-8">
     <a href="${pageContext.request.contextPath}/customer/browse" class="flex items-center gap-2.5">
@@ -80,7 +79,6 @@
 
 <main class="max-w-4xl mx-auto px-6 py-8">
 
-  <!-- SEARCH BAR -->
   <div class="card p-4 mb-8 shadow-xs">
     <form action="${pageContext.request.contextPath}/shipment/track" method="GET" class="flex flex-col sm:flex-row gap-3">
       <div class="relative flex-1">
@@ -133,7 +131,6 @@
           </div>
         </div>
 
-        <!-- 4-STEP ROUTE TIMELINE -->
         <div class="py-8">
           <div class="flex items-center gap-0 mb-4 px-4">
             <div class="route-node done"></div>
@@ -181,7 +178,6 @@
           </div>
         </div>
 
-        <!-- DETAILS GRID -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-line text-xs">
           <div>
             <span class="text-ink/40 block mb-1 font-mono uppercase">Logistics Carrier</span>
@@ -201,7 +197,6 @@
           </div>
         </div>
 
-        <!-- ITEMS IN SHIPMENT -->
         <c:if test="${not empty order.items}">
           <div class="mt-6 pt-6 border-t border-line">
             <h4 class="text-xs font-mono uppercase text-ink/50 mb-3">Manifest &amp; Contents (${order.itemCount} Units)</h4>

@@ -42,7 +42,6 @@
       </div>
 
       <form class="space-y-4" onsubmit="return false;">
-        <!-- account credentials (common to both roles) -->
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-ink/60 mb-1.5">Username</label>
@@ -66,7 +65,6 @@
 
         <div class="pt-2 border-t border-line"></div>
 
-        <!-- VENDOR-only fields -->
         <div id="vendorFields" class="space-y-4">
           <div>
             <label class="block text-xs font-medium text-ink/60 mb-1.5">Company Name</label>
@@ -88,7 +86,6 @@
           </div>
         </div>
 
-        <!-- CUSTOMER-only fields -->
         <div id="customerFields" class="space-y-4 hidden">
           <div>
             <label class="block text-xs font-medium text-ink/60 mb-1.5">Full Name / Business Name</label>
