@@ -12,12 +12,12 @@
 
 <div class="flex items-center justify-between mb-6">
   <div>
-    <h2 class="text-xl font-display font-bold text-ink">Vendors &amp; Suppliers</h2>
+    <h2 class="text-xl font-display font-bold text-ink">Vendors & Suppliers</h2>
     <p class="text-sm text-ink/50 mt-0.5">Manage approved global suppliers, procurement partners &amp; performance</p>
   </div>
   <button onclick="toggleModal('addVendorModal')" class="px-4 py-2.5 rounded-xl bg-primary hover:bg-primarydk text-white text-xs font-semibold shadow-sm shadow-primary/20 inline-flex items-center gap-2 transition">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-    + Onboard New Vendor
+    Add New Vendor
   </button>
 </div>
 
