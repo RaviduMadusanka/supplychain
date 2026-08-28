@@ -59,19 +59,17 @@ public class InventoryAlertTimerBeanTest {
         lowStock.setId(10L);
         lowStock.setItem(item);
         lowStock.setWarehouse(wh);
-        lowStock.setStockQty(12); // Low stock (12 <= 50)
+        lowStock.setStockQty(12);
 
         when(em.createQuery(contains("InventoryStock"), eq(InventoryStock.class))).thenReturn(stockQuery);
         when(stockQuery.getResultList()).thenReturn(Collections.singletonList(lowStock));
 
         when(em.createQuery(contains("InventoryAlert"), eq(InventoryAlert.class))).thenReturn(alertQuery);
         when(alertQuery.setParameter(anyString(), any())).thenReturn(alertQuery);
-        when(alertQuery.getResultList()).thenReturn(Collections.emptyList()); // No previous unresolved alert
+        when(alertQuery.getResultList()).thenReturn(Collections.emptyList());
 
-        // Execute scheduled timer logic
         timerBean.checkLowStockLevels();
 
-        // Verify that an InventoryAlert was created and persisted
         verify(em, atLeastOnce()).persist(any(InventoryAlert.class));
     }
 }

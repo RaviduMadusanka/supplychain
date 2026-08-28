@@ -14,21 +14,6 @@ import java.lang.reflect.Method;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * SecurityPenetrationTestSuite -- Adversarial Security Validation for NexTrade SCM.
- *
- * Simulates 6 real-world attack and misuse scenarios against the
- * AuthorizationInterceptor + RequiresRole security layer, providing
- * evidence of security robustness for the assignment assessment.
- *
- * Threat Model Covered:
- *   1. Unauthenticated access (null UserContext / no session)
- *   2. Horizontal privilege escalation (CUSTOMER -> ADMIN-only EJB)
- *   3. Vertical privilege escalation (VENDOR -> WAREHOUSE_MANAGER resource)
- *   4. Role injection via special characters (OWASP A03 Injection)
- *   5. Empty-role bypass attempt
- *   6. Valid multi-role access (ADMIN permitted on multi-role endpoint)
- */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SecurityPenetrationTestSuite -- AuthorizationInterceptor Adversarial Tests")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -39,7 +24,6 @@ public class SecurityPenetrationTestSuite {
 
     private AuthorizationInterceptor interceptor;
 
-    // --- Target stubs ---
 
     static class AdminOnlyBean {
         @RequiresRole("ADMIN")
@@ -67,7 +51,6 @@ public class SecurityPenetrationTestSuite {
         UserContext.clear();
     }
 
-    // THREAT 1: Unauthenticated access
     @Test
     @Order(1)
     @DisplayName("[PENTEST-01] Unauthenticated caller (null UserContext) must be BLOCKED")
@@ -85,7 +68,6 @@ public class SecurityPenetrationTestSuite {
         System.out.println("[PENTEST-01 BLOCKED] " + ex.getMessage());
     }
 
-    // THREAT 2: CUSTOMER -> ADMIN escalation
     @Test
     @Order(2)
     @DisplayName("[PENTEST-02] CUSTOMER attempting ADMIN method must be BLOCKED")
@@ -105,7 +87,6 @@ public class SecurityPenetrationTestSuite {
         System.out.println("[PENTEST-02 BLOCKED] " + ex.getMessage());
     }
 
-    // THREAT 3: VENDOR -> WAREHOUSE_MANAGER escalation
     @Test
     @Order(3)
     @DisplayName("[PENTEST-03] VENDOR attempting WAREHOUSE_MANAGER resource must be BLOCKED")
@@ -123,7 +104,6 @@ public class SecurityPenetrationTestSuite {
         System.out.println("[PENTEST-03 BLOCKED] " + ex.getMessage());
     }
 
-    // THREAT 4: Role injection (OWASP A03)
     @Test
     @Order(4)
     @DisplayName("[PENTEST-04] SQL-injection role string must NOT bypass role check")
@@ -139,7 +119,6 @@ public class SecurityPenetrationTestSuite {
         System.out.println("[PENTEST-04 BLOCKED] " + ex.getMessage());
     }
 
-    // THREAT 5: Empty role bypass
     @Test
     @Order(5)
     @DisplayName("[PENTEST-05] Empty role must be BLOCKED")
@@ -157,7 +136,6 @@ public class SecurityPenetrationTestSuite {
         System.out.println("[PENTEST-05 BLOCKED] " + ex.getMessage());
     }
 
-    // POSITIVE TEST: ADMIN permitted on multi-role endpoint
     @Test
     @Order(6)
     @DisplayName("[PENTEST-06] Legitimate ADMIN on multi-role endpoint must be PERMITTED")

@@ -28,7 +28,6 @@ public class InterceptorSuiteTest {
         UserContext.clear();
     }
 
-    // Dummy sample target class for testing Authorization & Validation
     @RequiresRole("ADMIN")
     static class SampleSecuredBean {
         public void executeAdminTask() {}
@@ -70,7 +69,6 @@ public class InterceptorSuiteTest {
     void testAuthorizationInterceptorRejectsNonAdmin() throws Exception {
         AuthorizationInterceptor interceptor = new AuthorizationInterceptor();
 
-        // Set UserContext as CUSTOMER (not ADMIN)
         UserDTO customerUser = new UserDTO();
         customerUser.setId(99L);
         customerUser.setUsername("customer1");
@@ -91,7 +89,6 @@ public class InterceptorSuiteTest {
     void testAuthorizationInterceptorAllowsAdmin() throws Exception {
         AuthorizationInterceptor interceptor = new AuthorizationInterceptor();
 
-        // Set UserContext as ADMIN
         UserDTO adminUser = new UserDTO();
         adminUser.setId(1L);
         adminUser.setUsername("admin1");
