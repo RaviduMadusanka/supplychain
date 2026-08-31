@@ -29,9 +29,9 @@ public class AuthorizationInterceptor {
             UserDTO currentUser = UserContext.getUser();
 
             if (currentUser == null) {
-                LOGGER.log(Level.WARNING, "[SECURITY-VIOLATION] Unauthenticated caller attempted invocation on: {0}.{1}()",
+                LOGGER.log(Level.WARNING, "Unauthenticated access attempt on {0}.{1}()",
                         new Object[]{targetClass.getSimpleName(), method.getName()});
-                throw new SecurityException("Authentication Required: No authenticated security context found.");
+                throw new SecurityException("Authentication Required");
             }
 
             String userRole = currentUser.getRole() != null ? currentUser.getRole().toUpperCase() : "";
@@ -45,9 +45,9 @@ public class AuthorizationInterceptor {
             }
 
             if (!authorized) {
-                LOGGER.log(Level.WARNING, "[SECURITY-VIOLATION] Unauthorized access attempt! Caller: {0} (Role: {1}) denied for {2}.{3}(). Required Roles: {4}",
+                LOGGER.log(Level.WARNING, "Access denied for user {0} on {2}.{3}()",
                         new Object[]{currentUser.getUsername(), userRole, targetClass.getSimpleName(), method.getName(), Arrays.toString(allowedRoles)});
-                throw new SecurityException("Access Denied: Caller [" + currentUser.getUsername() + " | " + userRole + "] lacks required privileges " + Arrays.toString(allowedRoles));
+                throw new SecurityException("Access Denied");
             }
         }
 
