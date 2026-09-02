@@ -5,6 +5,7 @@ import com.globaltrade.core.service.OrderService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -25,9 +26,17 @@ public class OrderServiceIntegrationTest {
     public static JavaArchive createDeployment() {
         return ShrinkWrap.create(JavaArchive.class, "order-service-integration-test.jar")
                 .addPackages(true, "com.globaltrade.core")
-                .addPackages(true, "com.globaltrade.ejb")
+                .addClasses(
+                        OrderServiceBean.class,
+                        InventoryServiceBean.class,
+                        com.globaltrade.ejb.interceptor.AuditLogInterceptor.class,
+                        com.globaltrade.ejb.interceptor.PerformanceMonitorInterceptor.class,
+                        com.globaltrade.ejb.interceptor.ExceptionLoggingInterceptor.class,
+                        com.globaltrade.ejb.interceptor.AuthorizationInterceptor.class,
+                        com.globaltrade.ejb.interceptor.VendorDataValidationInterceptor.class
+                )
                 .addAsManifestResource("META-INF/persistence.xml", "persistence.xml")
-                .addAsManifestResource("META-INF/beans.xml", "beans.xml");
+                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
     }
 
     @EJB(beanName = "OrderServiceBean")

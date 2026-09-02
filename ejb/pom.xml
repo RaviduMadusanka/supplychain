@@ -44,10 +44,9 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Arquillian JUnit5 — in-container integration testing (activated via -Parq-glassfish-remote) -->
         <dependency>
             <groupId>org.jboss.arquillian.junit5</groupId>
-            <artifactId>arquillian-junit5-core</artifactId>
+            <artifactId>arquillian-junit5-container</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -73,7 +72,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-ejb-plugin</artifactId>
             </plugin>
-            <!-- Exclude Arquillian integration tests from the default surefire run -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -92,21 +90,16 @@
             </plugin>
         </plugins>
     </build>
-
-    <!-- Run integration tests against a live GlassFish 7 instance:
-         mvn clean test -Parq-glassfish-remote
-         (Requires GlassFish running on localhost:4848 with datasource configured) -->
     <profiles>
         <profile>
             <id>arq-glassfish-remote</id>
             <dependencies>
-                <!-- GlassFish 7 remote adapter — add when running in-container tests.
-                     The specific artifact for GlassFish 7 / Jakarta EE 10 must be sourced
-                     from the GlassFish project or OmniFaces Arquillian extension:
-                     groupId: org.omnifaces.arquillian
-                     artifactId: arquillian-glassfish-remote-6
-                     version: 1.4
-                     See: https://github.com/omnifaces/arquillian-glassfish -->
+                <dependency>
+                    <groupId>ee.omnifish.arquillian</groupId>
+                    <artifactId>arquillian-glassfish-server-remote</artifactId>
+                    <version>2.1.2</version>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -115,12 +108,10 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.1.2</version>
                         <configuration>
-                            <!-- Include ONLY integration tests when this profile is active -->
-                            <includes>
+                            <includes combine.self="override">
                                 <include>**/*IntegrationTest.java</include>
                             </includes>
-                            <excludes>
-                                <exclude>none</exclude>
+                            <excludes combine.self="override">
                             </excludes>
                         </configuration>
                     </plugin>

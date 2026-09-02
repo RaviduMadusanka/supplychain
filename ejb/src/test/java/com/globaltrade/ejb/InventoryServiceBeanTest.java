@@ -106,8 +106,8 @@ public class InventoryServiceBeanTest {
 
         when(em.find(InventoryStock.class, 50L)).thenReturn(mockStock);
         when(em.createQuery(anyString(), eq(Status.class))).thenReturn(statusQuery);
-        when(statusQuery.setParameter(eq("sname"), anyString())).thenReturn(statusQuery);
-        when(statusQuery.getResultList()).thenReturn(Collections.singletonList(inStockStatus));
+        when(statusQuery.setParameter(eq("name"), anyString())).thenReturn(statusQuery);
+        when(statusQuery.getSingleResult()).thenReturn(inStockStatus);
 
         inventoryService.quickUpdateStock(50L, 100);
 
